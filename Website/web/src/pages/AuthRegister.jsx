@@ -1,28 +1,22 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Formik, Form } from 'formik';
 import { InputLabel, Stack, OutlinedInput, Button } from "@mui/material";
 import { object, string } from 'yup';
 import httpClient from './httpClient';
-import AuthRegister from './AuthRegister';
 
-const AuthLogin = () => {
-  const [showRegister, setShowRegister] = useState(false);
-
-  const login = async (values) => {
+const AuthRegister = ({ onSwitchToLogin }) => {
+  const register = async (values) => {
     try {
-      const resp = await httpClient.post("http://localhost:8080/login", {
+      const resp = await httpClient.post("http://localhost:8080/register", {
         email: values.email,
         password: values.password,
       });
-      console.log('Login response:', resp);
+      console.log('Register response:', resp);
+      onSwitchToLogin(); 
     } catch (e) {
-      console.error("Login error:", e.response?.data || e.message);
+      console.error("Registration error:", e.response?.data || e.message);
     }
   };
-
-  if (showRegister) {
-    return <AuthRegister onSwitchToLogin={() => setShowRegister(false)} />;
-  }
 
   return (
     <Formik
@@ -34,7 +28,7 @@ const AuthLogin = () => {
         email: string().email("Must be a valid email").max(255).required("Email is required"),
         password: string().max(255).required("Password is required"),
       })}
-      onSubmit={login}
+      onSubmit={register}
     >
       {({ handleChange, handleBlur, handleSubmit, values }) => (
         <Form onSubmit={handleSubmit}>
@@ -59,8 +53,8 @@ const AuthLogin = () => {
               fullWidth
               placeholder="Enter password"
             />
-            <Button type="submit" fullWidth variant="contained">Login</Button>
-            <Button fullWidth variant="contained" onClick={() => setShowRegister(true)}>Register</Button>
+            <Button type="submit" fullWidth variant="contained">Register</Button>
+            <Button fullWidth onClick={onSwitchToLogin}>Back to Login</Button>
           </Stack>
         </Form>
       )}
@@ -68,4 +62,4 @@ const AuthLogin = () => {
   );
 };
 
-export default AuthLogin;
+export default AuthRegister;
