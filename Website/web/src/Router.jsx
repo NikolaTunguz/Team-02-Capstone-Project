@@ -4,14 +4,19 @@ import NotFound from './pages/NotFound';
 import Dashboard from './pages/dashboard/index';
 import Notifications from './pages/notifications/index'; 
 import Account from './pages/account/index'
+import Register from './pages/Register';
 
 const Router = () => {
     return (
         <BrowserRouter>
             <Routes>
                 <Route 
-                    path="/" 
-                    element={<Login />} 
+                    path="/login" 
+                    element={<Login/>} 
+                />
+                <Route 
+                    path="/register" 
+                    element={<Register/>} 
                 />
                 <Route 
                     path="*" 

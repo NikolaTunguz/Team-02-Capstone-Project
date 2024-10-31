@@ -52,6 +52,8 @@ def login_user():
     user = User.query.filter_by(email=email).first()
     if not user or not bcrypt.check_password_hash(user.password, password):
         return jsonify({"error": "Unauthorized"}), 401
+    if user and user.user.id:
+        session["user_id"] = user.user.id
     return jsonify({
         "id": user.id,
         "email": user.email
