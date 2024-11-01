@@ -1,7 +1,6 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
-from flask_session import Session
 from flask import Flask, send_from_directory
 from config import ApplicationConfig
 from model import db, User
@@ -16,7 +15,6 @@ with app.app_context():
     db.create_all()
 
 bcrypt = Bcrypt(app)
-session = Session(app)
 
 @app.route('/@me')
 def get_cur_user():
@@ -52,8 +50,7 @@ def login_user():
     user = User.query.filter_by(email=email).first()
     if not user or not bcrypt.check_password_hash(user.password, password):
         return jsonify({"error": "Unauthorized"}), 401
-    # if user and user.user.id:
-    #     session["user_id"] = user.user.id
+    session["user_id"] = user.id
     return jsonify({
         "id": user.id,
         "email": user.email
