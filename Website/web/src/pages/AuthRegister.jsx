@@ -1,12 +1,27 @@
 import React from 'react';
 import { Formik, Form } from 'formik';
-import { InputLabel, Stack, OutlinedInput, Button, Grid2 } from "@mui/material";
+import { InputLabel, Stack, OutlinedInput, Button, Grid2, InputAdornment, IconButton } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { object, string } from 'yup';
 import httpClient from './httpClient';
 import { useNavigate } from 'react-router-dom';
 
 const AuthRegister = () => {
+  const [showPassword, setShowPassword] = React.useState(false)
   const navigate = useNavigate();
+
+  const handleClickShowPass = () => {
+    setShowPassword(!showPassword)
+  }
+
+  const handleMouseDownPass = (event) => {
+    event.preventDefault();
+  }
+
+  React.useEffect(() => {
+    setShowPassword(false); 
+  }, []);
+
   const register = async (values) => {
     try {
       const resp = await httpClient.post("http://localhost:8080/register", {
@@ -17,7 +32,12 @@ const AuthRegister = () => {
         window.location.href="/dashboard";
       } 
     } catch (e) {
-      console.error("Registration error:", e.response?.data || e.message);
+        if (e.response?.status === 409) {
+          alert("User already exists");
+        } else {
+          console.error("Registration error:", e.response?.data || e.message);
+          alert("Registration failed");
+        }
     }
   };
 
@@ -55,13 +75,28 @@ const AuthRegister = () => {
             />
             <InputLabel>Password</InputLabel>
             <OutlinedInput
-                type="password"
                 name="password"
+                type={showPassword ? "text" : "password"}
                 value={values.password}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 fullWidth
                 placeholder="Password"
+                endAdornment={
+                values.password.length > 0 && (
+                  <InputAdornment position="end">
+                    <IconButton 
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPass}
+                      onMouseDown={handleMouseDownPass}
+                      edge="end"
+                      size="large"
+                    >
+                    {showPassword ? <Visibility/> : <VisibilityOff/> }
+                    </IconButton>
+                    </InputAdornment>
+                  )
+                }
             />
             <Button 
                 type="submit" 

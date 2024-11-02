@@ -1,12 +1,26 @@
 import React from 'react';
 import { Formik, Form } from 'formik';
-import { InputLabel, Stack, OutlinedInput, Button, Grid2 } from "@mui/material";
+import { InputLabel, Stack, OutlinedInput, Button, Grid2, InputAdornment, IconButton  } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { object, string } from 'yup';
 import httpClient from './httpClient';
 import { useNavigate } from 'react-router-dom';
 
 const AuthLogin = () => {
+  const [showPassword, setShowPassword] = React.useState(false)
   const navigate = useNavigate();
+
+  const handleClickShowPass = () => {
+    setShowPassword(!showPassword)
+  }
+
+  const handleMouseDownPass = (event) => {
+    event.preventDefault();
+  }
+
+  React.useEffect(() => {
+    setShowPassword(false); 
+  }, []);
 
   const login = async (values) => {
     try {
@@ -57,14 +71,29 @@ const AuthLogin = () => {
               />
               <InputLabel>Password</InputLabel>
               <OutlinedInput
-                type="password"
                 name="password"
+                type={showPassword ? "text" : "password"}
                 value={values.password}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 fullWidth
                 placeholder="Password"
-              />
+                endAdornment={
+                  values.password.length > 0 && (
+                    <InputAdornment position="end">
+                        <IconButton 
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPass}
+                          onMouseDown={handleMouseDownPass}
+                          edge="end"
+                          size="large"
+                        >
+                          {showPassword ? <Visibility/> : <VisibilityOff/> }
+                        </IconButton>
+                    </InputAdornment>
+                  )
+                }
+            />
               <Button 
                 type="submit" 
                 fullWidth 
