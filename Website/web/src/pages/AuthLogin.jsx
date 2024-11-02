@@ -1,13 +1,15 @@
 import React from 'react';
 import { Formik, Form } from 'formik';
-import { InputLabel, Stack, OutlinedInput, Button, Grid2, InputAdornment, IconButton  } from "@mui/material";
+import { InputLabel, Stack, OutlinedInput, Button, Grid2, InputAdornment, IconButton, FormHelperText } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { object, string } from 'yup';
 import httpClient from './httpClient';
 import { useNavigate } from 'react-router-dom';
 
 const AuthLogin = () => {
+  const formRef = React.useRef(null);
   const [showPassword, setShowPassword] = React.useState(false)
+  const [error, setError] = React.useState("")
   const navigate = useNavigate();
 
   const handleClickShowPass = () => {
@@ -18,22 +20,29 @@ const AuthLogin = () => {
     event.preventDefault();
   }
 
-  React.useEffect(() => {
-    setShowPassword(false); 
-  }, []);
+  const handleChange = (e) => {
+    setError(""); 
+    formRef.current.handleChange(e);
+  };
 
-  const login = async (values) => {
+  const login = async () => {
+    const email = formRef.current.values.email;
+    const password = formRef.current.values.password; 
     try {
       const resp = await httpClient.post("http://localhost:8080/login", {
-        email: values.email,
-        password: values.password,
+        email: email,
+        password: password,
       });
       if(resp.status === 200){
         window.location.href="/dashboard";
       } 
     } catch (e) {
-      console.error("Login error:", e.response?.data || e.message);
-      alert("Invalid Credentials")
+      if (e.response?.status === 401) {
+        setError("Invalid Credentials");
+      } else {
+        console.error("Login error:", e.response?.data || e.message);
+        setError(e.message ?? "An error occurred");
+      }
     }
   };
 
@@ -41,6 +50,7 @@ const AuthLogin = () => {
     <>
       <h1> Login to SeeThru</h1>
       <Formik
+        innerRef={formRef}
         initialValues={{
           email: "",
           password: "",
@@ -49,13 +59,23 @@ const AuthLogin = () => {
           email: string().email("Must be a valid email").max(255).required("Email is required"),
           password: string().max(255).required("Password is required"),
         })}
-        onSubmit={login}
+        onSubmit={async ({ setErrors, setStatus }) => {
+          try {
+              setStatus({ success: true });
+          } catch (e) {
+              setStatus({ success: false });
+              setErrors({ submit: e.message });
+          }
+      }}
       >
         {({ 
-          handleChange, 
-          handleBlur, 
-          handleSubmit, 
-          values 
+            errors,
+            handleBlur, 
+            handleSubmit, 
+            isValid,
+            dirty,
+            touched,
+            values, 
         }) => (
           <Form onSubmit={handleSubmit}>
             <Stack spacing={2} sx={{ width: '100%' }}>
@@ -68,7 +88,11 @@ const AuthLogin = () => {
                 onBlur={handleBlur}
                 fullWidth
                 placeholder="Email"
+                error={Boolean(touched.email && errors.email)}
               />
+              {touched.email && errors.email && (
+                  <FormHelperText error> {errors.email} </FormHelperText>
+              )}
               <InputLabel>Password</InputLabel>
               <OutlinedInput
                 name="password"
@@ -78,6 +102,7 @@ const AuthLogin = () => {
                 onBlur={handleBlur}
                 fullWidth
                 placeholder="Password"
+                error={Boolean(touched.password && errors.password)}
                 endAdornment={
                   values.password.length > 0 && (
                     <InputAdornment position="end">
@@ -94,13 +119,28 @@ const AuthLogin = () => {
                   )
                 }
             />
+            {touched.password && errors.password && (
+                <FormHelperText error> {errors.password} </FormHelperText>
+            )}
               <Button 
                 type="submit" 
                 fullWidth 
                 variant="contained"
+                onClick={login}
+                disabled={!(isValid && dirty)}
               >
                 Login
               </Button>
+              {errors.submit && (
+                <Grid2 xs={12}>
+                    <FormHelperText error> {errors.submit} </FormHelperText>
+                </Grid2>
+              )}
+              {error && isValid ? <Grid2 xs={12}>
+                  <Stack spacing={1}>
+                    <FormHelperText error> {error} </FormHelperText>
+                  </Stack>
+              </Grid2> : null }
               <Grid2 
                 xs={4} 
                 container 
