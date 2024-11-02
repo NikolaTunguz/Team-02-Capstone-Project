@@ -5,10 +5,15 @@ import Dashboard from './pages/dashboard/index';
 import Notifications from './pages/notifications/index';
 import Account from './pages/account/index'
 import Register from './pages/Register';
+import { useAuth } from "./context/AuthContext";
+import NavBar from "./components/NavBar";
 
 const Router = () => {
+    const { isLoggedIn } = useAuth();
+
     return (
         <BrowserRouter>
+        {isLoggedIn && <NavBar />}
             <Routes>
                 <Route
                     path="/login"

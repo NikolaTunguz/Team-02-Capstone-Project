@@ -5,12 +5,18 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { object, string } from 'yup';
 import httpClient from './httpClient';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from "../context/AuthContext";
 
 const AuthLogin = () => {
   const formRef = React.useRef(null);
   const [showPassword, setShowPassword] = React.useState(false)
   const [error, setError] = React.useState("")
   const navigate = useNavigate();
+  const { setIsLoggedIn } = useAuth();
+
+  React.useEffect(() => {
+    setIsLoggedIn(false);
+  }, [])
 
   const handleClickShowPass = () => {
     setShowPassword(!showPassword)
@@ -21,21 +27,22 @@ const AuthLogin = () => {
   }
 
   const handleChange = (e) => {
-    setError(""); 
+    setError("");
     formRef.current.handleChange(e);
   };
 
   const login = async () => {
     const email = formRef.current.values.email;
-    const password = formRef.current.values.password; 
+    const password = formRef.current.values.password;
     try {
       const resp = await httpClient.post("http://localhost:8080/login", {
         email: email,
         password: password,
       });
-      if(resp.status === 200){
-        window.location.href="/dashboard";
-      } 
+      if (resp.status === 200) {
+        setIsLoggedIn(true);
+        navigate("/dashboard");
+      }
     } catch (e) {
       if (e.response?.status === 401) {
         setError("Invalid Credentials");
@@ -61,21 +68,21 @@ const AuthLogin = () => {
         })}
         onSubmit={async ({ setErrors, setStatus }) => {
           try {
-              setStatus({ success: true });
+            setStatus({ success: true });
           } catch (e) {
-              setStatus({ success: false });
-              setErrors({ submit: e.message });
+            setStatus({ success: false });
+            setErrors({ submit: e.message });
           }
-      }}
+        }}
       >
-        {({ 
-            errors,
-            handleBlur, 
-            handleSubmit, 
-            isValid,
-            dirty,
-            touched,
-            values, 
+        {({
+          errors,
+          handleBlur,
+          handleSubmit,
+          isValid,
+          dirty,
+          touched,
+          values,
         }) => (
           <Form onSubmit={handleSubmit}>
             <Stack spacing={2} sx={{ width: '100%' }}>
@@ -91,7 +98,7 @@ const AuthLogin = () => {
                 error={Boolean(touched.email && errors.email)}
               />
               {touched.email && errors.email && (
-                  <FormHelperText error> {errors.email} </FormHelperText>
+                <FormHelperText error> {errors.email} </FormHelperText>
               )}
               <InputLabel>Password</InputLabel>
               <OutlinedInput
@@ -106,25 +113,25 @@ const AuthLogin = () => {
                 endAdornment={
                   values.password.length > 0 && (
                     <InputAdornment position="end">
-                        <IconButton 
-                          aria-label="toggle password visibility"
-                          onClick={handleClickShowPass}
-                          onMouseDown={handleMouseDownPass}
-                          edge="end"
-                          size="large"
-                        >
-                          {showPassword ? <Visibility/> : <VisibilityOff/> }
-                        </IconButton>
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPass}
+                        onMouseDown={handleMouseDownPass}
+                        edge="end"
+                        size="large"
+                      >
+                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
                     </InputAdornment>
                   )
                 }
-            />
-            {touched.password && errors.password && (
+              />
+              {touched.password && errors.password && (
                 <FormHelperText error> {errors.password} </FormHelperText>
-            )}
-              <Button 
-                type="submit" 
-                fullWidth 
+              )}
+              <Button
+                type="submit"
+                fullWidth
                 variant="contained"
                 onClick={login}
                 disabled={!(isValid && dirty)}
@@ -133,21 +140,21 @@ const AuthLogin = () => {
               </Button>
               {errors.submit && (
                 <Grid2 xs={12}>
-                    <FormHelperText error> {errors.submit} </FormHelperText>
+                  <FormHelperText error> {errors.submit} </FormHelperText>
                 </Grid2>
               )}
               {error && isValid ? <Grid2 xs={12}>
-                  <Stack spacing={1}>
-                    <FormHelperText error> {error} </FormHelperText>
-                  </Stack>
-              </Grid2> : null }
-              <Grid2 
-                xs={4} 
-                container 
+                <Stack spacing={1}>
+                  <FormHelperText error> {error} </FormHelperText>
+                </Stack>
+              </Grid2> : null}
+              <Grid2
+                xs={4}
+                container
                 alignItems="center"
               >
                 <p>Don't have an account? </p>
-                <Button 
+                <Button
                   onClick={() => navigate("/register")}
                 >
                   <p>Sign Up</p>
