@@ -20,6 +20,10 @@ const Router = () => {
                 />
                 <Route 
                     path="*" 
+                    element={<Login/>}
+                />
+                <Route 
+                    path="*" 
                     element={<NotFound/>}
                 />
                 <Route 
