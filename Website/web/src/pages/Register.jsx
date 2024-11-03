@@ -1,9 +1,9 @@
 import { Box, Grid2, Stack } from "@mui/material";
-import AuthLogin from './AuthLogin';
+import AuthRegister from './AuthRegister';
 import '../App.css';
 import templogo from '../assets/images/templogo.png';
 
-const Login = () => (
+const Register = () => (
     <Grid2 
         container 
         justifyContent="center" 
@@ -18,16 +18,16 @@ const Login = () => (
                     boxShadow: 3,
                     backgroundColor: '#fff', 
                     width: '100%',
-                    maxWidth: '100%', 
+                    maxWidth: '500px', 
                 }}
             >
                 <Stack direction="column" spacing={2} alignItems="center">
                     <img alt={'logo'} src={templogo} style={{ width: "100px" }} />
-                    <AuthLogin/>
+                    <AuthRegister/>
                 </Stack>
             </Box>
         </Grid2>
     </Grid2>
 );
 
-export default Login;
+export default Register;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Formik, Form } from 'formik';
+import { Formik, Form, useFormik } from 'formik';
 import { InputLabel, Stack, OutlinedInput, Button, Grid2, InputAdornment, IconButton, FormHelperText } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { object, string } from 'yup';
@@ -7,7 +7,7 @@ import httpClient from './httpClient';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from "../context/AuthContext";
 
-const AuthLogin = () => {
+const AuthRegister = () => {
   const formRef = React.useRef(null);
   const [showPassword, setShowPassword] = React.useState(false)
   const [error, setError] = React.useState("")
@@ -31,21 +31,21 @@ const AuthLogin = () => {
     formRef.current.handleChange(e);
   };
 
-  const login = async (email, password) => {
+  const register = async (email, password) => {
     try {
-      const resp = await httpClient.post("http://localhost:8080/login", {
+      const resp = await httpClient.post("http://localhost:8080/register", {
         email: email,
         password: password,
       });
       if (resp.status === 200) {
         setIsLoggedIn(true);
-        navigate("/dashboard");
+        navigate("/dashboard")
       }
     } catch (e) {
-      if (e.response?.status === 401) {
-        setError("Invalid Credentials");
+      if (e.response?.status === 409) {
+        setError("User already exists");
       } else {
-        console.error("Login error:", e.response?.data || e.message);
+        console.error("Registration error:", e.response?.data || e.message);
         setError(e.message ?? "An error occurred");
       }
     }
@@ -53,7 +53,7 @@ const AuthLogin = () => {
 
   return (
     <>
-      <h1> Login to SeeThru</h1>
+      <h1> Sign up to SeeThru </h1>
       <Formik
         innerRef={formRef}
         initialValues={{
@@ -61,12 +61,17 @@ const AuthLogin = () => {
           password: "",
         }}
         validationSchema={object().shape({
-          email: string().email("Must be a valid email").max(255).required("Email is required"),
-          password: string().max(255).required("Password is required"),
+          email: string()
+            .email("Must be a valid email")
+            .max(255).required("Email is required"),
+          password: string()
+            .max(255)
+            .required("Password is required")
+            .min(10, "Password must be at least 8 characters long")
         })}
         onSubmit={async ({ email, password }, { setErrors, setStatus }) => {
           try {
-            await login(email, password); 
+            await register(email, password); 
             setStatus({ success: true }); 
           } catch (e) {
             setStatus({ success: false });
@@ -134,7 +139,7 @@ const AuthLogin = () => {
                 variant="contained"
                 disabled={!(isValid && dirty)}
               >
-                Login
+                Register
               </Button>
               {errors.submit && (
                 <Grid2 xs={12}>
@@ -151,11 +156,11 @@ const AuthLogin = () => {
                 container
                 alignItems="center"
               >
-                <p>Don't have an account? </p>
+                <p>Already have an account? </p>
                 <Button
-                  onClick={() => navigate("/register")}
+                  onClick={() => navigate("/login")}
                 >
-                  <p>Sign Up</p>
+                  <p>Log In</p>
                 </Button>
               </Grid2>
             </Stack>
@@ -166,4 +171,4 @@ const AuthLogin = () => {
   );
 };
 
-export default AuthLogin;
+export default AuthRegister;

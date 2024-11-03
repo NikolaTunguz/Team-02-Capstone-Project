@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useRef } from 'react';
+import '../App.css';
 
 const LiveStream = () => {
   return (
