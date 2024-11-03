@@ -1,5 +1,5 @@
 import React from 'react';
-import { Formik, Form } from 'formik';
+import { Formik, Form, useFormik } from 'formik';
 import { InputLabel, Stack, OutlinedInput, Button, Grid2, InputAdornment, IconButton, FormHelperText } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { object, string } from 'yup';
@@ -31,9 +31,7 @@ const AuthRegister = () => {
     formRef.current.handleChange(e);
   };
 
-  const register = async () => {
-    const email = formRef.current.values.email;
-    const password = formRef.current.values.password;
+  const register = async (email, password) => {
     try {
       const resp = await httpClient.post("http://localhost:8080/register", {
         email: email,
@@ -71,9 +69,10 @@ const AuthRegister = () => {
             .required("Password is required")
             .min(10, "Password must be at least 8 characters long")
         })}
-        onSubmit={async ({ setErrors, setStatus }) => {
+        onSubmit={async ({ email, password }, { setErrors, setStatus }) => {
           try {
-            setStatus({ success: true });
+            await register(email, password); 
+            setStatus({ success: true }); 
           } catch (e) {
             setStatus({ success: false });
             setErrors({ submit: e.message });
@@ -138,7 +137,6 @@ const AuthRegister = () => {
                 type="submit"
                 fullWidth
                 variant="contained"
-                onClick={register}
                 disabled={!(isValid && dirty)}
               >
                 Register

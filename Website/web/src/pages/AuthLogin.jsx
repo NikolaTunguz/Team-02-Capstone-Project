@@ -31,9 +31,7 @@ const AuthLogin = () => {
     formRef.current.handleChange(e);
   };
 
-  const login = async () => {
-    const email = formRef.current.values.email;
-    const password = formRef.current.values.password;
+  const login = async (email, password) => {
     try {
       const resp = await httpClient.post("http://localhost:8080/login", {
         email: email,
@@ -66,9 +64,10 @@ const AuthLogin = () => {
           email: string().email("Must be a valid email").max(255).required("Email is required"),
           password: string().max(255).required("Password is required"),
         })}
-        onSubmit={async ({ setErrors, setStatus }) => {
+        onSubmit={async ({ email, password }, { setErrors, setStatus }) => {
           try {
-            setStatus({ success: true });
+            await login(email, password); 
+            setStatus({ success: true }); 
           } catch (e) {
             setStatus({ success: false });
             setErrors({ submit: e.message });
@@ -133,7 +132,6 @@ const AuthLogin = () => {
                 type="submit"
                 fullWidth
                 variant="contained"
-                onClick={login}
                 disabled={!(isValid && dirty)}
               >
                 Login
