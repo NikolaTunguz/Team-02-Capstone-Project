@@ -13,7 +13,7 @@ const Router = () => {
 
     return (
         <BrowserRouter>
-        {isLoggedIn && <NavBar />}
+            {isLoggedIn && <NavBar />}
             <Routes>
                 <Route
                     path="/login"

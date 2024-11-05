@@ -5,16 +5,16 @@ from model import db, User
 auth_bp = Blueprint('auth', __name__)
 bcrypt = Bcrypt()
 
-# @auth_bp.route('/@me')
-# def get_cur_user():
-#     user_id = session.get("user_id")
-#     if not user_id:
-#         return jsonify({"error": "Unauthorized"}), 401
-#     user = User.query.filter_by(id=user_id).first()
-#     return jsonify({
-#         "id": user.id,
-#         "email": user.email
-#     })
+@auth_bp.route('/@me')
+def get_cur_user():
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+    user = User.query.filter_by(id=user_id).first()
+    return jsonify({
+        "id": user.id,
+        "email": user.email
+    })
 
 @auth_bp.route('/register', methods=["POST"])
 def register_user():
