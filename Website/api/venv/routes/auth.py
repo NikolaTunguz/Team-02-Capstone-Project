@@ -76,3 +76,8 @@ def update_password():
     user.password = bcrypt.generate_password_hash(new_password).decode('utf8')
     db.session.commit()
     return jsonify({"message": "Password updated successfully"}), 200
+
+@auth_bp.route('/logout', methods=["POST"])
+def logout_user():
+    session.pop("user_id")
+    return jsonify({"message": "Logout successful"}), 200
