@@ -79,5 +79,5 @@ def update_password():
 
 @auth_bp.route('/logout', methods=["POST"])
 def logout_user():
-    session.pop("user_id")
+    session.pop("user_id", None)
     return jsonify({"message": "Logout successful"}), 200
