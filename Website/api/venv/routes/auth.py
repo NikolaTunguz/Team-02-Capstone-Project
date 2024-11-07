@@ -44,3 +44,35 @@ def login_user():
         "id": user.id,
         "email": user.email
     })  
+
+@auth_bp.route('/update_email', methods=['POST'])
+def update_email():
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    new_email = request.get_json().get("email")
+
+    user = User.query.get(user_id)
+    user.email = new_email
+    db.session.commit()
+    return jsonify({
+        "email": user.email
+    })
+
+@auth_bp.route('/update_password', methods=['POST'])
+def update_password():
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    current_password = request.get_json().get("current_password")
+    new_password = request.get_json().get("new_password")
+
+    user = User.query.get(user_id)
+    if not bcrypt.check_password_hash(user.password, current_password):
+        return jsonify({"error": "Current password is incorrect"}), 403
+
+    user.password = bcrypt.generate_password_hash(new_password).decode('utf8')
+    db.session.commit()
+    return jsonify({"message": "Password updated successfully"}), 200
