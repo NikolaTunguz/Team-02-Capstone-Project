@@ -1,0 +1,4 @@
+The data in this folder is in gitignore.
+To access the thermal pistol dataset, download from the following link.
+
+https://figshare.com/articles/dataset/Concealed_Pistol_Detection_Dataset/20105600?file=35965742
