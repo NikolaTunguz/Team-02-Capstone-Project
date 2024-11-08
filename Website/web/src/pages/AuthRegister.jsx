@@ -67,7 +67,7 @@ const AuthRegister = () => {
           password: string()
             .max(255)
             .required("Password is required")
-            .min(10, "Password must be at least 8 characters long")
+            .min(8, "Password must be at least 8 characters long")
         })}
         onSubmit={async ({ email, password }, { setErrors, setStatus }) => {
           try {
