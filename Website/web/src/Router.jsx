@@ -12,6 +12,7 @@ const Router = () => {
     const { isLoggedIn } = useAuth();
 
     return (
+        <>
         <BrowserRouter>
             {isLoggedIn && <NavBar />}
             <Routes>
@@ -31,20 +32,23 @@ const Router = () => {
                     path="*"
                     element={<NotFound />}
                 />
-                <Route
-                    path="/dashboard"
-                    element={<Dashboard />}
-                />
-                <Route
-                    path="/notifications"
-                    element={<Notifications />}
-                />
-                <Route
-                    path="/account"
-                    element={<Account />}
-                />
+                {isLoggedIn && <>
+                    <Route
+                        path="/dashboard"
+                        element={<Dashboard />}
+                    />
+                    <Route
+                        path="/notifications"
+                        element={<Notifications />}
+                    />
+                    <Route
+                        path="/account"
+                        element={<Account />}
+                    />
+                </>}
             </Routes>
         </BrowserRouter>
+        </>
     );
 };
 export default Router;
