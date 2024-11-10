@@ -3,10 +3,12 @@ import { Menu, MenuItem, IconButton } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import httpClient from '../pages/httpClient';
+import { useAuth } from "../context/AuthContext";
 
 const AccountMenu = () => {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const navigate = useNavigate();
+    const { setIsLoggedIn } = useAuth();
 
     const handleMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -21,6 +23,7 @@ const AccountMenu = () => {
             const resp = await httpClient.post("http://localhost:8080/logout");
             if (resp.status === 200) {
                 handleMenuClose();
+                setIsLoggedIn(false);
                 navigate('/login');
             }
         } catch (e) {
