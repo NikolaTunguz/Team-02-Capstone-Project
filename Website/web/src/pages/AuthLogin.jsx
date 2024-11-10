@@ -14,9 +14,9 @@ const AuthLogin = () => {
   const navigate = useNavigate();
   const { setIsLoggedIn } = useAuth();
 
-  React.useEffect(() => {
-    setIsLoggedIn(false);
-  }, [])
+  // React.useEffect(() => {
+  //   setIsLoggedIn(false);
+  // }, [])
 
   const handleClickShowPass = () => {
     setShowPassword(!showPassword)
