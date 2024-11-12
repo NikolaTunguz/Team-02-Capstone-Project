@@ -53,7 +53,9 @@ def update_email():
         return jsonify({"error": "Unauthorized"}), 401
 
     new_email = request.get_json().get("email")
-
+    user = User.query.filter_by(email=new_email).first()
+    if user: 
+        return jsonify({"error": "User already exists"}), 409
     user = User.query.get(user_id)
     user.email = new_email
     db.session.commit()
