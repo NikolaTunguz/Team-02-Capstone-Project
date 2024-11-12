@@ -45,7 +45,11 @@ const Account = () => {
                 setFormStatus({ success: false, message: "Could not update email." });
             }
         } catch (error) {
-            setFormStatus({ success: false, message: "Failed to update account" });
+            if(error.response?.status === 409) {
+                setFormStatus({ success: false, message: "Email is already registered" });
+            } else {
+                setFormStatus({ success: false, message: "Failed to update account" });
+            }
         }
     };
 
