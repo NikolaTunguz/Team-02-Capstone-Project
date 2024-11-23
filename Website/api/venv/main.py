@@ -1,8 +1,10 @@
 from flask_cors import CORS
 from flask import Flask, send_from_directory, request, session
 from config import ApplicationConfig
-from model import db, Notification
+from model import db, Notification, UserCameras
 from routes.auth import auth_bp
+from sqlalchemy import select, desc
+import json
 
 app = Flask(__name__)
 cors = CORS(app, origins=["http://localhost:5173"], supports_credentials=True)
@@ -43,10 +45,20 @@ def database():
 @app.route('/notifications')
 def notifications():
     user_id = session.get("user_id")
-    # user_id = request.get_json().get("user_id")
-    user = Notification.query.filter_by(user_id=user_id)
-    print(user)
+    query = select(
+        Notification.timestamp
+    ).select_from(UserCameras).join(
+            Notification, UserCameras.device_id==Notification.device_id
+    ).filter(
+        UserCameras.user_id == user_id
+    ).order_by(
+        desc(Notification.timestamp)
+    )
 
+    notifications = db.session.execute(query).all()
+    notifications = [timestamp[0].split("'")[0] for timestamp in notifications]
+    
+    return json.dumps(notifications, default=str)
 
 with app.app_context():
     db.create_all()

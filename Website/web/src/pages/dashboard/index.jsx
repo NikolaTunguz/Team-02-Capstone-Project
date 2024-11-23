@@ -7,9 +7,9 @@ import './index.css';
 export default function Dashboard({}){
     return (
         <>
-            <h1>
+            <div className="video">
                 <LiveStream/>
-            </h1>
+            </div>
         </>
     )
 
