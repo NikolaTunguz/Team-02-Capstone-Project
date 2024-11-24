@@ -15,22 +15,6 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
 
-# @app.route('/')
-# def index():
-#     return send_from_directory(app.static_folder, 'index.html')
-
-# @app.route('/account')
-# def account():
-#     return send_from_directory(app.static_folder, 'index.html')
-
-# @app.route('/dashboard')
-# def dashboard():
-#     return send_from_directory(app.static_folder, 'index.html')
-
-# @app.route('/notifications')
-# def notifications():
-#     return send_from_directory(app.static_folder, 'index.html')
-
 @app.route('/database', methods=['POST'])
 def database(): 
     device_id = request.get_json().get("device_id")
