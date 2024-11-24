@@ -12,7 +12,9 @@ const Home = () => {
         <div className = "about_us">
             <h2 > About Us </h2>
             <p>
-                This is our team, please don't be rude.
+                We are Team 02: SeeThru. <br />
+                From the University of Nevada, Reno.<br />
+                Our goals are to enhance residential security at an affordable price.
             </p>
             <img className = 'team_photo'
                 alt = 'Team Photo'
