@@ -1,7 +1,6 @@
 #interface to interact with all of the models with the rest of the system
-import cv2
-from PIL import Image
 
+#class imports
 from Models.thermal_models.thermal_model_interface import ThermalInterface
 from Models.normal_models.normal_model_interface import NormalInterface
 
@@ -15,9 +14,19 @@ class ModelInterface:
         self.thermal_image = None
 
     def set_normal_image(self, image_path):
-        self.normal_image = cv2.imread(image_path)
+        self.normal_image = image_path
 
     def set_thermal_image(self, image_path):
-        self.thermal_image = Image(image_path)
+        self.thermal_image = image_path
 
+    def detect_pistol(self):
+        image = self.thermal_image
+        self.thermal_interface.detect_pistol(image)
 
+    def detect_person(self):
+        image = self.normal_image
+        self.normal_interface.detect_person(image)
+
+    def detect_package(self):
+        image = self.normal_image
+        self.normal_interface.detect_package(image)
