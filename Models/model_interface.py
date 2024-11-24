@@ -35,11 +35,11 @@ class ModelInterface:
         image = self.normal_image
         return self.normal_interface.get_output_image(image)
 
+# Used for debugging models.
+# def main():
+#     wasd = ModelInterface()
+#     wasd.set_thermal_image("test/test_image.jpg")
+#     wasd.detect_pistol()
 
-def main():
-    wasd = ModelInterface()
-    wasd.set_thermal_image("test/test_image.jpg")
-    wasd.detect_pistol()
-
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()

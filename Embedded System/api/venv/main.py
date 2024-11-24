@@ -4,7 +4,6 @@ from flask_cors import CORS
 import cv2
 import sys
 from pathlib import Path
-from multiprocessing import Process
 import time
 
 #get ModelInterface class.
@@ -20,6 +19,7 @@ cors = CORS(app, origins="*")
 #global variables
 camera = cv2.VideoCapture(0)
 running = True
+model_interface = ModelInterface()
 
 
 def generate_frames():
@@ -39,18 +39,17 @@ def generate_frames():
                 b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
         
         #process 2: capture frame for model processing
-        model_interface = ModelInterface()
         model_interface.set_normal_image("localcache/input_image.jpg")
-        model_interface.set_thermal_image("localcache/test_image.jpg") 
+        # model_interface.set_thermal_image("localcache/test_image.jpg") 
 
         #object detection models - return is a bounding box
         model_interface.detect_person()
-        model_interface.detect_package()
-        image = model_interface.get_bbox_image()
+        # model_interface.detect_package()
+        # image = model_interface.get_bbox_image()
         
         #classification model - return is a 0 or a 1
-        model_interface.detect_pistol()
-        thermal_output = model_interface.detect_pistol()
+        # model_interface.detect_pistol()
+        # thermal_output = model_interface.detect_pistol()
 
 
 @app.route('/video_feed')
@@ -59,18 +58,5 @@ def video_feed():
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
-
-
 if __name__ == '__main__':
-    capture_process = Process(target=generate_frames)
-    processing_process = Process(target=generate_frames)
-
-    capture_process.start()
-    processing_process.start()
-
-    try: 
-        app.run(port=5000, debug=True)
-    finally:
-        running = False
-        capture_process.join()
-        processing_process.join()
+    app.run(port=5000, debug=True)

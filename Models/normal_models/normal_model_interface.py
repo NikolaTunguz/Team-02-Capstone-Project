@@ -88,10 +88,6 @@ class NormalInterface:
             image = cv2.rectangle(image, (x1, y1), (x2, y2), (255, 199, 46), 1) 
             image = cv2.putText(image, class_name, (x1, y1-10), font, 0.6, (0, 0, 200), 1, cv2.LINE_AA) 
 
-        cv2.imshow("output-image", image)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-
         return image
 
 def main():
