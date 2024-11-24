@@ -1,5 +1,5 @@
 import React from 'react';
-import './index.css'; // Import the CSS file for styling'
+import './index.css'; 
 import HomeNavBar from '../../components/HomeNavBar.jsx'
 import temp_team_photo from '../../assets/images/team_photo.jpg'
 
