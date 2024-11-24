@@ -3,9 +3,9 @@ import { Formik, Form } from 'formik';
 import { InputLabel, Stack, OutlinedInput, Button, Grid2, InputAdornment, IconButton, FormHelperText } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { object, string } from 'yup';
-import httpClient from './httpClient';
+import httpClient from '../httpClient';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 
 const AuthLogin = () => {
   const formRef = React.useRef(null);

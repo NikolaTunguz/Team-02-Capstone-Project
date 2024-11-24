@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "./pages/Login";
-import NotFound from './pages/NotFound';
+import Login from "./pages/public/Login";
+import NotFound from './pages/public/NotFound';
 import Dashboard from './pages/dashboard/index';
 import Notifications from './pages/notifications/index';
 import Account from './pages/account/index'
-import Register from './pages/Register';
+import Register from './pages/public/Register';
 import { useAuth } from "./context/AuthContext";
 import HeaderContent from "./layout/Header";
 import NavBar from "./components/NavBar";
