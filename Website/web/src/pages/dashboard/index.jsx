@@ -1,11 +1,15 @@
 import React from 'react' 
 import LiveStream from '../../components/LiveStream.jsx';
+import './index.css';
+
 
 
 export default function Dashboard({}){
     return (
         <>
-            <LiveStream />
+            <div className="video">
+                <LiveStream/>
+            </div>
         </>
     )
 

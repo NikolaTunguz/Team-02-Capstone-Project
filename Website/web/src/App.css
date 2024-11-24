@@ -53,3 +53,25 @@ nav a {
 nav a:hover {
     text-decoration: underline;
 }
+
+.expandable {
+    display: grid;
+    width: 85%;
+    margin: auto;
+    margin-bottom: 10px;
+    justify-content:center;
+    padding: 10px 20px;
+    border-radius: 10px;
+    background-color: white;
+}
+
+.expandable .preview {
+    display:flex;
+    gap: 425px;
+}
+
+.expandable .content {
+    display: flex;
+    justify-content: center;
+    
+}

@@ -1,9 +1,12 @@
 import React from 'react' 
+import NotificationDeck from '../../components/NotificationDeck.jsx';
 
 export default function Notifications({}){
     return (
         <>
-            <div> notifications placeholder</div>
+            <div> 
+                <NotificationDeck/>
+            </div>
         </>
     )
 

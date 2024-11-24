@@ -4,7 +4,7 @@ import '../App.css';
 const LiveStream = () => {
   return (
     <div>
-      <h3>Live Stream</h3>
+      <img src="http://localhost:5000/video_feed" alt="Live Stream"/>
     </div>
   );
 };
