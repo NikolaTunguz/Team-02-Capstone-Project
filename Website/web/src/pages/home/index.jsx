@@ -8,16 +8,17 @@ const Home = () => {
         <div className = "home">
         <div>
             <HomeNavBar/>
-        </div>
+        </div >
+        <div className = "about_us">
             <h2 > About Us </h2>
             <p>
                 This is our team, please don't be rude.
             </p>
-            <img 
+            <img className = 'team_photo'
                 alt = 'Team Photo'
                 src = {temp_team_photo}  
-                className = 'team_photo'
             />
+        </div>
         </div>
     );
 };
