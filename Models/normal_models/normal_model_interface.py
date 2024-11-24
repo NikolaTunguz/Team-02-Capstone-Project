@@ -7,7 +7,7 @@ import package_detection
 #image imports
 import cv2
 
-class Pipeline():
+class NormalInterface:
     def __init__(self):
         #initialize models
         self.person_classifier = person_classification.FineTunedRN18()
@@ -25,7 +25,7 @@ class Pipeline():
         self.package_classifier.train_model() #best val loss: 0.0130
         self.package_detector.train_model() #best val loss: 0.1425 
 
-    def flow(self, image_path):
+    def detect_person(self, image_path):
         #person & package detection pipeline
         person_result = self.person_classifier.prediction(image_path)
 
@@ -34,17 +34,16 @@ class Pipeline():
             self.person_bboxes = self.person_detector.prediction(image_path)
         else:
             print("No person detected")
+    
 
+    def detect_package(self, image_path):
         #packages
         package_result = self.package_classifier.prediction(image_path)
         if(package_result == 1):
             self.package_bboxes = self.package_detector.prediction(image_path)
         else:
             print("No package detected")
-        
-        output_image = self.get_output_image(image_path)
-        return output_image
-
+            
 
     def get_output_image(self, image_path):
         #add bounding boxes using cv2
@@ -95,9 +94,10 @@ class Pipeline():
         return image
 
 def main():
-    model_pipeline = Pipeline()
+    model_pipeline = NormalInterface()
     #model_pipeline.training()
-    model_pipeline.flow("test-data/test.jpg")
+    model_pipeline.detect_person("test-data/test.jpg")
+    model_pipeline.detect_package("test-data/test.jpg")
 
 if __name__ == "__main__":
     main()
