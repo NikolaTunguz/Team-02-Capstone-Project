@@ -42,9 +42,9 @@ class ThermalInterface:
         detected = self.concealed_pistol_model.pistol_detected(self.image)
 
         if detected:
-            print("gun detected")
+            return 1
         else:
-            print("no gun detected")
+            return 0
 
 if __name__ == '__main__':
     thermal_interface = ThermalInterface()

@@ -28,12 +28,13 @@ class NormalInterface:
     def detect_person(self, image_path):
         #person & package detection pipeline
         person_result = self.person_classifier.prediction(image_path)
-        return person_result
         #people
         if(person_result == 1):
             self.person_bboxes = self.person_detector.prediction(image_path)
+            return self.person_bboxes
         else:
-            print("No person detected")
+            #print("No person detected")
+            pass
     
 
     def detect_package(self, image_path):

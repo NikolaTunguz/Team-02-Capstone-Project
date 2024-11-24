@@ -21,22 +21,25 @@ class ModelInterface:
 
     def detect_pistol(self):
         image = self.thermal_image
-        self.thermal_interface.detect_pistol(image)
+        return self.thermal_interface.detect_pistol(image)
 
     def detect_person(self):
         image = self.normal_image
-        return self.normal_interface.detect_person(image)
-
+        self.normal_interface.detect_person(image)
 
     def detect_package(self):
         image = self.normal_image
         self.normal_interface.detect_package(image)
+    
+    def get_bbox_image(self):
+        image = self.normal_image
+        return self.normal_interface.get_output_image(image)
 
 
-# def main():
-#     wasd = ModelInterface()
-#     wasd.set_thermal_image("test/test_image.jpg")
-#     wasd.detect_pistol()
+def main():
+    wasd = ModelInterface()
+    wasd.set_thermal_image("test/test_image.jpg")
+    wasd.detect_pistol()
 
-# if __name__ == '__main__':
-#     main()
+if __name__ == '__main__':
+    main()

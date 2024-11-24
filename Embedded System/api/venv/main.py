@@ -1,65 +1,56 @@
+#general imports
 from flask import Flask, Response
 from flask_cors import CORS
 import cv2
-from datetime import datetime
-import requests
 import sys
-import threading
 from pathlib import Path
+from multiprocessing import Process
+import time
 
+#get ModelInterface class.
 base_path = Path(__file__).resolve().parents[3]
 print(base_path)
 sys.path.append(str(base_path))
-
 from Models.model_interface import ModelInterface
 
+#backend initialization
 app = Flask(__name__)
 cors = CORS(app, origins="*")
 
-
+#global variables
 camera = cv2.VideoCapture(0)
 running = True
-frame = None
-
-def capture_frames():
-    global frame
-    while running:
-        ret, currFrame = camera.read()
-        if not ret:
-            print("BROKEN")
-            break
-        frame = currFrame
-
-
-def process_frames():
-    while running:
-    #     if frame == None():
-    #         print("NO IMAGE")
-    #     else:
-            # model_interface = ModelInterface()
-            # model_interface.set_normal_image("test/test_image.jpg")
-            # # model_interface.setThermalImages("C:\Users\Diego\Pictures\Screenshots\Screenshot 2024-04-03 161659.png")
-            # print("model: ", model_interface.detect_person())
-            # model_interface.detect_pistol()
-            pass
-
-
 
 
 def generate_frames():
-    global frame
-    while True:
-        # ret, frame = camera.read()
-        # if not ret:
-        #     break
-        # else:
+    while running:
+        #read camera data
+        ret, frame = camera.read()
 
-        if frame is None:
-            continue
+        #check if there is a frame
+        if not ret:
+           break
+
+        cv2.imwrite("localcache/input_image.jpg", frame)
+        #process 1: display image to site
         _, buffer = cv2.imencode('.jpg', frame)
         frame = buffer.tobytes()
         yield (b'--frame\r\n'
                 b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        
+        #process 2: capture frame for model processing
+        model_interface = ModelInterface()
+        model_interface.set_normal_image("localcache/input_image.jpg")
+        model_interface.set_thermal_image("localcache/test_image.jpg") 
+
+        #object detection models - return is a bounding box
+        model_interface.detect_person()
+        model_interface.detect_package()
+        image = model_interface.get_bbox_image()
+        
+        #classification model - return is a 0 or a 1
+        model_interface.detect_pistol()
+        thermal_output = model_interface.detect_pistol()
 
 
 @app.route('/video_feed')
@@ -67,23 +58,19 @@ def video_feed():
     return Response(generate_frames(),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
-# if __name__ == '__main__':
-#     app.run(port=5000, debug=True)
+
+
 
 if __name__ == '__main__':
-    capture_thread = threading.Thread(target=capture_frames)
-    processing_thread = threading.Thread(target=process_frames)
+    capture_process = Process(target=generate_frames)
+    processing_process = Process(target=generate_frames)
 
-
-    capture_thread.start()
-    processing_thread.start()
-
-    app.run(port=5000, debug=True)
+    capture_process.start()
+    processing_process.start()
 
     try: 
         app.run(port=5000, debug=True)
     finally:
         running = False
-        capture_thread.join()
-        processing_thread.join()
-        camera.release()   
+        capture_process.join()
+        processing_process.join()
