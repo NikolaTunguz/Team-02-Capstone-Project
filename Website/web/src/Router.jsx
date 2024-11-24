@@ -33,6 +33,10 @@ const Router = () => {
                     element={<Home />}
                 />
                 <Route
+                    path="/Home"
+                    element={<Home />}
+                />
+                <Route
                     path="*"
                     element={<NotFound />}
                 />
