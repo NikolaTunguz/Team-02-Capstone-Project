@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import AccountMenu from './AccountMenu';
 import '../App.css';
 import templogo from '../assets/images/templogo.png';
 
