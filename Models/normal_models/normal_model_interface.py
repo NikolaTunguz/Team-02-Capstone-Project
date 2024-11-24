@@ -7,7 +7,7 @@ import package_detection
 #image imports
 import cv2
 
-class Pipeline():
+class NormalInterface:
     def __init__(self):
         #initialize models
         self.person_classifier = person_classification.FineTunedRN18()
@@ -95,7 +95,7 @@ class Pipeline():
         return image
 
 def main():
-    model_pipeline = Pipeline()
+    model_pipeline = NormalInterface()
     #model_pipeline.training()
     model_pipeline.flow("test-data/test.jpg")
 
