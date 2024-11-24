@@ -1,8 +1,8 @@
 #model imports
-import person_classification
-import person_detection
-import package_classification
-import package_detection
+from .person_classification import FineTunedRN18
+from .person_detection import FineTunedFasterRCNNPerson
+from .package_classification import CustomCNN
+from .package_detection import FinedTunedFasterRCNNPackage
 
 #image imports
 import cv2
@@ -10,10 +10,10 @@ import cv2
 class NormalInterface:
     def __init__(self):
         #initialize models
-        self.person_classifier = person_classification.FineTunedRN18()
-        self.person_detector = person_detection.FineTunedFasterRCNNPerson()
-        self.package_classifier = package_classification.CustomCNN()
-        self.package_detector = package_detection.FinedTunedFasterRCNNPackage()
+        self.person_classifier = FineTunedRN18()
+        self.person_detector = FineTunedFasterRCNNPerson()
+        self.package_classifier = CustomCNN()
+        self.package_detector = FinedTunedFasterRCNNPackage()
 
         #initialize bboxes
         self.person_bboxes = []
@@ -28,7 +28,7 @@ class NormalInterface:
     def detect_person(self, image_path):
         #person & package detection pipeline
         person_result = self.person_classifier.prediction(image_path)
-
+        return person_result
         #people
         if(person_result == 1):
             self.person_bboxes = self.person_detector.prediction(image_path)

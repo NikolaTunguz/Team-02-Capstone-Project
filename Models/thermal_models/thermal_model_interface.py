@@ -5,9 +5,10 @@
 import torch
 import torchvision.transforms as transforms
 from PIL import Image
+import os
 
 #class imports
-from concealed_pistol_classification import ConcealedPistol
+from .concealed_pistol_classification import ConcealedPistol
 
 
 class ThermalInterface:
@@ -15,7 +16,10 @@ class ThermalInterface:
         self.image = None
 
         self.concealed_pistol_model = ConcealedPistol()
-        self.concealed_pistol_model.load_state_dict(torch.load('best_concealed_model.pth', weights_only = True))
+
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        model_path = os.path.join(current_dir, 'best_concealed_model.pth')
+        self.concealed_pistol_model.load_state_dict(torch.load(model_path, weights_only = True))
 
     def transform_image(self):
         #shape and grayscale image

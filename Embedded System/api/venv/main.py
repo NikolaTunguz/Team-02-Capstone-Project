@@ -78,10 +78,12 @@ if __name__ == '__main__':
     capture_thread.start()
     processing_thread.start()
 
+    app.run(port=5000, debug=True)
+
     try: 
         app.run(port=5000, debug=True)
     finally:
         running = False
         capture_thread.join()
         processing_thread.join()
-        camera.release()    
+        camera.release()   

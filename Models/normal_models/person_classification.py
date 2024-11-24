@@ -4,6 +4,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, random_split
 import torchvision
 from torchvision import transforms, datasets
+import os
 
 #general imports
 from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
@@ -13,7 +14,7 @@ from PIL import Image
 class FineTunedRN18():
     def __init__(self):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.preprocessing()
+        # self.preprocessing()
 
         #define model
         self.model = torchvision.models.resnet18(weights="DEFAULT")
@@ -147,7 +148,9 @@ class FineTunedRN18():
         image = image.to(self.device)
 
         #make prediction
-        self.model.load_state_dict(torch.load("model-weights/best_person_classification.pth", weights_only=True))
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        model_path = os.path.join(current_dir, 'model-weights/best_person_classification.pth')
+        self.model.load_state_dict(torch.load(model_path, weights_only=True))
         self.model.eval()
         with torch.no_grad():
             prediction = self.model(image)
