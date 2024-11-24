@@ -8,6 +8,8 @@ import Register from './pages/Register';
 import { useAuth } from "./context/AuthContext";
 import NavBar from "./components/NavBar";
 
+import Home from './pages/home'
+
 const Router = () => {
     const { isLoggedIn } = useAuth();
 
@@ -26,7 +28,7 @@ const Router = () => {
                 />
                 <Route
                     path="/"
-                    element={<Login />}
+                    element={<Home />}
                 />
                 <Route
                     path="*"
