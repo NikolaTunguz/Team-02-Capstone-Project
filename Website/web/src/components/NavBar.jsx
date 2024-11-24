@@ -11,15 +11,14 @@ const NavBar = () => {
   return (
     <>
     {!hideNavBar && 
-      <nav>
-        <div>
+      <nav className="navbar"> 
+        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
           <h1>SeeThru</h1>
-          <img alt="logo" src={templogo} style={{ width: "80px" }} />
+          <img alt="logo" src={templogo} style={{ width: "75px" }} />
         </div>
-        <div>
+        <div className="nav-links">
           <Link to="/dashboard">Dashboard</Link>
           <Link to="/notifications">Notifications</Link>
-          <AccountMenu/>
         </div>
       </nav>
     }

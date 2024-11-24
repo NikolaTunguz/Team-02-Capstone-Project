@@ -32,7 +32,7 @@ const AccountMenu = () => {
     };
 
     return (
-        <>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
             <IconButton onClick={handleMenuOpen}>
                 <AccountCircleIcon fontSize="large" />
             </IconButton>
@@ -46,7 +46,7 @@ const AccountMenu = () => {
                 </MenuItem>
                 <MenuItem onClick={logout}>Logout</MenuItem>
             </Menu>
-        </>
+        </div>
     );
 };
 

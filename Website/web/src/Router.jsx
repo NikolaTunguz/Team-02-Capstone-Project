@@ -6,15 +6,17 @@ import Notifications from './pages/notifications/index';
 import Account from './pages/account/index'
 import Register from './pages/Register';
 import { useAuth } from "./context/AuthContext";
+import HeaderContent from "./layout/Header";
 import NavBar from "./components/NavBar";
+import AppLayout from "./AppLayout"
 
 const Router = () => {
     const { isLoggedIn } = useAuth();
 
     return (
-        <>
         <BrowserRouter>
-            {isLoggedIn && <NavBar />}
+            {isLoggedIn && <NavBar/>}
+            {isLoggedIn && <HeaderContent/>}
             <Routes>
                 <Route
                     path="/login"
@@ -35,20 +37,19 @@ const Router = () => {
                 {isLoggedIn && <>
                     <Route
                         path="/dashboard"
-                        element={<Dashboard />}
+                        element={<AppLayout> <Dashboard /> </AppLayout>}
                     />
                     <Route
                         path="/notifications"
-                        element={<Notifications />}
+                        element={<AppLayout> <Notifications /></AppLayout> }
                     />
                     <Route
                         path="/account"
-                        element={<Account />}
+                        element={<AppLayout> <Account /> </AppLayout>}
                     />
                 </>}
             </Routes>
         </BrowserRouter>
-        </>
     );
 };
 export default Router;
