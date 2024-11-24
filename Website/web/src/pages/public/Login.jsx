@@ -1,7 +1,7 @@
 import { Box, Grid2, Stack } from "@mui/material";
 import AuthLogin from './AuthLogin';
-import '../App.css';
-import templogo from '../assets/images/templogo.png';
+import '../../App.css';
+import templogo from '../../assets/images/templogo.png';
 
 const Login = () => (
     <Grid2 
