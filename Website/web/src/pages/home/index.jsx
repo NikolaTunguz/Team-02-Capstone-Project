@@ -9,7 +9,7 @@ const Home = () => {
         <div>
             <HomeNavBar/>
         </div>
-            <h1> SeeThru </h1>
+            <h2 > About Us </h2>
             <p>
                 This is our team, please don't be rude.
             </p>
