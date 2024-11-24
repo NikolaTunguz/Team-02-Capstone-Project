@@ -6,6 +6,7 @@ import torchvision
 from torchvision import transforms
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.ops import nms
+import os
 
 #general 
 import pandas as pd
@@ -14,7 +15,7 @@ from PIL import Image
 
 class FinedTunedFasterRCNNPackage():
     def __init__(self):
-        self.preprocessing()
+        # self.preprocessing()
         #define model
         #self.model = torchvision.models.detection.fasterrcnn_mobilenet_v3_large_fpn(weights="DEFAULT")
         self.model = torchvision.models.detection.fasterrcnn_mobilenet_v3_large_fpn(weights="DEFAULT")
@@ -128,7 +129,9 @@ class FinedTunedFasterRCNNPackage():
         image = image.to(self.device)
 
         #make prediction
-        self.model.load_state_dict(torch.load("model-weights/best_package_detection.pth", weights_only=True))
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        model_path = os.path.join(current_dir, 'model-weights/best_package_detection.pth')
+        self.model.load_state_dict(torch.load(model_path, weights_only=True))
         self.model.eval()
         with torch.no_grad():
             pred = self.model([image])

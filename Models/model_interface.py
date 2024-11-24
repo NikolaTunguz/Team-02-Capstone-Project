@@ -1,8 +1,8 @@
 #interface to interact with all of the models with the rest of the system
 
 #class imports
-from Models.thermal_models.thermal_model_interface import ThermalInterface
-from Models.normal_models.normal_model_interface import NormalInterface
+from .thermal_models.thermal_model_interface import ThermalInterface
+from .normal_models.normal_model_interface import NormalInterface
 
 
 class ModelInterface:
@@ -21,7 +21,7 @@ class ModelInterface:
 
     def detect_pistol(self):
         image = self.thermal_image
-        self.thermal_interface.detect_pistol(image)
+        return self.thermal_interface.detect_pistol(image)
 
     def detect_person(self):
         image = self.normal_image
@@ -30,3 +30,16 @@ class ModelInterface:
     def detect_package(self):
         image = self.normal_image
         self.normal_interface.detect_package(image)
+    
+    def get_bbox_image(self):
+        image = self.normal_image
+        return self.normal_interface.get_output_image(image)
+
+# Used for debugging models.
+# def main():
+#     wasd = ModelInterface()
+#     wasd.set_thermal_image("test/test_image.jpg")
+#     wasd.detect_pistol()
+
+# if __name__ == '__main__':
+#     main()

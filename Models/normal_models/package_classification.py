@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, random_split
 from torchvision import transforms, datasets
+import os
 
 #general imports
 from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
@@ -14,7 +15,7 @@ class CustomCNN(nn.Module):
     def __init__(self):
         super(CustomCNN, self).__init__()
         #prepare data
-        self.preprocessing()
+        # self.preprocessing()
 
         #in: 3x256x256
         self.conv1 = nn.Conv2d(in_channels=3, out_channels=32, kernel_size=3, stride=1, padding=1)
@@ -197,7 +198,9 @@ class CustomCNN(nn.Module):
         image = image.to(self.device)
 
         #make prediction
-        self.load_state_dict(torch.load("model-weights/best_package_classification.pth", weights_only=True))
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        model_path = os.path.join(current_dir, 'model-weights/best_package_classification.pth')
+        self.load_state_dict(torch.load(model_path, weights_only=True))
         self.eval()
         with torch.no_grad():
             prediction = self(image)
