@@ -29,7 +29,7 @@ const NotificationDeck = () => {
       }
       return elementArray;
     } else {
-      return '<div> No data available. </div>';
+      return 'No data available.';
     }
   }
 

@@ -25,21 +25,6 @@ def video_feed():
     return Response(generate_frames(),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
-# print(type(datetime.now().minute))
-# print(datetime.now().second)
-# url = "http://127.0.0.1:8080/database"
-# headers={
-#     'Content-type':'application/json', 
-#     'Accept':'application/json'
-# }
-# while(True):
-#     date = datetime.now()
-#     if(date.second == 30):
-#         date = date.strftime("%m/%d/%Y, %H:%M:%S")
-        
-#         data = '{"device_id":14, "timestamp":"' + date + '"}'
-#         requests.post(url, data=data, headers=headers)
-
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
     
