@@ -10,6 +10,8 @@ import HeaderContent from "./layout/Header";
 import NavBar from "./components/NavBar";
 import AppLayout from "./AppLayout"
 
+import Home from './pages/home'
+
 const Router = () => {
     const { isLoggedIn } = useAuth();
 
@@ -28,7 +30,7 @@ const Router = () => {
                 />
                 <Route
                     path="/"
-                    element={<Login />}
+                    element={<Home />}
                 />
                 <Route
                     path="*"
