@@ -11,6 +11,7 @@ import NavBar from "./components/NavBar";
 import AppLayout from "./AppLayout"
 
 import Home from './pages/home'
+import HomeNavBar from './components/HomeNavBar'
 
 const Router = () => {
     const { isLoggedIn } = useAuth();
@@ -30,6 +31,10 @@ const Router = () => {
                 />
                 <Route
                     path="/"
+                    element={<Home />}
+                />
+                <Route
+                    path="/Home"
                     element={<Home />}
                 />
                 <Route

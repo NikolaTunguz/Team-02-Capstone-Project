@@ -1,27 +1,24 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import '../App.css';
+import './Components.css'; 
 import templogo from '../assets/images/templogo.png';
 
 const HomeNavBar = () => {
   return (
-    <>
-      <nav>
-        <div>
-          <h1> SeeThru </h1>
-          <img 
-            alt = 'logo' 
-            src = { templogo } 
-            style = {{ width: "80px" }} 
-            />
-        </div>
-        <div>
-          <Link to = '/register'> Register </Link>
-          <Link to = '/login'> Login </Link>
-        </div>
-      </nav>
-    </>
+    <nav className = 'home_nav'>
+      <div className = 'home_nav_logo'>
+        <h1> SeeThru </h1>
+        <img className = 'home_logo'
+          alt = 'logo'
+          src = {templogo}
+        />
+      </div>
+      <div className = 'home_nav_links'>
+        <Link to = '/register' className = "home_nav_button"> Register </Link>
+        <Link to = '/login' className = "home_nav_button"> Login </Link>
+      </div>
+    </nav>
   );
 };
 

@@ -8,16 +8,19 @@ const Home = () => {
         <div className = "home">
         <div>
             <HomeNavBar/>
-        </div>
-            <h1> SeeThru </h1>
+        </div >
+        <div className = "about_us">
+            <h2 > About Us </h2>
             <p>
-                This is our team, please don't be rude.
+                We are Team 02: SeeThru. <br />
+                From the University of Nevada, Reno.<br />
+                Our goals are to enhance residential security at an affordable price.
             </p>
-            <img 
+            <img className = 'team_photo'
                 alt = 'Team Photo'
                 src = {temp_team_photo}  
-                className = 'team_photo'
             />
+        </div>
         </div>
     );
 };
