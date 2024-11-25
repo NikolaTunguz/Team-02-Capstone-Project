@@ -10,7 +10,7 @@ import HeaderContent from "./layout/Header";
 import NavBar from "./components/NavBar";
 import AppLayout from "./AppLayout"
 
-import Home from './pages/home'
+import AboutUs from './pages/about_us'
 import HomeNavBar from './components/HomeNavBar'
 
 const Router = () => {
@@ -31,11 +31,11 @@ const Router = () => {
                 />
                 <Route
                     path="/"
-                    element={<Home />}
+                    element={<AboutUs />}
                 />
                 <Route
-                    path="/Home"
-                    element={<Home />}
+                    path="/about us"
+                    element={<AboutUs/>}
                 />
                 <Route
                     path="*"
