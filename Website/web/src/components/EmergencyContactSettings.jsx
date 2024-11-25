@@ -129,10 +129,10 @@ const EmergencyContacts = () => {
             <br/>
             {contacts.length !== 2 && (
                 <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                onClick={() => setOpen(true)}
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    onClick={() => setOpen(true)}
                 > Add Contact
                 </Button>
             )}
@@ -202,59 +202,58 @@ const EmergencyContacts = () => {
                     }) => (
                     <Form>
                         <Stack spacing={2}>
-                            <Grid2 container spacing={2} sx={{ width: '100%' }}>
-                                <Grid2 xs={6}>
+                            <Box display="flex" gap={2} width="100%">
+                                <Box flex={1}>
                                     <FormControl fullWidth error={Boolean(touched.first_name && errors.first_name)}>
-                                    <InputLabel>First Name</InputLabel>
-                                    <OutlinedInput
-                                        id="first_name"
-                                        name="first_name"
-                                        value={values.first_name}
-                                        onChange={handleChange}
-                                        onBlur={handleBlur}
-                                    />
-                                    {touched.first_name && errors.first_name && (
-                                        <FormHelperText>{errors.first_name}</FormHelperText>
-                                    )}
+                                        <InputLabel htmlFor="first_name">First Name</InputLabel>
+                                        <OutlinedInput
+                                            label="First Name"
+                                            name="first_name"
+                                            value={values.first_name}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                        />
+                                        {touched.first_name && errors.first_name && (
+                                            <FormHelperText>{errors.first_name}</FormHelperText>
+                                        )}
                                     </FormControl>
-                                </Grid2>
-                                <Grid2 xs={6}>
+                                </Box>
+                                <Box flex={1}>
                                     <FormControl fullWidth error={Boolean(touched.last_name && errors.last_name)}>
-                                    <InputLabel>Last Name</InputLabel>
-                                    <OutlinedInput
-                                        id="last_name"
-                                        name="last_name"
-                                        value={values.last_name}
-                                        onChange={handleChange}
-                                        onBlur={handleBlur}
-                                    />
-                                    {touched.last_name && errors.last_name && (
-                                        <FormHelperText>{errors.last_name}</FormHelperText>
-                                    )}
+                                        <InputLabel htmlFor="last_name">Last Name</InputLabel>
+                                        <OutlinedInput
+                                            label="Last Name"
+                                            name="last_name"
+                                            value={values.last_name}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                        />
+                                        {touched.last_name && errors.last_name && (
+                                            <FormHelperText>{errors.last_name}</FormHelperText>
+                                        )}
                                     </FormControl>
-                                </Grid2>
-                            </Grid2>
-
-                            <FormControl error={Boolean(touched.email && errors.email)}>
-                                <InputLabel>Email</InputLabel>
+                                </Box>
+                            </Box>
+                            <FormControl fullWidth error={Boolean(touched.email && errors.email)}>
+                                <InputLabel htmlFor="email">Email</InputLabel>
                                 <OutlinedInput
-                                id="email"
-                                name="email"
-                                value={values.email}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
+                                    label="email"
+                                    name="email"
+                                    value={values.email}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
                                 />
                                 {touched.email && errors.email && (
-                                <FormHelperText>{errors.email}</FormHelperText>
+                                <   FormHelperText>{errors.email}</FormHelperText>
                                 )}
                             </FormControl>
 
                             <Stack direction="row" spacing={2} alignItems="center">
                                 <Box flexGrow={1}>
                                     <FormControl fullWidth error={Boolean(touched.phone && errors.phone)}>
-                                        <InputLabel>Phone</InputLabel>
+                                        <InputLabel htmlFor="phone">Phone</InputLabel>
                                         <OutlinedInput
-                                        id="phone"
+                                        label="phone"
                                         name="phone"
                                         value={values.phone}
                                         onChange={handleChange}
@@ -266,10 +265,11 @@ const EmergencyContacts = () => {
                                     </FormControl>
                                 </Box>
                                 <Button
-                                type="submit"
-                                variant="contained"
-                                color="primary"
-                                disabled={!isValid || !dirty}
+                                    type="submit"
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={!isValid || !dirty}
+                                    size="large"
                                 >
                                 {editingContact ? "Update" : "Add"}
                                 </Button>
