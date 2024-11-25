@@ -20,7 +20,7 @@ const HeaderContent = () => {
                         position: "fixed",
                         top: 0,
                         left: 0, 
-                        Index: 1000,
+                        zIndex: 1001,
                         padding: "0 20px",
                         justifyContent: "flex-end",
                         boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)"

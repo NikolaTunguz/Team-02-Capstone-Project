@@ -23,7 +23,8 @@ def create_emergency_contact():
     new_contact = EmergencyContact(first_name=first_name, 
         last_name = last_name,
         email=email, 
-        phone=phone)
+        phone=phone, 
+        user_id=user_id)
     db.session.add(new_contact)
     db.session.commit()
     return jsonify({"message": "Emergency contact successfully added"}), 200
@@ -63,18 +64,24 @@ def delete_emergency_contact():
     db.session.commit()
     return jsonify({"message": "Emergency contact successfully deleted"}), 200
   
-@emergency_contact_bp.route('/get_emergency_contacts', methods=["POST"])
+@emergency_contact_bp.route('/get_emergency_contacts')
 def get_emergency_contacts():
-    contacts = EmergencyContact.query.all()
-    if not contacts:  
-        return jsonify({"error": "No emergency contacts found"}), 404
-    contact_list = [
-        {
-            "first_name": contact.first_name,
-            "last_name": contact.last_name,
-            "email": contact.email,
-            "phone": contact.phone
-        }
-        for contact in contacts
-    ]
-    return jsonify({"emergency_contacts": contact_list}), 200
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+    try:
+        contacts = EmergencyContact.query.filter_by(user_id=user_id).all()
+        if not contacts:
+            return jsonify({"message": "No emergency contacts found"}), 204
+        contact_list = [
+            {
+                "first_name": contact.first_name,
+                "last_name": contact.last_name,
+                "email": contact.email,
+                "phone": contact.phone
+            }
+            for contact in contacts
+        ]
+        return jsonify({"contacts": contact_list}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
