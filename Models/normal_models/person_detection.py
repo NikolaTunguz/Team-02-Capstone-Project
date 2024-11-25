@@ -45,3 +45,11 @@ class FineTunedFasterRCNNPerson():
         bboxes = bboxes[nms_indices]
 
         return bboxes
+    
+#testing, not directly called
+def main():
+    person_detector = FineTunedFasterRCNNPerson()
+    print(person_detector.prediction("test/test.jpg"))
+
+if __name__ == "__main__":
+    main()
