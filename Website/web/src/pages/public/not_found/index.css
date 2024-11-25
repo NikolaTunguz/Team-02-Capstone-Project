@@ -1,0 +1,11 @@
+.not_found_info h1{
+    margin-top: 20%;
+    font-size: 3.0rem;
+    text-align: center;
+    color: black;
+}
+
+.not_found_info p{
+    font-size: 1.2rem;
+    text-align: center;
+}
