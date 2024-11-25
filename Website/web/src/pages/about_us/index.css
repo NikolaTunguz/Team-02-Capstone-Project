@@ -1,11 +1,11 @@
-.home {
+.about_us {
     text-align: center;
     display: flex;
     justify-content: center;
     align-items: flex-start;
 }
 
-.about_us{
+.about_us_test{
     margin-top: 3%;
     width: 80%; 
     flex-direction: column;

@@ -3,13 +3,13 @@ import './index.css';
 import HomeNavBar from '../../components/HomeNavBar.jsx'
 import temp_team_photo from '../../assets/images/team_photo.jpg'
 
-const Home = () => {
+const AboutUs = () => {
     return (
-        <div className = "home">
+        <div className = "about_us">
         <div>
             <HomeNavBar/>
         </div >
-        <div className = "about_us">
+        <div className = "about_us_text">
             <h2 > About Us </h2>
             <p>
                 We are Team 02: SeeThru. <br />
@@ -25,4 +25,4 @@ const Home = () => {
     );
 };
 
-export default Home;
+export default AboutUs;
