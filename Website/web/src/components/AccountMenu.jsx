@@ -9,6 +9,21 @@ const AccountMenu = () => {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const navigate = useNavigate();
     const { setIsLoggedIn } = useAuth();
+    const { firstName, lastName, setFirstName, setLastName } = useAuth();
+
+    React.useEffect(() => {
+        const fetchFirstLast = async () => {
+            try{
+                const response = await httpClient.get('http://localhost:8080/first_last');
+                setFirstName(response.data['first'])
+                setLastName(response.data['last'])
+            } catch (error) {
+                console.error("Failed to fetch user name:", error);
+            }
+          };
+        fetchFirstLast()
+      }, []);
+
 
     const handleMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -24,7 +39,7 @@ const AccountMenu = () => {
             if (resp.status === 200) {
                 handleMenuClose();
                 setIsLoggedIn(false);
-                navigate('/home')
+                navigate('/login')
             }
         } catch (e) {
             console.error("Error logging out", e);
@@ -46,6 +61,11 @@ const AccountMenu = () => {
                 </MenuItem>
                 <MenuItem onClick={logout}>Logout</MenuItem>
             </Menu>
+            <div>
+                {firstName}
+                {" "}
+                {lastName}
+            </div>
         </div>
     );
 };

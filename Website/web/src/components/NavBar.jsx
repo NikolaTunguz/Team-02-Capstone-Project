@@ -16,6 +16,7 @@ const NavBar = () => {
           <img alt="logo" src={templogo} style={{ width: "75px" }} />
         </div>
         <div className="nav-links">
+          <Link to="/">Home</Link>
           <Link to="/dashboard">Dashboard</Link>
           <Link to="/notifications">Notifications</Link>
         </div>

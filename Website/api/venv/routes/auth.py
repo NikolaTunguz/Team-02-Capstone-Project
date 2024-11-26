@@ -18,13 +18,15 @@ def get_cur_user():
 
 @auth_bp.route('/register', methods=["POST"])
 def register_user():
+    first_name = request.get_json().get("first_name")
+    last_name = request.get_json().get("last_name")
     email = request.get_json().get("email")
     password = request.get_json().get("password")
     exists = User.query.filter_by(email=email).first() is not None
     if exists:
         return jsonify({"error": "User already exists"}), 409
     hashed_password = bcrypt.generate_password_hash(password).decode('utf8')
-    new_user = User(email=email, password=hashed_password)
+    new_user = User(first_name=first_name, last_name=last_name, email=email, password=hashed_password)
     db.session.add(new_user)
     db.session.commit()
     session["user_id"] = new_user.id
@@ -84,3 +86,27 @@ def update_password():
 def logout_user():
     session.pop("user_id", None)
     return jsonify({"message": "Logout successful"}), 200
+
+@auth_bp.route('/update_first_name', methods=['POST'])
+def update_first_name():
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    new_first_name = request.get_json().get('first_name')
+    user = User.query.filter_by(id=user_id).first()
+    user.first_name = new_first_name
+    db.session.commit()
+    return jsonify({"message": "First name updated successfully"}), 200
+
+@auth_bp.route('/update_last_name', methods=['POST'])
+def update_last_name():
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    new_last_name = request.get_json().get('last_name')
+    user = User.query.filter_by(id=user_id).first()
+    user.last_name = new_last_name
+    db.session.commit()
+    return jsonify({"message": "Last name updated successfully"}), 200

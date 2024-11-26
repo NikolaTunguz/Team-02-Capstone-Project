@@ -1,7 +1,7 @@
 from flask_cors import CORS
 from flask import Flask, send_from_directory, request, session
 from config import ApplicationConfig
-from model import db, Notification, UserCameras
+from model import db, Notification, UserCameras, User
 from routes.auth import auth_bp
 from sqlalchemy import select, desc
 import json
@@ -43,6 +43,20 @@ def notifications():
     notifications = [timestamp[0].split("'")[0] for timestamp in notifications]
     
     return json.dumps(notifications, default=str)
+
+@app.route('/first_last')
+def username():
+    user_id = session.get("user_id")
+    query = select(
+        User.first_name,
+        User.last_name
+    ).filter(
+        User.id == user_id
+    )
+    first_name, last_name = db.session.execute(query).all()[0]
+
+    firstLast = {'first':first_name, 'last':last_name}
+    return json.dumps(firstLast, default=str)
 
 if __name__ == "__main__":
     app.run(debug=True, port=8080)

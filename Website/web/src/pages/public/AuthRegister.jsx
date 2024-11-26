@@ -31,9 +31,11 @@ const AuthRegister = () => {
     formRef.current.handleChange(e);
   };
 
-  const register = async (email, password) => {
+  const register = async (first_name, last_name, email, password) => {
     try {
       const resp = await httpClient.post("http://localhost:8080/register", {
+        first_name: first_name,
+        last_name: last_name,
         email: email,
         password: password,
       });
@@ -57,21 +59,30 @@ const AuthRegister = () => {
       <Formik
         innerRef={formRef}
         initialValues={{
+          first_name: "",
+          last_name: "",
           email: "",
           password: "",
         }}
         validationSchema={object().shape({
+          first_name: string()
+            .max(25)
+            .required("First name is required"),
+          last_name: string()
+            .max(25)
+            .required("Last name is required"),
           email: string()
             .email("Must be a valid email")
-            .max(255).required("Email is required"),
+            .max(255)
+            .required("Email is required"),
           password: string()
             .max(255)
             .required("Password is required")
             .min(8, "Password must be at least 8 characters long")
         })}
-        onSubmit={async ({ email, password }, { setErrors, setStatus }) => {
+        onSubmit={async ({ first_name, last_name, email, password }, { setErrors, setStatus }) => {
           try {
-            await register(email, password); 
+            await register(first_name, last_name, email, password); 
             setStatus({ success: true }); 
           } catch (e) {
             setStatus({ success: false });
@@ -90,6 +101,34 @@ const AuthRegister = () => {
         }) => (
           <Form onSubmit={handleSubmit}>
             <Stack spacing={2} sx={{ width: '100%' }}>
+              <InputLabel>First Name</InputLabel>
+              <OutlinedInput
+                type="text"
+                name="first_name"
+                value={values.first_name}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                fullWidth
+                placeholder="First Name"
+                // error={Boolean(touched.first_name && errors.first_name)}
+              />
+              {touched.first_name && errors.first_name && (
+                <FormHelperText error> {errors.first_name} </FormHelperText>
+              )}
+              <InputLabel>Last Name</InputLabel>
+              <OutlinedInput
+                type="text"
+                name="last_name"
+                value={values.last_name}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                fullWidth
+                placeholder="Last Name"
+                error={Boolean(touched.last_name && errors.last_name)}
+              />
+              {touched.last_name && errors.last_name && (
+                <FormHelperText error> {errors.last_name} </FormHelperText>
+              )}
               <InputLabel>Email Address</InputLabel>
               <OutlinedInput
                 type="email"

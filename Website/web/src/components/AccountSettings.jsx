@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import httpClient from '../pages/httpClient';
+import { useAuth } from '../context/AuthContext';
 
 const AccountSettings = () => {
     const [showCurrentPassword, setShowCurrentPassword] = React.useState(false);
@@ -19,6 +20,8 @@ const AccountSettings = () => {
     const [formStatus, setFormStatus] = React.useState(null);
     const [currentEmail, setCurrentEmail] = React.useState("");
     const [error, setError] = React.useState("");
+    const { firstName, lastName, setFirstName, setLastName } = useAuth();
+    
 
     const handleToggleCurrentPassword = () => setShowCurrentPassword(!showCurrentPassword);
     const handleToggleNewPassword = () => setShowNewPassword(!showNewPassword);
@@ -73,21 +76,52 @@ const AccountSettings = () => {
         }
     };
 
+    const updateFirstName = async (first_name) => {
+        try {
+            const resp = await httpClient.post("http://localhost:8080/update_first_name", { first_name });
+            setFirstName(first_name);
+
+            if(resp.status === 200) {
+                setFormStatus({ success: true, message: "Account updated successfully!" });
+            }
+        } catch {
+            setFormStatus({ success: false, message: "Failed to update account." });   
+        }
+    }
+
+    const updateLastName = async (last_name) => {
+        try {
+            const resp = await httpClient.post("http://localhost:8080/update_last_name", { last_name });
+            setLastName(last_name)
+            if(resp.status === 200) {
+                setFormStatus({ success: true, message: "Account updated successfully!" });
+            }
+        } catch {
+            setFormStatus({ success: false, message: "Failed to update account." });   
+        }
+    }
+
     return (
         <>
             <Formik
                 enableReinitialize
                 initialValues={{
+                    first_name: firstName, 
+                    last_name: lastName, 
                     email: currentEmail,
                     currentPassword: "",
                     newPassword: ""
                 }}
                 validationSchema={Yup.object().shape({
+                    first_name: Yup.string().max(25),
+                    last_name: Yup.string().max(25),
                     email: Yup.string().email("Must be a valid email").max(255),
                     newPassword: Yup.string().min(8, "Password must be at least 8 characters"),
                 })}
                 onSubmit={async (values, { resetForm }) => {
-                    const { email, currentPassword, newPassword } = values;
+                    const { first_name, last_name, email, currentPassword, newPassword } = values;
+                    if(first_name && first_name !== firstName) await updateFirstName(first_name);
+                    if(last_name && last_name !== lastName) await updateLastName(last_name);
                     if (email && email !== currentEmail) await updateEmail(email);
                     if (currentPassword && newPassword) await updatePassword(currentPassword, newPassword);
                     resetForm();
@@ -106,6 +140,36 @@ const AccountSettings = () => {
                 }) => (
                     <Form onSubmit={handleSubmit}>
                         <Stack spacing={2} sx={{ width: "100%", color: "#333" }}>
+                        <InputLabel>First Name</InputLabel>
+                            <OutlinedInput
+                                type="text"
+                                name="first_name"
+                                value={values.first_name}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                fullWidth
+                                placeholder="New First Name"
+                                error={Boolean(touched.first_name && errors.first_name)}
+                                sx={{ backgroundColor: "#fff", borderRadius: "4px" }}
+                            />
+                            {touched.first_name && errors.first_name && (
+                                <FormHelperText error>{errors.first_name}</FormHelperText>
+                            )}
+                            <InputLabel>Last Name</InputLabel>
+                            <OutlinedInput
+                                type="text"
+                                name="last_name"
+                                value={values.last_name}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                fullWidth
+                                placeholder="New Last Name"
+                                error={Boolean(touched.last_name && errors.last_name)}
+                                sx={{ backgroundColor: "#fff", borderRadius: "4px" }}
+                            />
+                            {touched.last_name && errors.last_name && (
+                                <FormHelperText error>{errors.last_name}</FormHelperText>
+                            )}
                             <InputLabel>Email</InputLabel>
                             <OutlinedInput
                                 type="email"
@@ -182,8 +246,8 @@ const AccountSettings = () => {
                                 variant="contained"
                                 disabled={
                                     !(isValid && dirty) ||
-                                    !(values.currentPassword && values.newPassword) &&
-                                    (values.currentPassword || values.newPassword)
+                                    (!(values.currentPassword && values.newPassword) &&
+                                    (values.currentPassword || values.newPassword))
                                 }
                                 sx={{
                                     mt: 2,
