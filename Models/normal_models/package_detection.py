@@ -1,3 +1,7 @@
+#Faster RCNN is weak model due to lack of resources for training
+#A roboflow model was trained to 94.9% mAP however requires python 3.11 
+#roboflow model also has limitation of deploying restricted to 1 device.
+
 #pytorch
 import torch
 import torch.optim.adadelta
@@ -6,7 +10,6 @@ import torchvision
 from torchvision import transforms
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.ops import nms
-import os
 
 #general 
 import pandas as pd
@@ -15,9 +18,8 @@ from PIL import Image
 
 class FinedTunedFasterRCNNPackage():
     def __init__(self):
-        # self.preprocessing()
-        #define model
-        #self.model = torchvision.models.detection.fasterrcnn_mobilenet_v3_large_fpn(weights="DEFAULT")
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        
         self.model = torchvision.models.detection.fasterrcnn_mobilenet_v3_large_fpn(weights="DEFAULT")
 
         #fine-tune to 2 classes by replacing with custom predictor.
@@ -25,20 +27,19 @@ class FinedTunedFasterRCNNPackage():
         num_classes = 2 #background, packages
         self.model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
 
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = self.model.to(self.device)
-        
-
+     
+    
     def preprocessing(self):
         #define datasets
-        train_data = pd.read_csv("datasets/package-detection/train_annotations.csv")
+        train_data = pd.read_csv("datasets/train.csv")
         train_data = train_data.drop(columns=["width", "height"])
 
-        val_data = pd.read_csv("datasets/package-detection/val_annotations.csv")
+        val_data = pd.read_csv("datasets/valid.csv")
         val_data = val_data.drop(columns=["width", "height"])
 
-        train_dataset = CustomDataset("datasets/package-detection/train", train_data)
-        val_dataset = CustomDataset("datasets/package-detection/validation", val_data)
+        train_dataset = CustomDataset("datasets/train", train_data)
+        val_dataset = CustomDataset("datasets/validation", val_data)
 
         #add to dataloader
         batch_size = 8
@@ -53,9 +54,12 @@ class FinedTunedFasterRCNNPackage():
     
 
     def train_model(self):
+        #prepare data
+        self.preprocessing()
+
         #hyperparameters
         optimizer = torch.optim.SGD(self.model.parameters(), lr=0.0003, momentum=0.9, weight_decay=0.0003)
-        num_epochs = 10
+        num_epochs = 5
 
         #save best weights
         best_val_loss = float("inf")
@@ -140,8 +144,8 @@ class FinedTunedFasterRCNNPackage():
         bboxes, scores = pred[0]["boxes"], pred[0]["scores"]
         
         #NMS filtering
-        keep = torch.where(scores > 0.4)
-        nms_indices = nms(bboxes[keep], scores[keep], 1)
+        keep = torch.where(scores > 0.2)
+        nms_indices = nms(bboxes[keep], scores[keep], 0.5)
         bboxes = bboxes[nms_indices]
 
         return bboxes
@@ -159,12 +163,11 @@ class CustomDataset(Dataset):
     def __getitem__(self, index):
         #get specific row's image and target data
         annotation = self.annotation_file.iloc[index]
-
         #get image
         image_path = os.path.join(self.image_root, annotation["filename"])
         image = Image.open(image_path)
         transform = transforms.Compose([
-            transforms.Resize((600,600)),
+            transforms.Resize(600),
             transforms.ToTensor(),  
             transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225)) #imagenet values
         ])
@@ -184,3 +187,13 @@ class CustomDataset(Dataset):
         target["labels"] = labels
 
         return image, target
+    
+#testing, not directly called.
+def main():
+    package_predicter = FinedTunedFasterRCNNPackage()
+    #package_predicter.train_model()
+    package_predicter.prediction("test/test.jpg")
+
+if __name__ == "__main__":
+    main()
+

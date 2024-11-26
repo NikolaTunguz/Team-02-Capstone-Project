@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/public/Login";
-import NotFound from './pages/public/NotFound';
+/*import NotFound from './pages/public/NotFound';*/
 import Dashboard from './pages/dashboard/index';
 import Notifications from './pages/notifications/index';
 import Account from './pages/account/index'
@@ -12,6 +12,8 @@ import AppLayout from "./AppLayout"
 
 import AboutUs from './pages/about_us'
 import HomeNavBar from './components/HomeNavBar'
+
+import NotFound from './pages/public/not_found/index.jsx'
 
 const Router = () => {
     const { isLoggedIn } = useAuth();
