@@ -1,7 +1,10 @@
 import React from 'react';
-import { Menu, MenuItem, IconButton } from '@mui/material';
+import { Menu, MenuItem, IconButton, Divider } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
 import httpClient from '../../pages/httpClient';
 import { useAuth } from "../../context/AuthContext";
 
@@ -32,7 +35,7 @@ const AccountMenu = () => {
     };
 
     return (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <IconButton onClick={handleMenuOpen}>
                 <AccountCircleIcon fontSize="large" />
             </IconButton>
@@ -40,11 +43,27 @@ const AccountMenu = () => {
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 onClose={handleMenuClose}
+                sx={{
+                    "& .MuiPaper-root": {
+                        minWidth: "200px",
+                        padding: "10px",
+                        borderRadius: "8px",
+                    },
+                }}
             >
                 <MenuItem component={Link} to="/account" onClick={handleMenuClose}>
+                    <ListItemIcon>
+                        <SettingsIcon fontSize="small" />
+                    </ListItemIcon>
                     Settings
                 </MenuItem>
-                <MenuItem onClick={logout}>Logout</MenuItem>
+                <Divider style={{ margin: "10px 0" }} />
+                <MenuItem onClick={logout}>
+                    <ListItemIcon>
+                        <LogoutIcon fontSize="small" />
+                    </ListItemIcon>
+                    Logout
+                </MenuItem>
             </Menu>
         </div>
     );
