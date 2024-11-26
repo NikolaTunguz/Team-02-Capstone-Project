@@ -32,7 +32,7 @@ const AccountMenu = () => {
     };
 
     return (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <IconButton onClick={handleMenuOpen}>
                 <AccountCircleIcon fontSize="large" />
             </IconButton>
@@ -40,11 +40,27 @@ const AccountMenu = () => {
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 onClose={handleMenuClose}
+                sx={{
+                    "& .MuiPaper-root": {
+                        minWidth: "200px",
+                        padding: "10px",
+                        borderRadius: "8px",
+                    },
+                }}
             >
                 <MenuItem component={Link} to="/account" onClick={handleMenuClose}>
+                    <ListItemIcon>
+                        <SettingsIcon fontSize="small" />
+                    </ListItemIcon>
                     Settings
                 </MenuItem>
-                <MenuItem onClick={logout}>Logout</MenuItem>
+                <Divider style={{ margin: "10px 0" }} />
+                <MenuItem onClick={logout}>
+                    <ListItemIcon>
+                        <LogoutIcon fontSize="small" />
+                    </ListItemIcon>
+                    Logout
+                </MenuItem>
             </Menu>
         </div>
     );
