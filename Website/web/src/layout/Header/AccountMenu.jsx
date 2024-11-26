@@ -1,7 +1,10 @@
 import React from 'react';
-import { Menu, MenuItem, IconButton } from '@mui/material';
+import { Menu, MenuItem, IconButton, Divider } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
 import httpClient from '../../pages/httpClient';
 import { useAuth } from "../../context/AuthContext";
 
