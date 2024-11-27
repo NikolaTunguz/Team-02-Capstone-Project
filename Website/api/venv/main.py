@@ -47,7 +47,7 @@ def notifications():
     return json.dumps(notifications, default=str)
 
 @app.route('/first_last')
-def username():
+def first_last():
     user_id = session.get("user_id")
     query = select(
         User.first_name,

@@ -18,6 +18,7 @@ def get_cur_user():
 
 @auth_bp.route('/register', methods=["POST"])
 def register_user():
+    phone_number = request.get_json().get("phone_number")
     first_name = request.get_json().get("first_name")
     last_name = request.get_json().get("last_name")
     email = request.get_json().get("email")
@@ -26,7 +27,7 @@ def register_user():
     if exists:
         return jsonify({"error": "User already exists"}), 409
     hashed_password = bcrypt.generate_password_hash(password).decode('utf8')
-    new_user = User(first_name=first_name, last_name=last_name, email=email, password=hashed_password)
+    new_user = User(phone_number=phone_number, first_name=first_name, last_name=last_name, email=email, password=hashed_password)
     db.session.add(new_user)
     db.session.commit()
     session["user_id"] = new_user.id

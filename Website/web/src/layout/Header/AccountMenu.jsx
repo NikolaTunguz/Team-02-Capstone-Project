@@ -53,6 +53,11 @@ const AccountMenu = () => {
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <IconButton onClick={handleMenuOpen}>
                 <AccountCircleIcon fontSize="large" />
+                <div style={{ fontSize: "medium", color: "black", marginLeft: "10px"}}>
+                    {firstName}
+                    {" "}
+                    {lastName}
+                </div>
             </IconButton>
             <Menu
                 anchorEl={anchorEl}
@@ -80,11 +85,7 @@ const AccountMenu = () => {
                     Logout
                 </MenuItem>
             </Menu>
-            <div>
-                {firstName}
-                {" "}
-                {lastName}
-            </div>
+
         </div>
     );
 };

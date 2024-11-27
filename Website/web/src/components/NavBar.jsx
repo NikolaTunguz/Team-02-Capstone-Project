@@ -2,10 +2,12 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import '../App.css';
 import templogo from '../assets/images/templogo.png';
+import { Home, Dashboard, Notifications } from '@mui/icons-material';
 
 const NavBar = () => {
   const location = useLocation();
   const hideNavBar = location.pathname === "/" || location.pathname === "/register" || location.pathname === "/login";
+  const isSelected = (path) => location.pathname === path;
 
   return (
     <>
@@ -16,9 +18,24 @@ const NavBar = () => {
           <img alt="logo" src={templogo} style={{ width: "55px" }} />
         </div>
         <div className="nav-links">
-          <Link to="/">Home</Link>
-          <Link to="/dashboard">Dashboard</Link>
-          <Link to="/notifications">Notifications</Link>
+          <Link 
+            to="/"
+            className={isSelected("/") ? "active-link" : ""}
+          >
+            <Home style={{ marginRight: "5px" }} /> Home
+          </Link>
+          <Link 
+            to="/dashboard"
+            className={isSelected("/dashboard") ? "active-link" : ""}
+          >
+            <Dashboard style={{ marginRight: "5px" }} /> Dashboard
+          </Link>
+          <Link 
+            to="/notifications"
+            className={isSelected("/notifications") ? "active-link" : ""}
+          >
+            <Notifications style={{ marginRight: "5px" }} /> Notifications
+          </Link>
         </div>
       </nav>
     }
