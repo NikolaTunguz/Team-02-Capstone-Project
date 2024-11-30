@@ -4,7 +4,11 @@ import { Link } from 'react-router-dom';
 import './Components.css'; 
 import templogo from '../assets/images/templogo.png';
 
+import { useAuth } from '../context/AuthContext'
+
 const HomeNavBar = () => {
+  const { isLoggedIn } = useAuth()
+
   return (
     <nav className = 'home_nav'>
       <div className = 'home_nav_logo'>
@@ -14,10 +18,13 @@ const HomeNavBar = () => {
           src = {templogo}
         />
       </div>
-      <div className = 'home_nav_links'>
+      {!isLoggedIn && (<div className = 'home_nav_links'>
         <Link to = '/register' className = "home_nav_button"> Register </Link>
         <Link to = '/login' className = "home_nav_button"> Login </Link>
-      </div>
+      </div>)}
+      {isLoggedIn && (<div className = 'home_nav_links'>
+        <Link to = '/dashboard' className = "home_nav_button"> Back </Link>
+      </div>)}
     </nav>
   );
 };

@@ -111,3 +111,26 @@ def update_last_name():
     user.last_name = new_last_name
     db.session.commit()
     return jsonify({"message": "Last name updated successfully"}), 200
+
+@auth_bp.route('/current_phone_number')
+def current_phone_number():
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    user = User.query.filter_by(id=user_id).first()
+    current_phone_number = user.phone_number
+
+    return jsonify({"phone_number":current_phone_number})
+
+@auth_bp.route('/update_phone_number', methods=['POST'])
+def update_phone_number():
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    new_phone_number = request.get_json().get('phone_number')
+    user = User.query.filter_by(id=user_id).first()
+    user.phone_number = new_phone_number
+    db.session.commit()
+    return jsonify({"message": "Phone number updated sucessfully"}), 200
