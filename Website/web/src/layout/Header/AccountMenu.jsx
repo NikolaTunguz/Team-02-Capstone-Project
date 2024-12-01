@@ -42,7 +42,7 @@ const AccountMenu = () => {
             if (resp.status === 200) {
                 handleMenuClose();
                 setIsLoggedIn(false);
-                navigate('/login')
+                navigate('/')
             }
         } catch (e) {
             console.error("Error logging out", e);

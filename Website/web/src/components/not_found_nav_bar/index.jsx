@@ -14,7 +14,7 @@ const NotFoundNavBar = () => {
         />
       </div>
       <div className = 'not_found_nav_links'>
-        <Link to = '/home' className = 'not_found_nav_button'> Home </Link>
+        <Link to = '/' className = 'not_found_nav_button'> Home </Link>
       </div>
     </nav>
   );

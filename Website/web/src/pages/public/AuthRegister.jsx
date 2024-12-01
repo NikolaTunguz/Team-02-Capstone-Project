@@ -237,36 +237,51 @@ const AuthRegister = () => {
             )}
             </Stack>
             <br/>
-            <Box sx={{display: 'flex', gap: '10px'}}>
-            {activeStep > 0 && (
-                <Button
-                  fullWidth
-                  variant="contained"
-                  onClick={handleBack}
-                >
-                  Back
-                </Button>
-              )}
-              {activeStep === 3 ? (
-                <Button 
-                  type="submit" 
-                  fullWidth 
-                  variant="contained" 
-                  disabled={!(isValid && dirty)} 
-                >
-                  Register
-                </Button>
-              ) : (
-                <Button
-                  fullWidth
-                  variant="contained"
-                  onClick={handleNext}
-                  disabled={activeStep === 0 && !(values.email)
-                    || activeStep === 1 && !(values.password)
-                    || activeStep === 2 && !(values.firstName && values.lastName)}
-                >
-                  Next
-                </Button>
+            <Box sx={{display: 'flex', flexDirection:'column', gap:'15px'}}>
+              <div style={{display:'flex', flexDirection:'row', gap:'10px'}}>
+                {activeStep > 0 && (
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    onClick={handleBack}
+                  >
+                    Back
+                  </Button>
+                )}
+                {activeStep === 3 ? (
+                  <Button 
+                    type="submit" 
+                    fullWidth 
+                    variant="contained" 
+                    disabled={!(isValid && dirty)} 
+                  >
+                    Register
+                  </Button>
+                ) : (
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    onClick={handleNext}
+                    disabled={activeStep === 0 && !(values.email)
+                      || activeStep === 1 && !(values.password)
+                      || activeStep === 2 && !(values.firstName && values.lastName)}
+                  >
+                    Next
+                  </Button>
+                )}
+              </div>
+            
+              {activeStep == 0 && (
+                <div style={{display:'flex'}}>
+                  <p style={{marginTop:'20px'}}>
+                    Already have an account? 
+                  </p>
+                  <Button 
+                    onClick={() => navigate("/login")}
+                  >
+                    <p>Login</p>
+                  </Button>
+                </div>
               )}
               
             </Box>

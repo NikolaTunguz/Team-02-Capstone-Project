@@ -231,7 +231,7 @@ const AccountSettings = () => {
                                             color: "#fff"
                                         }}
                                     >
-                                        Update Account
+                                        Update
                                     </Button>
                                 </Stack>
                             </Form>
@@ -369,7 +369,7 @@ const AccountSettings = () => {
                                             color: "#fff"
                                         }}
                                     >
-                                        Update Account
+                                        Update
                                     </Button>
                                 </Stack>
                             </Form>
