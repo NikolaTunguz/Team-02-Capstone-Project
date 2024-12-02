@@ -7,7 +7,7 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    width: 140px;
+    width: 155px;
     height: 100vh;
     background-color: white;
     display: flex;
@@ -24,17 +24,27 @@ body {
 }
 
 .nav-links a {
+    display: flex;
+    align-items: center; 
+    gap: 8px; 
     text-decoration: none;
-    color: black;
-    font-size: 16px;
-    padding: 9px;
-    border-radius: 4px;
-    transition: background-color 0.3s;
+    color: #4b4f54;
+    font-size: 15px;
+    padding: 8px 20px; 
+    transition: background-color 0.3s, color 0.3s;
+    margin-left: -20px;
 }
 
 nav a:hover {
-    text-decoration: underline;
+    color: white;
+    opacity: 70%;
+    background-color: #235986;
 }
+
+.nav-links a.active-link {
+    background-color: #235986; 
+    color: #ffffff; 
+  }
 
 .nav-account {
     margin-top: auto;
@@ -50,29 +60,31 @@ nav a:hover {
 }
 
 h1 {
-    color: rgb(37, 72, 119);
+    color: #254877;
 }
 
 .expandable {
-    display: grid;
+    margin:auto;
     width: 85%;
-    margin: auto;
     margin-bottom: 10px;
-    justify-content:center;
     padding: 10px 20px;
     border-radius: 10px;
     background-color: white;
-    position: relative;
-    box-sizing: border-box;
+    display:flex;
+    flex-direction:column;
 }
 
 .expandable .preview {
-    display:flex;
-    gap: 425px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.expandable .text {
+    flex: 1;
 }
 
 .expandable .content {
-    display: flex;
+    display:flex;
     justify-content: center;
-    
 }
+

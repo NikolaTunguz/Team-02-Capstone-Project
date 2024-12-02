@@ -36,10 +36,6 @@ const Router = () => {
                     element={<AboutUs />}
                 />
                 <Route
-                    path="/about us"
-                    element={<AboutUs/>}
-                />
-                <Route
                     path="*"
                     element={<NotFound />}
                 />

@@ -1,6 +1,9 @@
 import React from 'react';
 import { useState } from 'react';
+// import {ExpandLessIcon, ExpandMoreIcon} from '@mui/icons-material';
 
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 const Expandable = ({ preview, content }) => {
 
@@ -9,12 +12,17 @@ const Expandable = ({ preview, content }) => {
   return (
     <div className="expandable">
         <div className="preview">
+          <div className="text">
             {preview}
-            <button onClick={() => setIsOpen(!isOpen)}>
-                {!isOpen ? 'show':'hide'}
-            </button>
+          </div>
+          <button style={{backgroundColor:'white', border:'0px'}} onClick={() => setIsOpen(!isOpen)}>
+            {!isOpen ? <ExpandMoreIcon/> : <ExpandLessIcon/>}
+          </button>
         </div>
-            {isOpen && (<div className='content'>{content}</div>)}
+
+        <div>
+          {isOpen && (<div className='content'>{content}</div>)}
+        </div>
     </div>
   );
 };

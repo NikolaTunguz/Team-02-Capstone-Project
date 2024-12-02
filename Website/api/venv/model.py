@@ -8,6 +8,9 @@ def get_uuid():
 
 class User (db.Model):
     __tablename__ = "users"
+    phone_number = db.Column(db.String(15))
+    first_name = db.Column(db.String(25))
+    last_name = db.Column(db.String(25))
     id = db.Column(db.String(32), primary_key=True, unique=True, default=get_uuid)
     email = db.Column(db.String(145), unique=True)
     password = db.Column(db.String(128), nullable=False)

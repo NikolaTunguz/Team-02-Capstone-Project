@@ -4,7 +4,7 @@
     top: 0;
     left: 0;
     width: 100%; 
-    height: 12%;
+    height: 5%;
     background-color: white;
     display: flex;
     flex-direction: row; 
@@ -13,8 +13,8 @@
 }
 
 .home_nav_logo h1{
-    padding-top: 5%;
-    font-size: 2.5rem;
+    padding-top: 4%;
+    font-size: 2rem;
 }
 .home_nav_logo {
     display: flex;
@@ -27,7 +27,7 @@
 
 .home_logo {
     flex-direction: row;
-    width: 20%;
+    width: 15%;
     padding-top: 4%
 }
 

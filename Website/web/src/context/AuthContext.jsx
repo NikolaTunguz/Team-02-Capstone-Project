@@ -7,6 +7,8 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(null);
     const [user, setUser] = useState(null);
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
 
     useEffect(() => {
         const fetchCurrentUser = async () => {
@@ -27,7 +29,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, user, setUser }}>
+        <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, user, setUser, firstName, setFirstName, lastName, setLastName}}>
             {children}
         </AuthContext.Provider>
     );
