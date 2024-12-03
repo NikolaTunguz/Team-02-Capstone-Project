@@ -19,12 +19,6 @@ const NavBar = () => {
         </div>
         <div className="nav-links">
           <Link 
-            to="/"
-            className={isSelected("/") ? "active-link" : ""}
-          >
-            <Home style={{ marginRight: "5px" }} /> Home
-          </Link>
-          <Link 
             to="/dashboard"
             className={isSelected("/dashboard") ? "active-link" : ""}
           >
@@ -35,6 +29,12 @@ const NavBar = () => {
             className={isSelected("/notifications") ? "active-link" : ""}
           >
             <Notifications style={{ marginRight: "5px" }} /> Notifications
+          </Link>
+          <Link 
+            to="/"
+            className={isSelected("/") ? "active-link" : ""}
+          >
+            <Home style={{ marginRight: "5px" }} /> Home
           </Link>
         </div>
       </nav>
