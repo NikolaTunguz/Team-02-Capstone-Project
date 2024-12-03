@@ -135,7 +135,7 @@ class FinedTunedFasterRCNNPackage():
         #make prediction
         current_dir = os.path.dirname(os.path.abspath(__file__))
         model_path = os.path.join(current_dir, 'model-weights/best_package_detection.pth')
-        self.model.load_state_dict(torch.load(model_path, weights_only=True))
+        self.model.load_state_dict(torch.load(model_path, weights_only=True, map_location=self.device))
         self.model.eval()
         with torch.no_grad():
             pred = self.model([image])

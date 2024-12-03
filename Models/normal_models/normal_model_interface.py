@@ -90,6 +90,7 @@ class NormalInterface:
 
         return image
 
+#training and testing the class works. Not used.
 def main():
     model_pipeline = NormalInterface()
     #model_pipeline.training()

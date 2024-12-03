@@ -200,7 +200,7 @@ class CustomCNN(nn.Module):
         #make prediction
         current_dir = os.path.dirname(os.path.abspath(__file__))
         model_path = os.path.join(current_dir, 'model-weights/best_package_classification.pth')
-        self.load_state_dict(torch.load(model_path, weights_only=True))
+        self.load_state_dict(torch.load(model_path, weights_only=True, map_location=self.device))
         self.eval()
         with torch.no_grad():
             prediction = self(image)

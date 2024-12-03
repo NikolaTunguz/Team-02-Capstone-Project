@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Camera Feed</title>
+    <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #video-container {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        #video {
+            width: 100%;
+            height: auto;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #status {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .status-connected {
+            color: green;
+        }
+
+        .status-disconnected {
+            color: red;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Live Camera Feed</h1>
+
+        <div id="video-container">
+            <img id="video" alt="Live feed" />
+        </div>
+
+        <div id="status">
+            <span id="status-text">Connecting...</span>
+        </div>
+    </div>
+    
+    <script>
+        const socket = io();
+
+        socket.on("connect", () => {
+            console.log("connected to server");
+            setStatus("Connected");
+        });
+
+        socket.on("frame", (jpg_as_text) => {
+            const img = document.getElementById("video");
+            img.src = "data:image/jpeg;base64," + jpg_as_text;
+        });
+
+        socket.on("disconnect", () => {
+            console.log("disconnected from server");
+            setStatus("Disconnected");
+        });
+
+        function setStatus(status) {
+            const statusText = document.getElementById("status-text");
+            statusText.textContent = status;
+
+            if (status === "Connected") {
+                statusText.classList.remove("status-disconnected");
+                statusText.classList.add("status-connected");
+            } else {
+                statusText.classList.remove("status-connected");
+                statusText.classList.add("status-disconnected");
+            }
+        }
+    </script>
+</body>
+</html>
