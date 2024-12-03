@@ -11,12 +11,9 @@ const HomeNavBar = () => {
 
   return (
     <nav className = 'home_nav'>
-      <div className = 'home_nav_logo'>
-        <h1> SeeThru </h1>
-        <img className = 'home_logo'
-          alt = 'logo'
-          src = {templogo}
-        />
+      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+        <h1>SeeThru</h1>
+        <img alt="logo" src={templogo} style={{ width: "55px" }} />
       </div>
       {!isLoggedIn && (<div className = 'home_nav_links'>
         <Link to = '/register' className = "home_nav_button"> Register </Link>
