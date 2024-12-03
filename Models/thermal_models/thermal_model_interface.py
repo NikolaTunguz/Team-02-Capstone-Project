@@ -20,7 +20,7 @@ class ThermalInterface:
         current_dir = os.path.dirname(os.path.abspath(__file__))
         model_path = os.path.join(current_dir, 'best_concealed_model.pth')
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.concealed_pistol_model.load_state_dict(torch.load(model_path, weights_only = True))
+        self.concealed_pistol_model.load_state_dict(torch.load(model_path, weights_only = True, map_location=device))
 
     def transform_image(self):
         #shape and grayscale image
