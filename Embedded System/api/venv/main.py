@@ -4,7 +4,6 @@ from flask_cors import CORS
 import cv2
 import sys
 from pathlib import Path
-import time
 
 #get ModelInterface class.
 base_path = Path(__file__).resolve().parents[3]
@@ -30,7 +29,7 @@ def generate_frames():
         #check if there is a frame
         if not ret:
            break
-
+        #important note: localcache needs to exist, imwrite() will not generate this.
         cv2.imwrite("localcache/input_image.jpg", frame)
         #process 1: display image to site
         _, buffer = cv2.imencode('.jpg', frame)

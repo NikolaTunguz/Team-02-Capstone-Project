@@ -21,9 +21,9 @@ class NormalInterface:
 
     def training(self):
         #only train if needed.
-        self.person_classifier.train_model() #best val loss: 0.0708
-        self.package_classifier.train_model() #best val loss: 0.0130
-        self.package_detector.train_model() #best val loss: 0.1425 
+        self.person_classifier.train_model() 
+        self.package_classifier.train_model() 
+        self.package_detector.train_model()  
 
     def detect_person(self, image_path):
         #person & package detection pipeline
