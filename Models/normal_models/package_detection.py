@@ -32,14 +32,14 @@ class FinedTunedFasterRCNNPackage():
     
     def preprocessing(self):
         #define datasets
-        train_data = pd.read_csv("datasets/train.csv")
+        train_data = pd.read_csv("datasets/package-detection/train_annotations.csv")
         train_data = train_data.drop(columns=["width", "height"])
 
-        val_data = pd.read_csv("datasets/valid.csv")
+        val_data = pd.read_csv("datasets/package-detection/val_annotations.csv")
         val_data = val_data.drop(columns=["width", "height"])
 
-        train_dataset = CustomDataset("datasets/train", train_data)
-        val_dataset = CustomDataset("datasets/validation", val_data)
+        train_dataset = CustomDataset("datasets/package-detection/train", train_data)
+        val_dataset = CustomDataset("datasets/package-detection/validation", val_data)
 
         #add to dataloader
         batch_size = 8
@@ -58,7 +58,9 @@ class FinedTunedFasterRCNNPackage():
         self.preprocessing()
 
         #hyperparameters
-        optimizer = torch.optim.SGD(self.model.parameters(), lr=0.0003, momentum=0.9, weight_decay=0.0003)
+        #optimizer = torch.optim.SGD(self.model.parameters(), lr=0.0003, momentum=0.9, weight_decay=0.0003)
+        optimizer = torch.optim.SGD(self.model.parameters(), lr=0.001, momentum=0.9, weight_decay=0.0005)
+        #optimizer = torch.optim.Adam(self.model.parameters(), lr=0.0001)
         num_epochs = 5
 
         #save best weights
@@ -135,7 +137,7 @@ class FinedTunedFasterRCNNPackage():
         #make prediction
         current_dir = os.path.dirname(os.path.abspath(__file__))
         model_path = os.path.join(current_dir, 'model-weights/best_package_detection.pth')
-        self.model.load_state_dict(torch.load(model_path, weights_only=True))
+        self.model.load_state_dict(torch.load(model_path, weights_only=True, map_location=self.device))
         self.model.eval()
         with torch.no_grad():
             pred = self.model([image])
@@ -144,8 +146,8 @@ class FinedTunedFasterRCNNPackage():
         bboxes, scores = pred[0]["boxes"], pred[0]["scores"]
         
         #NMS filtering
-        keep = torch.where(scores > 0.2)
-        nms_indices = nms(bboxes[keep], scores[keep], 0.5)
+        keep = torch.where(scores > 0.05)
+        nms_indices = nms(bboxes[keep], scores[keep], 1)
         bboxes = bboxes[nms_indices]
 
         return bboxes
@@ -167,7 +169,7 @@ class CustomDataset(Dataset):
         image_path = os.path.join(self.image_root, annotation["filename"])
         image = Image.open(image_path)
         transform = transforms.Compose([
-            transforms.Resize(600),
+            #transforms.Resize(600),
             transforms.ToTensor(),  
             transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225)) #imagenet values
         ])
@@ -188,12 +190,12 @@ class CustomDataset(Dataset):
 
         return image, target
     
-#testing, not directly called.
-def main():
-    package_predicter = FinedTunedFasterRCNNPackage()
-    #package_predicter.train_model()
-    package_predicter.prediction("test/test.jpg")
+#quick training only
+# def main():
+#     package_predicter = FinedTunedFasterRCNNPackage()
+#     package_predicter.train_model()
+#     #best val loss: 0.3594
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
 
