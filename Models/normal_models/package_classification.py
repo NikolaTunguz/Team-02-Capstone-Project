@@ -14,9 +14,6 @@ from PIL import Image
 class CustomCNN(nn.Module):
     def __init__(self):
         super(CustomCNN, self).__init__()
-        #prepare data
-        # self.preprocessing()
-
         #in: 3x256x256
         self.conv1 = nn.Conv2d(in_channels=3, out_channels=32, kernel_size=3, stride=1, padding=1)
         self.bn1 = nn.BatchNorm2d(32)
@@ -42,20 +39,15 @@ class CustomCNN(nn.Module):
         self.bn5 = nn.BatchNorm2d(128)
         self.relu5 = nn.ReLU()
         self.pool5 = nn.MaxPool2d(2,2)
+        #out: 128x8x8
 
-        self.conv6 = nn.Conv2d(in_channels=128, out_channels=256, kernel_size=3, stride=1, padding=1)
-        self.bn6 = nn.BatchNorm2d(256)
-        self.relu6 = nn.ReLU()
-        self.pool6 = nn.MaxPool2d(2,2)
-        #out: 256x4x4
-
-        self.fc1 = nn.Linear(in_features=256*4*4, out_features=256)
-        self.drop = nn.Dropout(0.5)
+        self.fc1 = nn.Linear(in_features=128*8*8, out_features=256)
+        self.drop = nn.Dropout(0.2)
         self.fc2 = nn.Linear(in_features=256, out_features=2)
 
         #move model to gpu if possible
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self = self.to(self.device)
+        self.to(self.device)
 
     def forward(self, x):
         output = self.pool1(self.relu1(self.bn1(self.conv1(x))))
@@ -63,9 +55,8 @@ class CustomCNN(nn.Module):
         output = self.pool3(self.relu3(self.bn3(self.conv3(output))))
         output = self.pool4(self.relu4(self.bn4(self.conv4(output))))
         output = self.pool5(self.relu5(self.bn5(self.conv5(output))))
-        output = self.pool6(self.relu6(self.bn6(self.conv6(output))))
 
-        output = output.view(-1, 256*4*4)
+        output = output.view(-1, 128*8*8)
         output = self.fc1(output)
         output = self.drop(output)
         output = self.fc2(output)
@@ -75,8 +66,8 @@ class CustomCNN(nn.Module):
     def preprocessing(self):
             #prepare images
             transform = transforms.Compose([
-                transforms.Resize((256,256)),
-                transforms.ToTensor()
+            transforms.Resize((256, 256)),
+            transforms.ToTensor(),
             ])
 
             dataset = datasets.ImageFolder(root="datasets/package-classification", transform=transform)
@@ -93,10 +84,13 @@ class CustomCNN(nn.Module):
             
 
     def train_model(self):
+        #prepare data
+        self.preprocessing()
+
         #define hyperparameters
         criterion = nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(self.parameters(), lr=0.0001)
-        self.num_epochs = 10
+        self.num_epochs = 50
 
         #save statistics for graphing 
         self.epoch_train_loss = []
@@ -109,13 +103,13 @@ class CustomCNN(nn.Module):
         best_val_loss = float("inf")
         best_epoch = 0
 
+        batch_train_loss = []
+        batch_train_acc = []
+        batch_val_loss = []
+        batch_val_acc = []
+
         for epoch in range(self.num_epochs):
             self.train()
-            batch_train_loss = []
-            batch_train_acc = []
-            batch_val_loss = []
-            batch_val_acc = []
-            
             #training
             for (data,labels) in self.train_loader:
                 data = data.to(self.device)
@@ -238,9 +232,19 @@ class CustomCNN(nn.Module):
         plt.show()
 
 
-    def displayConfusionMatrix(self):
+    def display_confusion_matrix(self):
         #display confusion matrix on validation set.
         val_cm = confusion_matrix(self.val_labels, self.val_prediction_labels)
         ConfusionMatrixDisplay(val_cm).plot()
         plt.show()
 
+#training only
+# def main():
+#     classifier = CustomCNN()
+#     classifier.train_model()
+#     classifier.display_training_graphs()
+#     classifier.display_confusion_matrix()
+#     #best val loss: 0.4580
+
+# if __name__ == "__main__":
+#     main()

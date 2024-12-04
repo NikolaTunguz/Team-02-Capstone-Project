@@ -10,8 +10,8 @@ Person Detection Datset:
 #dataset: https://cocodataset.org/#explore
 
 #Package Classification Dataset:
-#dataset: https://www.kaggle.com/datasets/mikhailma/house-rooms-streets-image-dataset "0" class
-#dataset: https://public.roboflow.com/object-detection/packages-dataset/5 "1" class
+#dataset: https://universe.roboflow.com/katie/door-detection-2-dl5yv-ni5hu "0" class
+#dataset: https://universe.roboflow.com/package-detection/package-at-front-door "1" class
 
 
 Package Detection Dataset & Model:
