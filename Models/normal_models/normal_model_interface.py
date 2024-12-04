@@ -21,9 +21,9 @@ class NormalInterface:
 
     def training(self):
         #only train if needed.
-        self.person_classifier.train_model() #best val loss: 0.0708
-        self.package_classifier.train_model() #best val loss: 0.0130
-        self.package_detector.train_model() #best val loss: 0.1425 
+        self.person_classifier.train_model() 
+        self.package_classifier.train_model() 
+        self.package_detector.train_model()  
 
     def detect_person(self, image_path):
         #person & package detection pipeline
@@ -51,11 +51,13 @@ class NormalInterface:
         image = cv2.imread(image_path)
 
         height, width, _ = image.shape
-        new_size = 700
-        image = cv2.resize(image, (new_size, new_size))
+        #current functionality: overlap with live feed. don't resize for now.
+        #redundant scales
+        #new_size = 700
+        image = cv2.resize(image, (width, height))
 
-        scale_x = new_size / width
-        scale_y = new_size / height
+        scale_x = width / width
+        scale_y = height / height
 
         font = cv2.FONT_HERSHEY_SIMPLEX
 
@@ -90,6 +92,7 @@ class NormalInterface:
 
         return image
 
+#training and testing the class works. Not used.
 def main():
     model_pipeline = NormalInterface()
     #model_pipeline.training()

@@ -2,3 +2,17 @@ The data in this folder is in gitignore.
 To access the thermal pistol dataset, download from the following link.
 
 https://figshare.com/articles/dataset/Concealed_Pistol_Detection_Dataset/20105600?file=35965742
+
+Person Classification Dataset:
+#dataset: https://www.kaggle.com/datasets/constantinwerner/human-detection-dataset 
+
+Person Detection Datset:
+#dataset: https://cocodataset.org/#explore
+
+#Package Classification Dataset:
+#dataset: https://universe.roboflow.com/katie/door-detection-2-dl5yv-ni5hu "0" class
+#dataset: https://universe.roboflow.com/package-detection/package-at-front-door "1" class
+
+
+Package Detection Dataset & Model:
+#dataset: https://universe.roboflow.com/package-detection/package-at-front-door

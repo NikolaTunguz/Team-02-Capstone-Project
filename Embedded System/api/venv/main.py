@@ -4,7 +4,6 @@ from flask_cors import CORS
 import cv2
 import sys
 from pathlib import Path
-import time
 
 #get ModelInterface class.
 base_path = Path(__file__).resolve().parents[3]
@@ -30,7 +29,7 @@ def generate_frames():
         #check if there is a frame
         if not ret:
            break
-
+        #important note: localcache needs to exist, imwrite() will not generate this.
         cv2.imwrite("localcache/input_image.jpg", frame)
         #process 1: display image to site
         _, buffer = cv2.imencode('.jpg', frame)
@@ -39,17 +38,17 @@ def generate_frames():
                 b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
         
         #process 2: capture frame for model processing
-        model_interface.set_normal_image("localcache/input_image.jpg")
-        # model_interface.set_thermal_image("localcache/test_image.jpg") 
+        model_interface.set_normal_image("localcache/input_image.jpg") 
 
-        #object detection models - return is a bounding box
+        #person detection
         model_interface.detect_person()
-        # model_interface.detect_package()
-        # image = model_interface.get_bbox_image()
-        
-        #classification model - return is a 0 or a 1
-        # model_interface.detect_pistol()
-        # thermal_output = model_interface.detect_pistol()
+        bbox_image = model_interface.get_bbox_image()
+
+        #display processed image to site
+        _, buffer = cv2.imencode('.jpg', bbox_image)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 
 @app.route('/video_feed')
