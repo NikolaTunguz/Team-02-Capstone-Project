@@ -80,7 +80,7 @@ const AuthRegister = () => {
         }}
         validationSchema={object().shape({
           phoneNumber: string()
-            .max(15, "Phone number must be at most 15 characters")
+            .matches(/^\d{10,15}$/, "Phone number is not valid")
             .required('Phone number is required'),
           firstName: string()
             .max(25, "First name must be at most 25 characters")
@@ -259,15 +259,19 @@ const AuthRegister = () => {
                   </Button>
                 ) : (
                   <Button
-                    fullWidth
-                    variant="contained"
-                    onClick={handleNext}
-                    disabled={activeStep === 0 && !(values.email)
-                      || activeStep === 1 && !(values.password)
-                      || activeStep === 2 && !(values.firstName && values.lastName)}
-                  >
-                    Next
-                  </Button>
+                  fullWidth
+                  variant="contained"
+                  onClick={handleNext}
+                  disabled={
+                    Boolean(activeStep === 0 && (!values.email || errors.email)) || 
+                    Boolean(activeStep === 1 && (!values.password || errors.password)) || 
+                    Boolean(activeStep === 2 && (!values.firstName || !values.lastName || errors.firstName || errors.lastName)) || 
+                    Boolean(activeStep === 3 && (!values.phoneNumber || errors.phoneNumber))
+                  }
+                >
+                  Next
+                </Button>
+                
                 )}
               </div>
             
