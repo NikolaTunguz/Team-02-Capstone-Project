@@ -35,13 +35,17 @@ class FineTunedFasterRCNNPerson():
         person_only = torch.where(labels == 1)[0] #get first tuple (the tensor)
         if(person_only.numel() == 0):
             print("no person detected")
-            return image
-        
+            return torch.empty((0, 4), device=self.device) #no bboxes
         bboxes = bboxes[person_only]
-
+        scores = scores[person_only]
+        
         #NMS filtering
-        keep = torch.where(scores > 0.95)
-        nms_indices = nms(bboxes[keep], scores[keep], 0.5) #threshold 50% IoU
+        keep = torch.where(scores > 0.95)[0]
+        #check if empty bboxes BEFORE nms
+        if (keep.numel() == 0):
+            return torch.empty((0, 4), device=self.device)
+
+        nms_indices = nms(bboxes[keep], scores[keep], 0.5) #last param, IoU threshold
         bboxes = bboxes[nms_indices]
 
         return bboxes
