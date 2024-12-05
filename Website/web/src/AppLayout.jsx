@@ -1,7 +1,12 @@
+import HeaderContent from "./layout/Header";
+
 const AppLayout = ({ children }) => (
-    <div className="main-content">
-      {children}
-    </div>
+    <>
+      <HeaderContent />
+      <div className="main-content">
+        {children}
+      </div>
+    </>
   );
   
   export default AppLayout;

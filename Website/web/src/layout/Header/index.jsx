@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 
 const HeaderContent = () => {
     const location = useLocation();
-    const hideHeader = location.pathname === "/" || location.pathname === "/register" || location.pathname === "/login";
+    const hideHeader = location.pathname === "/register" || location.pathname === "/login";
 
     return (
         <> 
