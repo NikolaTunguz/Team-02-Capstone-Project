@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify, session
 from flask_bcrypt import Bcrypt
 from model import db, User
+from sqlalchemy import select
+import json
 
 auth_bp = Blueprint('auth', __name__)
 bcrypt = Bcrypt()
@@ -134,3 +136,17 @@ def update_phone_number():
     user.phone_number = new_phone_number
     db.session.commit()
     return jsonify({"message": "Phone number updated sucessfully"}), 200
+
+@auth_bp.route('/first_last')
+def first_last():
+    user_id = session.get("user_id")
+    query = select(
+        User.first_name,
+        User.last_name
+    ).filter(
+        User.id == user_id
+    )
+    first_name, last_name = db.session.execute(query).all()[0]
+
+    firstLast = {'first':first_name, 'last':last_name}
+    return json.dumps(firstLast, default=str)
