@@ -1,18 +1,13 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/public/Login";
-/*import NotFound from './pages/public/NotFound';*/
 import Cameras from './pages/cameras/index';
 import Notifications from './pages/notifications/index';
 import Account from './pages/account/index'
 import Register from './pages/public/Register';
 import { useAuth } from "./context/AuthContext";
-import HeaderContent from "./layout/Header";
 import NavBar from "./components/NavBar";
 import AppLayout from "./AppLayout"
-
 import AboutUs from './pages/about_us'
-import HomeNavBar from './components/HomeNavBar'
-
 import NotFound from './pages/public/not_found/index.jsx'
 
 const Router = () => {
@@ -20,8 +15,7 @@ const Router = () => {
 
     return (
         <BrowserRouter>
-            {isLoggedIn && <NavBar/>}
-            {isLoggedIn && <HeaderContent/>}
+            {isLoggedIn && <NavBar />}
             <Routes>
                 <Route
                     path="/login"
@@ -33,7 +27,11 @@ const Router = () => {
                 />
                 <Route
                     path="/"
-                    element={<AboutUs />}
+                    element={
+                        isLoggedIn
+                            ? <AppLayout> <AboutUs /> </AppLayout>
+                            : <AboutUs />
+                    }
                 />
                 <Route
                     path="*"
@@ -46,7 +44,7 @@ const Router = () => {
                     />
                     <Route
                         path="/notifications"
-                        element={<AppLayout> <Notifications /></AppLayout> }
+                        element={<AppLayout> <Notifications /></AppLayout>}
                     />
                     <Route
                         path="/account"
