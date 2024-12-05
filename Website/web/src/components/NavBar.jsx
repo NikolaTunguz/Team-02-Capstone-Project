@@ -22,7 +22,7 @@ const NavBar = () => {
             to="/dashboard"
             className={isSelected("/dashboard") ? "active-link" : ""}
           >
-            <Dashboard style={{ marginRight: "5px" }} /> Dashboard
+            <Dashboard style={{ marginRight: "5px" }} /> Cameras
           </Link>
           <Link 
             to="/notifications"
