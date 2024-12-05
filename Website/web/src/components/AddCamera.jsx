@@ -15,7 +15,7 @@ import {
 import { Cancel, Add } from "@mui/icons-material";
 import httpClient from "../pages/httpClient";
 
-const AddCamera = () => {
+const AddCamera = ({ onCameraAdded }) => {
     const [open, setOpen] = useState(false);
     const [error, setError] = useState("");
 
@@ -29,6 +29,7 @@ const AddCamera = () => {
             await httpClient.post("http://localhost:8080/add_user_camera", values);
             resetForm();
             resetModal();
+            if (onCameraAdded) onCameraAdded(); 
         } catch (e) {
             setError(e.response?.data?.error || "Failed to add camera.");
         }
