@@ -34,7 +34,7 @@ class FineTunedFasterRCNNPerson():
         #only keep people predictions.
         person_only = torch.where(labels == 1)[0] #get first tuple (the tensor)
         if(person_only.numel() == 0):
-            print("no person detected")
+            # print("no person detected")
             return torch.empty((0, 4), device=self.device) #no bboxes
         bboxes = bboxes[person_only]
         scores = scores[person_only]

@@ -36,11 +36,6 @@ def generate_frames():
            break
         #important note: localcache needs to exist, imwrite() will not generate this.
         cv2.imwrite("localcache/input_image.jpg", frame)
-        #process 1: display image to site
-        _, buffer = cv2.imencode('.jpg', frame)
-        frame = buffer.tobytes()
-        yield (b'--frame\r\n'
-                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
         
         #process 2: capture frame for model processing
         model_interface.set_normal_image("localcache/input_image.jpg") 
@@ -48,8 +43,6 @@ def generate_frames():
         #person detection
         detected = model_interface.detect_person()
         bbox_image = model_interface.get_bbox_image()
-
-        print(notification_counter)
 
         if(notification_counter == 0):
             if(detected):
