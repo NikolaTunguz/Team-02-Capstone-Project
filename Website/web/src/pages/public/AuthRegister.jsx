@@ -66,10 +66,10 @@ const AuthRegister = () => {
     <Box
       sx={{
         height: '420px', 
-        width: '280px',
+        width: '290px',
         overflow: 'hidden', 
-        display: 'flex',
-        flexDirection: 'column',
+        // display: 'flex',
+        // flexDirection: 'column',
         position: 'relative',
       }}
     >
@@ -130,7 +130,7 @@ const AuthRegister = () => {
               sx={{
                 marginTop:'45px',
                 overflow: 'hidden', 
-                display: 'flex',
+                // display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'center', 
               }}
@@ -258,7 +258,7 @@ const AuthRegister = () => {
             <br/>
             <Box 
               sx={{
-                display: 'flex',
+                // display: 'flex',
                 flexDirection: 'column',
                 gap: '15px',
                 position: 'absolute',
