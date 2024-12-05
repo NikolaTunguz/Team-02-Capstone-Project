@@ -36,27 +36,37 @@ export default function Dashboard() {
     }, []);
 
     return (
-        <div className="dashboard-container">
+        <>
             <Box
                 display="flex"
                 justifyContent="space-between"
                 alignItems="center"
                 mb={2}
+                marginRight="40px"
             >
                 <h2>Camera Feeds</h2>
                 <AddCamera onCameraAdded={getCameras} />
             </Box>
+            
+            <div className="dashboard-container">
+            
             <div className="camera-grid">
                 {cameras.map((camera, index) => (
                     <div key={camera.device_id || index}>
-                        <Typography variant="h6">Camera {index + 1}</Typography>
-                        <IconButton
-                            color="error"
-                            onClick={() => handleDelete(camera, index + 1)}
-                            className="delete-icon"
-                        >
-                            <Delete />
-                        </IconButton>
+                        {/* <Box
+                            display="flex"
+                            alignItems="center"
+                            mb={2}
+                        > */}
+                            <Typography variant="h6">Camera {index + 1}</Typography>
+                            <IconButton
+                                color="error"
+                                onClick={() => handleDelete(camera, index + 1)}
+                                className="delete-icon"
+                            >
+                                <Delete />
+                            </IconButton>
+                        {/* </Box> */}
                         <LiveStream camera={camera} />
                     </div>
                 ))}
@@ -70,5 +80,7 @@ export default function Dashboard() {
                 />
             )}
         </div>
+        </>
+        
     );
 }
