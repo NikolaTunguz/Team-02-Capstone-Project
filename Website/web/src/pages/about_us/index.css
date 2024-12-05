@@ -1,38 +1,63 @@
 .about_us {
-    text-align: center;
     display: flex;
     justify-content: center;
     align-items: flex-start;
-}
-
-.about_us_test{
-    margin-top: 3%;
-    width: 80%; 
     flex-direction: column;
-    align-items: center;
+    text-align: center;
+    margin-top: 70px;
+    margin-left: 10%;
+    margin-right: 10%;
 }
 
-.about_us h2 {
+.product_h2 {
     color: #000000;
     text-align: left;
     font-size: 2rem;
-    padding-top: 5%;
-    padding-left: 20%
+    padding-left: 25%;
 }
 
-.about_us p {
+.team_h2 {
+    color: #000000;
+    text-align: right;
+    font-size: 2rem;
+    padding-right: 25%;
+}
+
+.content {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    width: 70%;
+    padding-left: 15%;
+    padding-right: 15%;
+    gap: 5%;
+}
+
+.content p {
     color: #000000;
     text-align: left;
     font-size: 1.2rem;
-    padding-left: 20%
+    width: auto;
 }
 
-.team_photo{
+.content img{
     border:  3px solid #000000;
     border-color: #000000;
     border-radius: 20%;
-    width: 60%;
-    margin-bottom: 1%;
-
+    width: 50%;
     align-self: center;
+}
+
+.product_section .content img {
+    width: 50%;  
+    height: auto;  
+    max-height: 250px;  
+    background-color: rgb(190, 214, 246);
+}
+
+.team_section .content img {
+    width: 50%; 
+    height: auto; 
+    max-height: 400px;
 }
