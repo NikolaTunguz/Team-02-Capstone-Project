@@ -63,11 +63,20 @@ const AuthRegister = () => {
   };
 
   return (
-    <>
+    <Box
+      sx={{
+        height: '420px', 
+        width: '280px',
+        overflow: 'hidden', 
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative',
+      }}
+    >
       {activeStep == 0 && <h1>Sign up to SeeThru</h1>}      
       {activeStep > 0 && <Box sx={{ width: '80%', padding: 2 }}>
-        <LinearProgress variant="determinate" value={progress} />
-      </Box>}
+      <LinearProgress variant="determinate" value={progress} />
+    </Box>}
 
       <Formik
         innerRef={formRef}
@@ -117,127 +126,149 @@ const AuthRegister = () => {
           values
         }) => (
           <Form onSubmit={handleSubmit}>
-            <Stack spacing={2} sx={{ width: '100%' }}>
-            {activeStep === 0 && (
-              <>
-                <InputLabel>Email Address</InputLabel>
-                <OutlinedInput
-                  type="email"
-                  name="email"
-                  value={values.email}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  fullWidth
-                  placeholder="Email"
-                  error={Boolean(touched.email && errors.email)}
-                />
-                {touched.email && errors.email && (
-                  <FormHelperText error>{errors.email}</FormHelperText>
-                )}                
-              </>
-            )}
+            <Box
+              sx={{
+                marginTop:'45px',
+                overflow: 'hidden', 
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center', 
+              }}
+            >
+              <Stack spacing={2} sx={{ width: '100%' }}>
+              {activeStep === 0 && (
+                <>
+                  <InputLabel>Email Address</InputLabel>
+                  <OutlinedInput
+                    type="email"
+                    name="email"
+                    value={values.email}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    fullWidth
+                    placeholder="Email"
+                    error={Boolean(touched.email && errors.email)}
+                  />
+                  {touched.email && errors.email && (
+                    <FormHelperText error>{errors.email}</FormHelperText>
+                  )}                
+                </>
+              )}
 
-            {activeStep === 1 && (
-              <>
-                <InputLabel style={{ fontSize: '18px' }}>
-                  Create a password
-                </InputLabel>
-                <b/>
-                <InputLabel>Password</InputLabel>
-                <OutlinedInput
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={values.password}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  fullWidth
-                  placeholder="Password"
-                  error={Boolean(touched.password && errors.password)}
-                  endAdornment={
-                    values.password.length > 0 && (
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={handleClickShowPass}
-                          onMouseDown={handleMouseDownPass}
-                          edge="end"
-                          size="large"
-                        >
-                          {showPassword ? <Visibility /> : <VisibilityOff />}
-                        </IconButton>
-                      </InputAdornment>
-                    )
-                  }
-                />
-                {touched.password && errors.password && (
-                  <FormHelperText error>{errors.password}</FormHelperText>
-                )}
-              </>
-            )}
+              {activeStep === 1 && (
+                <>
+                  <InputLabel style={{ fontSize: '18px' }}>
+                    Create a password
+                  </InputLabel>
+                  <b/>
+                  <InputLabel>Password</InputLabel>
+                  <OutlinedInput
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={values.password}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    fullWidth
+                    placeholder="Password"
+                    error={Boolean(touched.password && errors.password)}
+                    endAdornment={
+                      values.password.length > 0 && (
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onClick={handleClickShowPass}
+                            onMouseDown={handleMouseDownPass}
+                            edge="end"
+                            size="large"
+                          >
+                            {showPassword ? <Visibility /> : <VisibilityOff />}
+                          </IconButton>
+                        </InputAdornment>
+                      )
+                    }
+                  />
+                  {touched.password && errors.password && (
+                    <FormHelperText error>{errors.password}</FormHelperText>
+                  )}
+                </>
+              )}
 
-            {activeStep === 2 && (
-              <>
-                <InputLabel style={{ fontSize: '18px' }}>
-                  Enter first and last name
-                </InputLabel>
-                <b/>
-                <InputLabel>First Name</InputLabel>
-                <OutlinedInput
-                  type="text"
-                  name="firstName"
-                  value={values.firstName}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  fullWidth
-                  placeholder="First Name"
-                  error={Boolean(touched.firstName && errors.firstName)}
-                />
-                {touched.firstName && errors.firstName && (
-                  <FormHelperText error>{errors.firstName}</FormHelperText>
-                )}
+              {activeStep === 2 && (
+                <>
+                  <InputLabel style={{ fontSize: '18px' }}>
+                    Enter first and last name
+                  </InputLabel>
+                  <b/>
+                  <InputLabel>First Name</InputLabel>
+                  <OutlinedInput
+                    type="text"
+                    name="firstName"
+                    value={values.firstName}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    fullWidth
+                    placeholder="First Name"
+                    error={Boolean(touched.firstName && errors.firstName)}
+                  />
+                  {touched.firstName && errors.firstName && (
+                    <FormHelperText error>{errors.firstName}</FormHelperText>
+                  )}
 
-                <InputLabel>Last Name</InputLabel>
-                <OutlinedInput
-                  type="text"
-                  name="lastName"
-                  value={values.lastName}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  fullWidth
-                  placeholder="Last Name"
-                  error={Boolean(touched.lastName && errors.lastName)}
-                />
-                {touched.lastName && errors.lastName && (
-                  <FormHelperText error>{errors.lastName}</FormHelperText>
-                )}
-              </>
-            )}
+                  <InputLabel>Last Name</InputLabel>
+                  <OutlinedInput
+                    type="text"
+                    name="lastName"
+                    value={values.lastName}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    fullWidth
+                    placeholder="Last Name"
+                    error={Boolean(touched.lastName && errors.lastName)}
+                  />
+                  {touched.lastName && errors.lastName && (
+                    <FormHelperText error>{errors.lastName}</FormHelperText>
+                  )}
+                </>
+              )}
 
-            {activeStep === 3 && (
-              <>
-                <InputLabel style={{ fontSize: '18px' }}>
-                  Enter phone number
-                </InputLabel>
-                <b/>
-                <InputLabel>Phone Number</InputLabel>
-                <OutlinedInput
-                  type="text"
-                  name="phoneNumber"
-                  value={values.phoneNumber}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  fullWidth
-                  placeholder="Phone Number"
-                  error={Boolean(touched.phoneNumber && errors.phoneNumber)}
-                />
-                {touched.phoneNumber && errors.phoneNumber && (
-                  <FormHelperText error>{errors.phoneNumber}</FormHelperText>
-                )}
-              </>
-            )}
-            </Stack>
+              {activeStep === 3 && (
+                <>
+                  <InputLabel style={{ fontSize: '18px' }}>
+                    Enter phone number
+                  </InputLabel>
+                  <b/>
+                  <InputLabel>Phone Number</InputLabel>
+                  <OutlinedInput
+                    type="text"
+                    name="phoneNumber"
+                    value={values.phoneNumber}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    fullWidth
+                    placeholder="Phone Number"
+                    error={Boolean(touched.phoneNumber && errors.phoneNumber)}
+                  />
+                  {touched.phoneNumber && errors.phoneNumber && (
+                    <FormHelperText error>{errors.phoneNumber}</FormHelperText>
+                  )}
+                </>
+              )}
+              </Stack>
+            </Box>
             <br/>
-            <Box sx={{display: 'flex', flexDirection:'column', gap:'15px'}}>
+            <Box 
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '15px',
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                padding: '10px', 
+              }}
+            >
+
               <div style={{display:'flex', flexDirection:'row', gap:'10px'}}>
                 {activeStep > 0 && (
                   <Button
@@ -292,7 +323,7 @@ const AuthRegister = () => {
           </Form>
         )}
       </Formik>
-    </>
+    </Box>
   );
 };
 
