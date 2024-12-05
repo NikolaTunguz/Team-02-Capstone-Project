@@ -25,7 +25,7 @@ class ModelInterface:
 
     def detect_person(self):
         image = self.normal_image
-        self.normal_interface.detect_person(image)
+        return self.normal_interface.detect_person(image)
 
     def detect_package(self):
         image = self.normal_image
