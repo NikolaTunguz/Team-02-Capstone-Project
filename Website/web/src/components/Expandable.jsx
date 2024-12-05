@@ -5,25 +5,21 @@ import { useState } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
-const Expandable = ({ preview, content }) => {
-
-    const[isOpen, setIsOpen] = useState(false);
+const Expandable = ({ preview, content, style }) => {
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="expandable">
-        <div className="preview">
-          <div className="text">
-            {preview}
+      <div className="expandable" style={{...style, paddingTop: '1rem'}}>
+          <div className="preview">
+              <div className="text"
+              style={{ fontSize: '1.1rem' }} 
+              >{preview}</div>
+              <button style={{ backgroundColor: 'white', border: '0px' }} onClick={() => setIsOpen(!isOpen)}>
+                  {!isOpen ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+              </button>
           </div>
-          <button style={{backgroundColor:'white', border:'0px'}} onClick={() => setIsOpen(!isOpen)}>
-            {!isOpen ? <ExpandMoreIcon/> : <ExpandLessIcon/>}
-          </button>
-        </div>
-
-        <div>
-          {isOpen && (<div className='content'>{content}</div>)}
-        </div>
-    </div>
+          <div>{isOpen && <div className="content">{content}</div>}</div>
+      </div>
   );
 };
 

@@ -180,7 +180,11 @@ const AccountSettings = () => {
                                         fullWidth
                                         placeholder="New First Name"
                                         error={Boolean(touched.formFirstName && errors.formFirstName)}
-                                        sx={{ backgroundColor: "#fff", borderRadius: "4px" }}
+                                        sx={{ 
+                                            backgroundColor: "#fff", 
+                                            borderRadius: "4px",
+                                            width: "700px", 
+                                        }}
                                     />
                                     {touched.formFirstName && errors.formFirstName && (
                                         <FormHelperText error>{errors.formFirstName}</FormHelperText>
@@ -196,7 +200,11 @@ const AccountSettings = () => {
                                         fullWidth
                                         placeholder="New Last Name"
                                         error={Boolean(touched.formLastName && errors.formLastName)}
-                                        sx={{ backgroundColor: "#fff", borderRadius: "4px" }}
+                                        sx={{ 
+                                            backgroundColor: "#fff", 
+                                            borderRadius: "4px",
+                                            width: "700px", 
+                                        }}
                                     />
                                     {touched.formLastName && errors.formLastName && (
                                         <FormHelperText error>{errors.formLastName}</FormHelperText>
@@ -212,7 +220,11 @@ const AccountSettings = () => {
                                         fullWidth
                                         placeholder="New Phone Number"
                                         error={Boolean(touched.phoneNumber && errors.phoneNumber)}
-                                        sx={{ backgroundColor: "#fff", borderRadius: "4px" }}
+                                        sx={{ 
+                                            backgroundColor: "#fff", 
+                                            borderRadius: "4px",
+                                            width: "700px", 
+                                        }}
                                     />
                                     {touched.phoneNumber && errors.phoneNumber && (
                                         <FormHelperText error>{errors.phoneNumber}</FormHelperText>
@@ -248,7 +260,11 @@ const AccountSettings = () => {
                         </FormHelperText>
                     )}
                 </div>
-            }></Expandable>
+            }
+            style={{ minWidth: '760px'}}
+            >
+
+            </Expandable>
 
             <Expandable preview='Login Credentials' content={
                 <div>
@@ -294,7 +310,11 @@ const AccountSettings = () => {
                                         fullWidth
                                         placeholder="New Email"
                                         error={Boolean(touched.email && errors.email)}
-                                        sx={{ backgroundColor: "#fff", borderRadius: "4px" }}
+                                        sx={{ 
+                                            backgroundColor: "#fff", 
+                                            borderRadius: "4px",
+                                            width: "700px", 
+                                        }}
                                     />
                                     {touched.email && errors.email && (
                                         <FormHelperText error>{errors.email}</FormHelperText>
@@ -310,17 +330,23 @@ const AccountSettings = () => {
                                         fullWidth
                                         placeholder="Current Password"
                                         error={Boolean(touched.currentPassword && errors.currentPassword)}
-                                        sx={{ backgroundColor: "#fff", borderRadius: "4px" }}
+                                        sx={{ 
+                                            backgroundColor: "#fff", 
+                                            borderRadius: "4px",
+                                            width: "700px", 
+                                        }}
                                         endAdornment={
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    onClick={handleToggleCurrentPassword}
-                                                    edge="end"
-                                                    size="large"
-                                                >
-                                                    {showCurrentPassword ? <Visibility /> : <VisibilityOff />}
-                                                </IconButton>
-                                            </InputAdornment>
+                                            values.currentPassword.length > 0 && (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        onClick={handleToggleCurrentPassword}
+                                                        edge="end"
+                                                        size="large"
+                                                    >
+                                                        {showCurrentPassword ? <Visibility /> : <VisibilityOff />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            )
                                         }
                                     />
                                     {touched.currentPassword && errors.currentPassword && (
@@ -337,17 +363,23 @@ const AccountSettings = () => {
                                         fullWidth
                                         placeholder="New Password"
                                         error={Boolean(touched.newPassword && errors.newPassword)}
-                                        sx={{ backgroundColor: "#fff", borderRadius: "4px" }}
+                                        sx={{ 
+                                            backgroundColor: "#fff", 
+                                            borderRadius: "4px",
+                                            width: "700px", 
+                                        }}
                                         endAdornment={
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    onClick={handleToggleNewPassword}
-                                                    edge="end"
-                                                    size="large"
-                                                >
-                                                    {showNewPassword ? <Visibility /> : <VisibilityOff />}
-                                                </IconButton>
-                                            </InputAdornment>
+                                            values.newPassword.length > 0 && (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        onClick={handleToggleNewPassword}
+                                                        edge="end"
+                                                        size="large"
+                                                    >
+                                                        {showNewPassword ? <Visibility /> : <VisibilityOff />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            )
                                         }
                                     />
                                     {touched.newPassword && errors.newPassword && (
@@ -386,7 +418,10 @@ const AccountSettings = () => {
                         </FormHelperText>
                     )}
                 </div>
-            }></Expandable>
+            }
+            style={{ minWidth: '760px'}}
+            >
+            </Expandable>
         </>
     );
 };
