@@ -6,6 +6,7 @@ from .package_detection import FinedTunedFasterRCNNPackage
 
 #image imports
 import cv2
+import torch
 
 class NormalInterface:
     def __init__(self):
@@ -25,18 +26,18 @@ class NormalInterface:
         self.package_classifier.train_model() 
         self.package_detector.train_model()  
 
+
     def detect_person(self, image_path):
         #person & package detection pipeline
-        person_result = self.person_classifier.prediction(image_path)
-        #people
-        if(person_result == 1):
-            self.person_bboxes = self.person_detector.prediction(image_path)
-            # return self.person_bboxes
-            return True
-        else:
-            #print("No person detected")
-            return False
-            pass
+        #classifier not used., too low accuracy across hundreds of frames a second.
+        #person_result = self.person_classifier.prediction(image_path) 
+
+        #if no detection, empty bboxes
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.person_bboxes = torch.empty((0, 4), device=device) #initialize empty bbox
+    
+        self.person_bboxes = self.person_detector.prediction(image_path)
+        return True
     
 
     def detect_package(self, image_path):
