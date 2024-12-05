@@ -7,7 +7,7 @@ import DeleteCamera from "../../components/DeleteCamera.jsx";
 import { Typography, Box, IconButton } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 
-export default function Dashboard() {
+export default function Cameras() {
     const [cameras, setCameras] = React.useState([]);
     const [open, setOpen] = React.useState(false);
     const [cameraToDelete, setCameraToDelete] = React.useState(null);
@@ -48,7 +48,7 @@ export default function Dashboard() {
                 <AddCamera onCameraAdded={getCameras} />
             </Box>
             
-            <div className="dashboard-container">
+            <div className="camera-container">
             
             <div className="camera-grid">
                 {cameras.map((camera, index) => (

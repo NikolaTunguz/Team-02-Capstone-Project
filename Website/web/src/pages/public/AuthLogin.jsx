@@ -39,7 +39,7 @@ const AuthLogin = () => {
       });
       if (resp.status === 200) {
         setIsLoggedIn(true);
-        navigate("/dashboard");
+        navigate("/cameras");
       }
     } catch (e) {
       if (e.response?.status === 401) {

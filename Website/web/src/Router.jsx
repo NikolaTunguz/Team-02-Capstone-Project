@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/public/Login";
 /*import NotFound from './pages/public/NotFound';*/
-import Dashboard from './pages/dashboard/index';
+import Cameras from './pages/cameras/index';
 import Notifications from './pages/notifications/index';
 import Account from './pages/account/index'
 import Register from './pages/public/Register';
@@ -41,8 +41,8 @@ const Router = () => {
                 />
                 {isLoggedIn && <>
                     <Route
-                        path="/dashboard"
-                        element={<AppLayout> <Dashboard /> </AppLayout>}
+                        path="/cameras"
+                        element={<AppLayout> <Cameras /> </AppLayout>}
                     />
                     <Route
                         path="/notifications"
