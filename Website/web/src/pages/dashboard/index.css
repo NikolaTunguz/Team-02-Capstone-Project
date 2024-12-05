@@ -1,5 +1,20 @@
 .video {
     display: flex;
-    justify-content: center;
     margin-top: 50px;
+    margin-left: 50px;
+}
+
+.dashboard-container {
+    padding: 20px;
+}
+
+.camera-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+}
+
+.delete-icon {
+    position: absolute;
+    top: 35px;
+    left: 220px;
 }

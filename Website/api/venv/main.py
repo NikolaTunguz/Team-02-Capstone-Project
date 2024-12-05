@@ -4,6 +4,7 @@ from config import ApplicationConfig
 from model import db, Notification, UserCameras, User
 from routes.auth import auth_bp
 from routes.emergency_contact import emergency_contact_bp
+from routes.cameras import camera_bp
 from sqlalchemy import select, desc
 import json
 
@@ -12,6 +13,7 @@ cors = CORS(app, origins=["http://localhost:5173"], supports_credentials=True)
 app.config.from_object(ApplicationConfig)
 app.register_blueprint(auth_bp)
 app.register_blueprint(emergency_contact_bp)
+app.register_blueprint(camera_bp)
 
 db.init_app(app)
 with app.app_context():
