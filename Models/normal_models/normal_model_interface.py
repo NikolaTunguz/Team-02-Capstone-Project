@@ -31,9 +31,11 @@ class NormalInterface:
         #people
         if(person_result == 1):
             self.person_bboxes = self.person_detector.prediction(image_path)
-            return self.person_bboxes
+            # return self.person_bboxes
+            return True
         else:
             #print("No person detected")
+            return False
             pass
     
 

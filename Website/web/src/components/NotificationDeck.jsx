@@ -15,6 +15,7 @@ const NotificationDeck = () => {
     const fetchNotifications = async () => {
         const response = await httpClient.get('http://localhost:8080/notifications');
         setNotifications(response.data);
+        console.log(response.data)
         setLoading(false)
       };
     fetchNotifications();
@@ -25,7 +26,7 @@ const NotificationDeck = () => {
     let elementArray = []
     if(notifications.length > 0){
       for(let i = 0; i < notifications.length; i++){
-        elementArray.push(<Expandable key={i} preview='Person detected at camera.' content={notifications[i]} />);
+        elementArray.push(<Expandable key={i} preview={notifications[i]['message']} content={notifications[i]['timestamp']} />);
       }
       return elementArray;
     } else {

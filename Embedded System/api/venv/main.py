@@ -4,6 +4,9 @@ from flask_cors import CORS
 import cv2
 import sys
 from pathlib import Path
+import requests
+from datetime import datetime
+
 
 #get ModelInterface class.
 base_path = Path(__file__).resolve().parents[3]
@@ -19,9 +22,11 @@ cors = CORS(app, origins="*")
 camera = cv2.VideoCapture(0)
 running = True
 model_interface = ModelInterface()
+notification_counter = 0
 
 
 def generate_frames():
+    global notification_counter
     while running:
         #read camera data
         ret, frame = camera.read()
@@ -41,8 +46,32 @@ def generate_frames():
         model_interface.set_normal_image("localcache/input_image.jpg") 
 
         #person detection
-        model_interface.detect_person()
+        detected = model_interface.detect_person()
         bbox_image = model_interface.get_bbox_image()
+
+        print(notification_counter)
+
+        if(notification_counter == 0):
+            if(detected):
+                date = datetime.now()
+                date = date.strftime("%m/%d/%Y, %H:%M:%S")
+
+                headers={
+                    'Content-type':'application/json',
+                    'Accept':'application/json'
+                }
+
+                data = {
+                    "device_id":14,
+                    "timestamp":date,
+                    "message":"Person detected at camera."
+                }
+                requests.post("http://127.0.0.1:8080/database", json=data, headers=headers)
+                notification_counter = 100
+        
+        else:
+            notification_counter -= 1
+        
 
         #display processed image to site
         _, buffer = cv2.imencode('.jpg', bbox_image)
