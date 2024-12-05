@@ -147,7 +147,9 @@ const AccountSettings = () => {
                         validationSchema={Yup.object().shape({
                             formFirstName: Yup.string().max(25),
                             formLastName: Yup.string().max(25),
-                            phoneNumber: Yup.string().max(15)
+                            phoneNumber: Yup.string()
+                            .matches(/^\d{10,15}$/, "Phone number is not valid")
+                            .required('Phone number is required'),
                         })}
                         onSubmit={async (values, { resetForm }) => {
                             const { formFirstName, formLastName, phoneNumber } = values;
