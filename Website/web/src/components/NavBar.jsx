@@ -19,8 +19,8 @@ const NavBar = () => {
         </div>
         <div className="nav-links">
           <Link 
-            to="/dashboard"
-            className={isSelected("/dashboard") ? "active-link" : ""}
+            to="/cameras"
+            className={isSelected("/cameras") ? "active-link" : ""}
           >
             <Dashboard style={{ marginRight: "5px" }} /> Cameras
           </Link>

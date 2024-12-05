@@ -20,7 +20,7 @@ const HomeNavBar = () => {
         <Link to = '/login' className = "home_nav_button"> Login </Link>
       </div>)}
       {isLoggedIn && (<div className = 'home_nav_links'>
-        <Link to = '/dashboard' className = "home_nav_button"> Back </Link>
+        <Link to = '/cameras' className = "home_nav_button"> Back </Link>
       </div>)}
     </nav>
   );
