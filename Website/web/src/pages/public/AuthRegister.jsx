@@ -40,7 +40,7 @@ const AuthRegister = () => {
       });
       if (resp.status === 200) {
         setIsLoggedIn(true);
-        navigate('/cameras');
+        navigate('/dashboard');
       }
     } catch (e) {
       if (e.response?.status === 409) {
@@ -65,7 +65,7 @@ const AuthRegister = () => {
   return (
     <Box
       sx={{
-        height: '420px',
+        height: '435px',
         width: '290px',
         overflow: 'hidden',
         // display: 'flex',
@@ -128,7 +128,7 @@ const AuthRegister = () => {
           <Form onSubmit={handleSubmit}>
             <Box
               sx={{
-                marginTop: '45px',
+                marginTop: activeStep === 2 ? '0px' : '75px',
                 overflow: 'hidden',
                 // display: 'flex',
                 flexDirection: 'column',
