@@ -37,7 +37,11 @@ class NormalInterface:
         self.person_bboxes = torch.empty((0, 4), device=device) #initialize empty bbox
     
         self.person_bboxes = self.person_detector.prediction(image_path)
-        return True
+
+        if(self.person_bboxes.size(0) == 0):
+            return False
+        else :
+            return True
     
 
     def detect_package(self, image_path):
