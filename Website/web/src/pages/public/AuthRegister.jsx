@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Formik, Form } from 'formik';
 import { InputLabel, Stack, OutlinedInput, Button, InputAdornment, IconButton, FormHelperText, LinearProgress, Box } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { object, string } from 'yup';
+import * as yup from 'yup';
 import httpClient from '../httpClient';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -10,6 +10,7 @@ import { useAuth } from '../../context/AuthContext';
 const AuthRegister = () => {
   const formRef = React.useRef(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfPassword, setShowConfPassword] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { setIsLoggedIn } = useAuth();
@@ -24,6 +25,10 @@ const AuthRegister = () => {
   const handleClickShowPass = () => {
     setShowPassword(!showPassword);
   };
+
+  const handleClickShowPassConf = () => {
+    setShowConfPassword(!showConfPassword);
+  }
 
   const handleMouseDownPass = (event) => {
     event.preventDefault();
@@ -85,27 +90,38 @@ const AuthRegister = () => {
           firstName: '',
           lastName: '',
           email: '',
-          password: ''
+          password: '',
+          passwordConf: ''
         }}
-        validationSchema={object().shape({
-          phoneNumber: string()
+        validationSchema={yup.object().shape({
+          phoneNumber: yup
+            .string()
             .matches(/^\d{10,15}$/, "Phone number is not valid")
             .required('Phone number is required'),
-          firstName: string()
+          firstName: yup
+            .string()
             .max(25, "First name must be at most 25 characters")
             .required('First name is required'),
-          lastName: string()
+          lastName: yup
+            .string()
             .max(25, "Last name must be at most 25 characters")
             .required('Last name is required'),
-          email: string()
+          email: yup
+            .string()
             .email('Must be a valid email')
             .max(255)
             .required('Email is required'),
-          password: string()
+          password: yup
+            .string()
             .max(255)
             .required('Password is required')
-            .min(8, 'Password must be at least 8 characters long')
+            .min(8, 'Password must be at least 8 characters long'),
+          passwordConf: yup
+            .string()
+            .oneOf([yup.ref('password')], 'Passwords must match')
+            .required('Confirm password is required')
         })}
+
         onSubmit={async ({ phoneNumber, firstName, lastName, email, password }, { setErrors, setStatus }) => {
           try {
             await register(phoneNumber, firstName, lastName, email, password);
@@ -128,7 +144,7 @@ const AuthRegister = () => {
           <Form onSubmit={handleSubmit}>
             <Box
               sx={{
-                marginTop: activeStep === 2 ? '0px' : '75px',
+                marginTop: activeStep === 2 || activeStep === 1 ? '0px' : '75px',
                 overflow: 'hidden',
                 // display: 'flex',
                 flexDirection: 'column',
@@ -189,6 +205,34 @@ const AuthRegister = () => {
                     />
                     {touched.password && errors.password && (
                       <FormHelperText error>{errors.password}</FormHelperText>
+                    )}
+                    <InputLabel>Confirm Password</InputLabel>
+                    <OutlinedInput
+                      name="passwordConf"
+                      type={showConfPassword ? 'text' : 'password'}
+                      value={values.passwordConf}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      fullWidth
+                      placeholder="Confirm Password"
+                      error={Boolean(touched.passwordConf && errors.passwordConf)}
+                      endAdornment={
+                        values.passwordConf.length > 0 && (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={handleClickShowPassConf}
+                              onMouseDown={handleMouseDownPass}
+                              edge="end"
+                              size="large"
+                            >
+                              {showConfPassword ? <Visibility /> : <VisibilityOff />}
+                            </IconButton>
+                          </InputAdornment>
+                        )
+                      }
+                    />
+                    {touched.passwordConf && errors.passwordConf && (
+                      <FormHelperText error>{errors.passwordConf}</FormHelperText>
                     )}
                   </>
                 )}
@@ -295,7 +339,7 @@ const AuthRegister = () => {
                     onClick={handleNext}
                     disabled={
                       Boolean(activeStep === 0 && (!values.email || errors.email)) ||
-                      Boolean(activeStep === 1 && (!values.password || errors.password)) ||
+                      Boolean(activeStep === 1 && (!values.password || errors.password || !values.passwordConf || errors.passwordConf)) ||
                       Boolean(activeStep === 2 && (!values.firstName || !values.lastName || errors.firstName || errors.lastName)) ||
                       Boolean(activeStep === 3 && (!values.phoneNumber || errors.phoneNumber))
                     }
