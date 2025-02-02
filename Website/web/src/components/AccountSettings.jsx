@@ -22,17 +22,19 @@ import Expandable from './Expandable.jsx'
 const AccountSettings = () => {
     const [showCurrentPassword, setShowCurrentPassword] = React.useState(false);
     const [showNewPassword, setShowNewPassword] = React.useState(false);
+    const [showConfPassword, setShowConfPassword] = React.useState(false);
     const [formStatus, setFormStatus] = React.useState({
-        personalInfo:{},
-        loginInfo:{},
+        personalInfo: {},
+        loginInfo: {},
     });
     const [currentEmail, setCurrentEmail] = React.useState("");
     const [error, setError] = React.useState("");
     const [currentPhoneNumber, setCurrentPhoneNumber] = React.useState("");
     const { firstName, lastName, setFirstName, setLastName } = useAuth();
-    
+
     const handleToggleCurrentPassword = () => setShowCurrentPassword(!showCurrentPassword);
     const handleToggleNewPassword = () => setShowNewPassword(!showNewPassword);
+    const handleToggleConfPassword = () => setShowConfPassword(!showConfPassword);
 
     React.useEffect(() => {
         const fetchCurrentEmail = async () => {
@@ -63,15 +65,15 @@ const AccountSettings = () => {
             const resp = await httpClient.post("http://localhost:8080/update_email", { email });
             if (resp.status === 200) {
                 setCurrentEmail(email);
-                setFormStatus({...formStatus, loginInfo:{ success: true, message: "Account updated successfully!" }});
+                setFormStatus({ ...formStatus, loginInfo: { success: true, message: "Account updated successfully!" } });
             } else {
-                setFormStatus({...formStatus, loginInfo:{ success: false, message: "Could not update email." }});
+                setFormStatus({ ...formStatus, loginInfo: { success: false, message: "Could not update email." } });
             }
         } catch (error) {
-            if(error.response?.status === 409) {
-                setFormStatus({...formStatus, loginInfo:{ success: false, message: "Email is already registered" }});
+            if (error.response?.status === 409) {
+                setFormStatus({ ...formStatus, loginInfo: { success: false, message: "Email is already registered" } });
             } else {
-                setFormStatus({...formStatus, loginInfo:{ success: false, message: "Failed to update account" }});
+                setFormStatus({ ...formStatus, loginInfo: { success: false, message: "Failed to update account" } });
             }
         }
     };
@@ -83,15 +85,15 @@ const AccountSettings = () => {
                 new_password: newPassword,
             });
             if (resp.status === 200) {
-                setFormStatus({...formStatus, loginInfo:{ success: true, message: "Account updated successfully!" }});
+                setFormStatus({ ...formStatus, loginInfo: { success: true, message: "Account updated successfully!" } });
             } else {
-                setFormStatus({...formStatus, loginInfo:{ success: false, message: "Could not update password." }});
+                setFormStatus({ ...formStatus, loginInfo: { success: false, message: "Could not update password." } });
             }
         } catch (e) {
             if (e.response?.status === 403) {
-                setFormStatus({...formStatus, loginInfo:{ success: false, message: "Current password is incorrect." }});
+                setFormStatus({ ...formStatus, loginInfo: { success: false, message: "Current password is incorrect." } });
             } else {
-                setFormStatus({...formStatus, loginInfo:{ success: false, message: "Failed to update account." }});
+                setFormStatus({ ...formStatus, loginInfo: { success: false, message: "Failed to update account." } });
             }
         }
     };
@@ -100,11 +102,11 @@ const AccountSettings = () => {
         try {
             const resp = await httpClient.post("http://localhost:8080/update_first_name", { first_name });
             setFirstName(first_name)
-            if(resp.status === 200) {
-                setFormStatus({...formStatus, personalInfo:{ success: true, message: "Account updated successfully!" }});
+            if (resp.status === 200) {
+                setFormStatus({ ...formStatus, personalInfo: { success: true, message: "Account updated successfully!" } });
             }
         } catch {
-            setFormStatus({...formStatus, personalInfo:{ success: false, message: "Failed to update account." }});   
+            setFormStatus({ ...formStatus, personalInfo: { success: false, message: "Failed to update account." } });
         }
     };
 
@@ -112,11 +114,11 @@ const AccountSettings = () => {
         try {
             const resp = await httpClient.post("http://localhost:8080/update_last_name", { last_name });
             setLastName(last_name)
-            if(resp.status === 200) {
-                setFormStatus({...formStatus, personalInfo:{ success: true, message: "Account updated successfully!" }});
+            if (resp.status === 200) {
+                setFormStatus({ ...formStatus, personalInfo: { success: true, message: "Account updated successfully!" } });
             }
         } catch {
-            setFormStatus({...formStatus, personalInfo:{ success: false, message: "Failed to update account." }});   
+            setFormStatus({ ...formStatus, personalInfo: { success: false, message: "Failed to update account." } });
         }
     };
 
@@ -124,11 +126,11 @@ const AccountSettings = () => {
         try {
             const resp = await httpClient.post("http://localhost:8080/update_phone_number", { phone_number });
             setCurrentPhoneNumber(phone_number)
-            if(resp.status === 200){
-                setFormStatus({...formStatus, personalInfo:{ success: true, message: "Account updated successfuly!"}});
+            if (resp.status === 200) {
+                setFormStatus({ ...formStatus, personalInfo: { success: true, message: "Account updated successfuly!" } });
             }
         } catch {
-            setFormStatus({...formStatus, personalInfo:{ success: false, message: "Failed to update account."}});
+            setFormStatus({ ...formStatus, personalInfo: { success: false, message: "Failed to update account." } });
         }
 
     }
@@ -140,22 +142,22 @@ const AccountSettings = () => {
                     <Formik
                         enableReinitialize
                         initialValues={{
-                            formFirstName: firstName, 
-                            formLastName: lastName, 
+                            formFirstName: firstName,
+                            formLastName: lastName,
                             phoneNumber: currentPhoneNumber,
                         }}
                         validationSchema={Yup.object().shape({
                             formFirstName: Yup.string().max(25),
                             formLastName: Yup.string().max(25),
                             phoneNumber: Yup.string()
-                            .matches(/^\d{10,15}$/, "Phone number is not valid")
-                            .required('Phone number is required'),
+                                .matches(/^\d{10,15}$/, "Phone number is not valid")
+                                .required('Phone number is required'),
                         })}
                         onSubmit={async (values, { resetForm }) => {
                             const { formFirstName, formLastName, phoneNumber } = values;
-                            if(formFirstName && formFirstName !== firstName) await updateFirstName(formFirstName);
-                            if(formLastName && formLastName !== lastName) await updateLastName(formLastName);
-                            if(phoneNumber && phoneNumber !== currentPhoneNumber) await updatePhoneNumber(phoneNumber);
+                            if (formFirstName && formFirstName !== firstName) await updateFirstName(formFirstName);
+                            if (formLastName && formLastName !== lastName) await updateLastName(formLastName);
+                            if (phoneNumber && phoneNumber !== currentPhoneNumber) await updatePhoneNumber(phoneNumber);
                             resetForm();
                             setError("");
                         }}
@@ -172,7 +174,7 @@ const AccountSettings = () => {
                         }) => (
                             <Form onSubmit={handleSubmit}>
                                 <Stack spacing={2} sx={{ width: "100%", color: "#333" }}>
-                                <InputLabel>First Name</InputLabel>
+                                    <InputLabel>First Name</InputLabel>
                                     <OutlinedInput
                                         type="text"
                                         name="formFirstName"
@@ -182,10 +184,10 @@ const AccountSettings = () => {
                                         fullWidth
                                         placeholder="New First Name"
                                         error={Boolean(touched.formFirstName && errors.formFirstName)}
-                                        sx={{ 
-                                            backgroundColor: "#fff", 
+                                        sx={{
+                                            backgroundColor: "#fff",
                                             borderRadius: "4px",
-                                            width: "700px", 
+                                            width: "700px",
                                         }}
                                     />
                                     {touched.formFirstName && errors.formFirstName && (
@@ -202,10 +204,10 @@ const AccountSettings = () => {
                                         fullWidth
                                         placeholder="New Last Name"
                                         error={Boolean(touched.formLastName && errors.formLastName)}
-                                        sx={{ 
-                                            backgroundColor: "#fff", 
+                                        sx={{
+                                            backgroundColor: "#fff",
                                             borderRadius: "4px",
-                                            width: "700px", 
+                                            width: "700px",
                                         }}
                                     />
                                     {touched.formLastName && errors.formLastName && (
@@ -222,10 +224,10 @@ const AccountSettings = () => {
                                         fullWidth
                                         placeholder="New Phone Number"
                                         error={Boolean(touched.phoneNumber && errors.phoneNumber)}
-                                        sx={{ 
-                                            backgroundColor: "#fff", 
+                                        sx={{
+                                            backgroundColor: "#fff",
                                             borderRadius: "4px",
-                                            width: "700px", 
+                                            width: "700px",
                                         }}
                                     />
                                     {touched.phoneNumber && errors.phoneNumber && (
@@ -263,7 +265,7 @@ const AccountSettings = () => {
                     )}
                 </div>
             }
-            style={{ minWidth: '760px'}}
+                style={{ minWidth: '760px' }}
             >
 
             </Expandable>
@@ -275,11 +277,13 @@ const AccountSettings = () => {
                         initialValues={{
                             email: currentEmail,
                             currentPassword: "",
-                            newPassword: ""
+                            newPassword: "",
+                            confPassword: "",
                         }}
                         validationSchema={Yup.object().shape({
                             email: Yup.string().email("Must be a valid email").max(255),
                             newPassword: Yup.string().min(8, "Password must be at least 8 characters"),
+                            confPassword: Yup.string().oneOf([Yup.ref('newPassword')], 'Passwords must match')
 
                         })}
                         onSubmit={async (values, { resetForm }) => {
@@ -312,10 +316,10 @@ const AccountSettings = () => {
                                         fullWidth
                                         placeholder="New Email"
                                         error={Boolean(touched.email && errors.email)}
-                                        sx={{ 
-                                            backgroundColor: "#fff", 
+                                        sx={{
+                                            backgroundColor: "#fff",
                                             borderRadius: "4px",
-                                            width: "700px", 
+                                            width: "700px",
                                         }}
                                     />
                                     {touched.email && errors.email && (
@@ -332,10 +336,10 @@ const AccountSettings = () => {
                                         fullWidth
                                         placeholder="Current Password"
                                         error={Boolean(touched.currentPassword && errors.currentPassword)}
-                                        sx={{ 
-                                            backgroundColor: "#fff", 
+                                        sx={{
+                                            backgroundColor: "#fff",
                                             borderRadius: "4px",
-                                            width: "700px", 
+                                            width: "700px",
                                         }}
                                         endAdornment={
                                             values.currentPassword.length > 0 && (
@@ -365,10 +369,10 @@ const AccountSettings = () => {
                                         fullWidth
                                         placeholder="New Password"
                                         error={Boolean(touched.newPassword && errors.newPassword)}
-                                        sx={{ 
-                                            backgroundColor: "#fff", 
+                                        sx={{
+                                            backgroundColor: "#fff",
                                             borderRadius: "4px",
-                                            width: "700px", 
+                                            width: "700px",
                                         }}
                                         endAdornment={
                                             values.newPassword.length > 0 && (
@@ -388,14 +392,47 @@ const AccountSettings = () => {
                                         <FormHelperText error>{errors.newPassword}</FormHelperText>
                                     )}
 
+                                    <InputLabel>Confirm New Password</InputLabel>
+                                    <OutlinedInput
+                                        name="confPassword"
+                                        type={showConfPassword ? "text" : "password"}
+                                        value={values.confPassword}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        fullWidth
+                                        placeholder="Confirm New Password"
+                                        error={Boolean(touched.confPassword && errors.confPassword)}
+                                        sx={{
+                                            backgroundColor: "#fff",
+                                            borderRadius: "4px",
+                                            width: "700px",
+                                        }}
+                                        endAdornment={
+                                            values.confPassword.length > 0 && (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        onClick={handleToggleConfPassword}
+                                                        edge="end"
+                                                        size="large"
+                                                    >
+                                                        {showConfPassword ? <Visibility /> : <VisibilityOff />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            )
+                                        }
+                                    />
+                                    {touched.confPassword && errors.confPassword && (
+                                        <FormHelperText error>{errors.confPassword}</FormHelperText>
+                                    )}
+
                                     <Button
                                         type="submit"
                                         fullWidth
                                         variant="contained"
                                         disabled={!!(
                                             !(isValid && dirty) ||
-                                            (!(values.currentPassword && values.newPassword) &&
-                                            (values.currentPassword || values.newPassword))
+                                            (!(values.currentPassword && values.newPassword && values.confPassword) &&
+                                                (values.currentPassword || values.newPassword || values.confPassword))
                                         )}
                                         sx={{
                                             mt: 2,
@@ -421,7 +458,7 @@ const AccountSettings = () => {
                     )}
                 </div>
             }
-            style={{ minWidth: '760px'}}
+                style={{ minWidth: '760px' }}
             >
             </Expandable>
         </>
