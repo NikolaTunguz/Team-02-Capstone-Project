@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, session
 from flask_bcrypt import Bcrypt
 from model import db, Notification, UserCameras, User
 from sqlalchemy import select, desc
+from .notify_contacts import notify_emergency_contacts
 import json
 
 
@@ -10,6 +11,7 @@ bcrypt = Bcrypt()
 
 @notifications_bp.route('/database', methods=['POST'])
 def database(): 
+    user_id = session.get("user_id")
     device_id = request.get_json().get("device_id")
     timestamp = request.get_json().get("timestamp")
     message = request.get_json().get("message")
@@ -19,6 +21,7 @@ def database():
     notification.message = message
     db.session.add(notification)
     db.session.commit()
+    notify_emergency_contacts(user_id, message)
     return '', 200
     
 @notifications_bp.route('/notifications')
