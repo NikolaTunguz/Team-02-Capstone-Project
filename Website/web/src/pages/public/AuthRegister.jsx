@@ -22,6 +22,14 @@ const AuthRegister = () => {
     formRef.current.handleChange(e);
   };
 
+  const getPasswordRequirements = (password) => {
+    return [
+      { label: "One uppercase letter", valid: /[A-Z]/.test(password) },
+      { label: "1 number or special character", valid: /[\d@$!%*?&]/.test(password) },
+      { label: "10 characters", valid: password.length >= 10 },
+    ];
+  };
+
   const handleClickShowPass = () => {
     setShowPassword(!showPassword);
   };
@@ -113,9 +121,7 @@ const AuthRegister = () => {
             .required('Email is required'),
           password: yup
             .string()
-            .max(255)
-            .required('Password is required')
-            .min(8, 'Password must be at least 8 characters long'),
+            .required(),
           passwordConf: yup
             .string()
             .oneOf([yup.ref('password')], 'Passwords must match')
@@ -172,12 +178,12 @@ const AuthRegister = () => {
                 )}
 
                 {activeStep === 1 && (
-                  <>
-                    <InputLabel style={{ fontSize: '18px' }}>
+                  <Box sx={{ paddingRight: '10px' }}>
+                    <InputLabel style={{ fontSize: '16px', marginBottom: '10px' }}>
                       Create a password
                     </InputLabel>
                     <b />
-                    <InputLabel>Password</InputLabel>
+                    <InputLabel style={{ fontSize: '16px', marginBottom: '10px' }}>Password</InputLabel>
                     <OutlinedInput
                       name="password"
                       type={showPassword ? 'text' : 'password'}
@@ -206,6 +212,21 @@ const AuthRegister = () => {
                     {touched.password && errors.password && (
                       <FormHelperText error>{errors.password}</FormHelperText>
                     )}
+
+                    <ul style={{
+                      display: 'grid',
+                      gap: '10px',
+                      paddingLeft: '20px',
+                      fontSize: '13px',
+                      marginTop: '10px',
+                    }}>
+                      {getPasswordRequirements(values.password).map((req, index) => (
+                        <li key={index} style={{ color: req.valid ? 'green' : '#d32f2f' }}>
+                          {req.label}
+                        </li>
+                      ))}
+                    </ul>
+
                     <InputLabel>Confirm Password</InputLabel>
                     <OutlinedInput
                       name="passwordConf"
@@ -234,12 +255,13 @@ const AuthRegister = () => {
                     {touched.passwordConf && errors.passwordConf && (
                       <FormHelperText error>{errors.passwordConf}</FormHelperText>
                     )}
-                  </>
+                  </Box>
                 )}
+
 
                 {activeStep === 2 && (
                   <>
-                    <InputLabel style={{ fontSize: '18px' }}>
+                    <InputLabel style={{ fontSize: '16px' }}>
                       Enter first and last name
                     </InputLabel>
                     <b />
@@ -277,7 +299,7 @@ const AuthRegister = () => {
 
                 {activeStep === 3 && (
                   <>
-                    <InputLabel style={{ fontSize: '18px' }}>
+                    <InputLabel style={{ fontSize: '16px' }}>
                       Enter phone number
                     </InputLabel>
                     <b />
