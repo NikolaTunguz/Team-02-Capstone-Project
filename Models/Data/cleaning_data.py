@@ -70,7 +70,7 @@ def rename_without_gun_files(folder_path):
             f.write("0 0 0 0 0\n")
 
 def main():
-    base_path = "AnnotatedData"
+    base_path = "Data/AnnotatedData"
     with_gun_path = os.path.join(base_path, "with gun")
     without_gun_path = os.path.join(base_path, "without gun")
 
