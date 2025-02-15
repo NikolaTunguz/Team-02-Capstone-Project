@@ -290,7 +290,7 @@ const AccountSettings = () => {
                         }}
                         validationSchema={Yup.object().shape({
                             email: Yup.string().email("Must be a valid email").max(255),
-                            newPassword: Yup.string().min(8, "Password must be at least 8 characters"),
+                            newPassword: Yup.string(),
                             confPassword: Yup.string().oneOf([Yup.ref('newPassword')], 'Passwords must match')
 
                         })}
@@ -399,7 +399,7 @@ const AccountSettings = () => {
                                     {touched.newPassword && errors.newPassword && (
                                         <FormHelperText error>{errors.newPassword}</FormHelperText>
                                     )}
-                                    <ul style={{
+                                    {touched.newPassword && values.newPassword && <ul style={{
                                         display: 'grid',
                                         gap: '10px',
                                         paddingLeft: '20px',
@@ -411,7 +411,7 @@ const AccountSettings = () => {
                                                 {req.label}
                                             </li>
                                         ))}
-                                    </ul>
+                                    </ul>}
 
                                     <InputLabel>Confirm New Password</InputLabel>
                                     <OutlinedInput
