@@ -21,7 +21,7 @@ def database():
     notification.message = message
     db.session.add(notification)
     db.session.commit()
-    notify_emergency_contacts(user_id, message)
+    notify_emergency_contacts(user_id, notification)
     return '', 200
     
 @notifications_bp.route('/notifications')
@@ -56,3 +56,19 @@ def remove_notification():
     db.session.delete(notification)
     db.session.commit()
     return '', 200
+
+@notifications_bp.route('/mock_notification', methods=['POST'])
+def mock_notification():
+
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    device_id = request.get_json().get("device_id")
+    message = request.get_json().get("message")
+    timestamp = "2024-01-01T00:00:00Z"
+
+    notification = Notification(device_id=device_id, message=message, timestamp=timestamp)
+    notify_emergency_contacts(user_id, notification)
+
+    return jsonify({"message": "Mock notification generated and email sent"}), 200
