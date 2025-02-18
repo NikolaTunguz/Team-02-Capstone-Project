@@ -2,6 +2,7 @@ The data in this folder is in gitignore.
 To access our datasets, refer to the following links.
 
 Thermal Pistol Dataset:
+This data source was self annotated.
 Dataset: https://figshare.com/articles/dataset/Concealed_Pistol_Detection_Dataset/20105600?file=35965742
 
 Custom Thermal Pistol Dataset:
