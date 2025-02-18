@@ -11,8 +11,11 @@ bcrypt = Bcrypt()
 
 @notifications_bp.route('/database', methods=['POST'])
 def database(): 
-    user_id = session.get("user_id")
     device_id = request.get_json().get("device_id")
+    user_camera = UserCameras.query.filter_by(device_id=device_id).first()
+    if not user_camera:
+        return jsonify({"error": "Device not found"}), 404
+    user_id = user_camera.user_id 
     timestamp = request.get_json().get("timestamp")
     message = request.get_json().get("message")
     notification = Notification()
