@@ -34,3 +34,6 @@ class EmergencyContact (db.Model):
     last_name = db.Column(db.String(100))
     email = db.Column(db.String(128), primary_key=True)
     phone = db.Column(db.String(15))
+    notify_pistol = db.Column(db.Boolean, default=False)
+    notify_person = db.Column(db.Boolean, default=False)
+    notify_package = db.Column(db.Boolean, default=False)

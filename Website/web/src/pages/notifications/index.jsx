@@ -3,6 +3,7 @@ import NotificationDeck from '../../components/NotificationDeck.jsx';
 import httpClient from "../httpClient";
 
 const triggerMockNotification = async () => {
+    console.log('teseting')
     try {
         const response = await httpClient.post("http://localhost:8080/mock_notification", {
             device_id: 14,

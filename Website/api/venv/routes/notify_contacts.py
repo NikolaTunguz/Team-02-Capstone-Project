@@ -10,6 +10,7 @@ def send_email(recipient_email, subject, body):
     load_dotenv()
     sender_email = "seethrucapstone@gmail.com"
     sender_password = os.getenv('SMTP_APP_PASSWORD')
+    print(f"SMTP password: {sender_password}")
     
     message = f"Subject: {subject}\n\n{body}"
     

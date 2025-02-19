@@ -12,14 +12,18 @@ import {
     IconButton,
     Modal,
     FormControl,
-    Grid2,
+    Switch,
+    FormControlLabel,
+    Tooltip,
 } from "@mui/material";
-import { 
-    Delete, 
-    Edit, 
-    Cancel 
+import {
+    Delete,
+    Edit,
+    Cancel,
+    Info,
 } from "@mui/icons-material";
 import httpClient from "../pages/httpClient";
+import NotificationInfo from "./NotificationInfo";
 
 const EmergencyContacts = () => {
     const [contacts, setContacts] = useState([]);
@@ -56,7 +60,7 @@ const EmergencyContacts = () => {
             resetForm();
             resetModal();
         } catch (e) {
-            if(e.response.status === 409) setError("Contact already exists")
+            if (e.response.status === 409) setError("Contact already exists")
             else setError(e.response?.data?.error || "Failed to save contact.");
         }
     };
@@ -82,7 +86,7 @@ const EmergencyContacts = () => {
                     <Stack
                         direction="row"
                         spacing={4}
-                        sx={{ width: "100%"}}
+                        sx={{ width: "100%" }}
                     >
                         {contacts.map((contact) => (
                             <Stack
@@ -94,7 +98,7 @@ const EmergencyContacts = () => {
                                     p: 3,
                                     borderRadius: "8px",
                                     backgroundColor: "white",
-                                    minWidth: "335px", 
+                                    minWidth: "335px",
                                     justifyContent: "space-between",
                                 }}
                             >
@@ -126,7 +130,7 @@ const EmergencyContacts = () => {
                     </Stack>
                 </Box>
             )}
-            <br/>
+            <br />
             {contacts.length !== 2 && (
                 <Button
                     type="submit"
@@ -156,138 +160,223 @@ const EmergencyContacts = () => {
                         width: 600,
                     }}
                 >
-                <IconButton
-                    onClick={() => {
-                    setOpen(false);
-                    setEditingContact(null);
-                    }}
-                    sx={{ position: "absolute", top: 8, right: 8 }}
-                >
-                    <Cancel/>
-                </IconButton>
+                    <IconButton
+                        onClick={() => {
+                            setOpen(false);
+                            setEditingContact(null);
+                        }}
+                        sx={{ position: "absolute", top: 8, right: 8 }}
+                    >
+                        <Cancel />
+                    </IconButton>
 
-                <Typography id="modal-title" variant="h6" mb={2}>
-                    {editingContact ? "Edit Contact" : "Add New Contact"}
-                </Typography>
+                    <Typography id="modal-title" variant="h6" mb={2}>
+                        {editingContact ? "Edit Contact" : "Add New Contact"}
+                    </Typography>
 
-                <Formik
-                    enableReinitialize
-                    initialValues={{
-                        first_name: editingContact?.first_name || "",
-                        last_name: editingContact?.last_name || "",
-                        email: editingContact?.email || "",
-                        phone: editingContact?.phone || "",
-                    }}
+                    <Formik
+                        enableReinitialize
+                        initialValues={{
+                            first_name: editingContact?.first_name || "",
+                            last_name: editingContact?.last_name || "",
+                            email: editingContact?.email || "",
+                            phone: editingContact?.phone || "",
+                            notify_pistol: editingContact?.notify_pistol || false,
+                            notify_person: editingContact?.notify_person || false,
+                            notify_package: editingContact?.notify_package || false,
+                        }}
 
-                    validationSchema={Yup.object({
-                        first_name: Yup.string().required("First name is required"),
-                        last_name: Yup.string().required("Last name is required"),
-                        email: Yup.string().email("Invalid email").required("Email is required"),
-                        phone: Yup.string()
-                            .matches(/^\d{10,15}$/, "Phone number is not valid")
-                            .required("Phone number is required"),
+                        validationSchema={Yup.object({
+                            first_name: Yup.string().required("First name is required"),
+                            last_name: Yup.string().required("Last name is required"),
+                            email: Yup.string().email("Invalid email").required("Email is required"),
+                            phone: Yup.string()
+                                .matches(/^\d{10,15}$/, "Phone number is not valid")
+                                .required("Phone number is required"),
                         })}
-                    onSubmit={(values, { resetForm }) => {
-                    handleAddOrUpdate(values, { resetForm });
-                    }}
-                >
-                    {({
-                        errors,
-                        handleBlur,
-                        handleChange,
-                        touched,
-                        values,
-                        isValid,
-                        dirty,
-                    }) => (
-                    <Form>
-                        <Stack spacing={2}>
-                            <Box display="flex" gap={2} width="100%">
-                                <Box flex={1}>
-                                    <FormControl fullWidth error={Boolean(touched.first_name && errors.first_name)}>
-                                        <InputLabel htmlFor="first_name">First Name</InputLabel>
-                                        <OutlinedInput
-                                            label="First Name"
-                                            name="first_name"
-                                            value={values.first_name}
-                                            onChange={handleChange}
-                                            onBlur={handleBlur}
+                        onSubmit={(values, { resetForm }) => {
+                            handleAddOrUpdate(values, { resetForm });
+                        }}
+                    >
+                        {({
+                            errors,
+                            handleBlur,
+                            handleChange,
+                            touched,
+                            values,
+                            isValid,
+                            dirty,
+                        }) => (
+                            <Form>
+                                <Typography id="modal-title" variant="h7" mb={2}>
+                                    Contact Information
+                                </Typography>
+                                <Stack spacing={2} sx={{ marginTop: "6px" }}>
+                                    <Box display="flex" gap={2} width="100%" sx={{ pt: 1.25 }}>
+                                        <Box flex={1} >
+                                            <FormControl fullWidth error={Boolean(touched.first_name && errors.first_name)}>
+                                                <InputLabel htmlFor="first_name">First Name</InputLabel>
+                                                <OutlinedInput
+                                                    label="First Name"
+                                                    name="first_name"
+                                                    value={values.first_name}
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                />
+                                                {touched.first_name && errors.first_name && (
+                                                    <FormHelperText>{errors.first_name}</FormHelperText>
+                                                )}
+                                            </FormControl>
+                                        </Box>
+                                        <Box flex={1}>
+                                            <FormControl fullWidth error={Boolean(touched.last_name && errors.last_name)}>
+                                                <InputLabel htmlFor="last_name">Last Name</InputLabel>
+                                                <OutlinedInput
+                                                    label="Last Name"
+                                                    name="last_name"
+                                                    value={values.last_name}
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                />
+                                                {touched.last_name && errors.last_name && (
+                                                    <FormHelperText>{errors.last_name}</FormHelperText>
+                                                )}
+                                            </FormControl>
+                                        </Box>
+                                    </Box>
+                                    <Box display="flex" gap={2} width="100%" sx={{ pt: 1.25 }}>
+                                        <Box flex={1} >
+                                            <FormControl fullWidth error={Boolean(touched.email && errors.email)}>
+                                                <InputLabel htmlFor="email">Email</InputLabel>
+                                                <OutlinedInput
+                                                    label="email"
+                                                    name="email"
+                                                    value={values.email}
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                />
+                                                {touched.email && errors.email && (
+                                                    <   FormHelperText>{errors.email}</FormHelperText>
+                                                )}
+                                            </FormControl>
+                                        </Box>
+                                        <Box>
+                                            <FormControl error={Boolean(touched.phone && errors.phone)}>
+                                                <InputLabel htmlFor="last_name">Phone</InputLabel>
+                                                <OutlinedInput
+                                                    label="phone"
+                                                    name="phone"
+                                                    value={values.phone}
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                />
+                                                {touched.phone && errors.phone && (
+                                                    <FormHelperText>{errors.phone}</FormHelperText>
+                                                )}
+                                            </FormControl>
+                                        </Box>
+                                    </Box>
+                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                        <Typography id="modal-title" variant="h7" mb={2} sx={{ pt: 1 }}>
+                                            Notification Settings
+                                        </Typography>
+                                        <NotificationInfo />
+                                    </Box>
+                                    <Stack direction="row" spacing={2} alignItems="center" >
+                                        <FormControlLabel
+                                            control={
+                                                <Tooltip title="Alert this contact when a firearm is detected">
+                                                    <Switch
+                                                        label="notify_pistol"
+                                                        name="notify_pistol"
+                                                        checked={values.notify_pistol}
+                                                        onChange={handleChange}
+                                                        onBlur={handleBlur}
+                                                        color="primary"
+                                                    />
+                                                </Tooltip>
+                                            }
+                                            label="Pistol Detection"
+                                            sx={{
+                                                color: "#333",
+                                                marginLeft: 0,
+                                                alignItems: "center",
+                                                justifyContent: "flex-start",
+                                                width: "auto"
+                                            }}
                                         />
-                                        {touched.first_name && errors.first_name && (
-                                            <FormHelperText>{errors.first_name}</FormHelperText>
-                                        )}
-                                    </FormControl>
-                                </Box>
-                                <Box flex={1}>
-                                    <FormControl fullWidth error={Boolean(touched.last_name && errors.last_name)}>
-                                        <InputLabel htmlFor="last_name">Last Name</InputLabel>
-                                        <OutlinedInput
-                                            label="Last Name"
-                                            name="last_name"
-                                            value={values.last_name}
-                                            onChange={handleChange}
-                                            onBlur={handleBlur}
-                                        />
-                                        {touched.last_name && errors.last_name && (
-                                            <FormHelperText>{errors.last_name}</FormHelperText>
-                                        )}
-                                    </FormControl>
-                                </Box>
-                            </Box>
-                            <FormControl fullWidth error={Boolean(touched.email && errors.email)}>
-                                <InputLabel htmlFor="email">Email</InputLabel>
-                                <OutlinedInput
-                                    label="email"
-                                    name="email"
-                                    value={values.email}
-                                    onChange={handleChange}
-                                    onBlur={handleBlur}
-                                />
-                                {touched.email && errors.email && (
-                                <   FormHelperText>{errors.email}</FormHelperText>
-                                )}
-                            </FormControl>
 
-                            <Stack direction="row" spacing={2} alignItems="center">
-                                <Box flexGrow={1}>
-                                    <FormControl fullWidth error={Boolean(touched.phone && errors.phone)}>
-                                        <InputLabel htmlFor="phone">Phone</InputLabel>
-                                        <OutlinedInput
-                                        label="phone"
-                                        name="phone"
-                                        value={values.phone}
-                                        onChange={handleChange}
-                                        onBlur={handleBlur}
+                                        <FormControlLabel
+                                            control={
+                                                <Tooltip title="Alert this contact when a person is detected">
+                                                    <Switch
+                                                        label="notify_person"
+                                                        name="notify_person"
+                                                        checked={values.notify_person}
+                                                        onChange={handleChange}
+                                                        onBlur={handleBlur}
+                                                        color="primary"
+                                                    />
+                                                </Tooltip>
+                                            }
+                                            label="Person Detection"
+                                            sx={{
+                                                color: "#333",
+                                                marginLeft: 0,
+                                                alignItems: "center",
+                                                justifyContent: "flex-start",
+                                                width: "auto"
+                                            }}
                                         />
-                                        {touched.phone && errors.phone && (
-                                        <FormHelperText>{errors.phone}</FormHelperText>
-                                        )}
-                                    </FormControl>
-                                </Box>
+
+                                        <FormControlLabel
+                                            control={
+                                                <Tooltip title="Alert this contact when a package is detected">
+                                                    <Switch
+                                                        label="notify_package"
+                                                        name="notify_package"
+                                                        checked={values.notify_package}
+                                                        onChange={handleChange}
+                                                        onBlur={handleBlur}
+                                                        color="primary"
+                                                    />
+                                                </Tooltip>
+                                            }
+                                            label="Package Detection"
+                                            sx={{
+                                                color: "#333",
+                                                marginLeft: 0,
+                                                alignItems: "center",
+                                                justifyContent: "flex-start",
+                                                width: "auto"
+                                            }}
+                                        />
+                                    </Stack>
+                                </Stack>
                                 <Button
                                     type="submit"
                                     variant="contained"
                                     color="primary"
                                     disabled={!isValid || !dirty}
                                     size="large"
+                                    fullWidth
+                                    sx={{ mt: 3 }}
                                 >
-                                {editingContact ? "Update" : "Add"}
+                                    {editingContact ? "Update" : "Add"}
                                 </Button>
-                            </Stack>
-                        </Stack>
-                    </Form>
+                            </Form>
+                        )}
+                    </Formik>
+                    <br />
+                    {error && (
+                        <Typography variant="body2" color="error" sx={{ mb: 2 }}>
+                            {error}
+                        </Typography>
                     )}
-                </Formik>
-                <br/>
-                {error && (
-                    <Typography variant="body2" color="error" sx={{ mb: 2 }}>
-                        {error}
-                    </Typography>
-                )}
                 </Box>
             </Modal>
         </>
     );
-    };
+};
 
-    export default EmergencyContacts;
+export default EmergencyContacts;
