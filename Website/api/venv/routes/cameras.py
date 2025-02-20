@@ -13,6 +13,7 @@ def get_user_cameras():
         camera_list = [
             {
                 "device_id": camera.device_id,
+                "device_name": camera.device_name
             } 
             for camera in cameras
         ]
@@ -28,9 +29,10 @@ def add_user_camera():
 
     data = request.get_json()
     device_id = data.get("device_id")
+    device_name = data.get("device_name")
     if not device_id:
         return jsonify({"error": "Missing device_id"}), 400
-    new_camera = UserCameras(device_id=device_id, user_id=user_id)
+    new_camera = UserCameras(device_id=device_id, user_id=user_id, device_name=device_name)
     db.session.add(new_camera)
     db.session.commit()
     return jsonify({"message": "Camera added successfully"}), 201

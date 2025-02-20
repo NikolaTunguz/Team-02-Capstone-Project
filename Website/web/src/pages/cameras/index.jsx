@@ -69,12 +69,12 @@ export default function Cameras() {
             <div className="camera-grid">
                 {cameras.map((camera, index) => (
                     <div key={camera.device_id || index}>
-                        {/* <Box
-                            display="flex"
-                            alignItems="center"
-                            mb={2}
-                        > */}
-                            <Typography variant="h6">Camera {index + 1}</Typography>
+
+                        <header className="device-header">
+                            <Typography variant="h6" className="device-name">
+                                {camera.device_name}
+                            </Typography>
+
                             <IconButton
                                 color="error"
                                 onClick={() => handleDelete(camera, index + 1)}
@@ -82,13 +82,15 @@ export default function Cameras() {
                             >
                                 <Delete />
                             </IconButton>
+
                             <Switch
                                 checked={cameraToggleSwitch?.[camera.device_id || index] || false}
                                 onChange={() => handleToggle(camera, index)}
                                 color="primary"
                                 className="switch-icon"
                             />
-                        {/* </Box> */}
+                        </header>
+            
                         <LiveStream camera={camera} className="camera-display"/>
                     </div>
                 ))}

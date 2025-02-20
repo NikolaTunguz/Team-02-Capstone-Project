@@ -81,7 +81,7 @@ const AddCamera = ({ onCameraAdded }) => {
                             device_id: Yup.string()
                                 .required("Device ID is required")
                                 .matches(/^\d+$/, "Device ID must be a number"),
-                            camera_name: Yup.string()
+                            device_name: Yup.string()
                                 .required("Device name is required")
                                 .min(3, "Device name must be at least 3 characters"),
                         })}
@@ -101,6 +101,25 @@ const AddCamera = ({ onCameraAdded }) => {
                             <Form>
                                 <FormControl
                                     fullWidth
+                                    error={Boolean(touched.device_name && errors.device_name)}
+                                    sx={{ mb: 2 }} 
+                                >
+                                
+                                    <InputLabel htmlFor="device_name">Device Name</InputLabel>
+                                    <OutlinedInput
+                                        label="Device Name"
+                                        name="device_name"
+                                        value={values.device_name}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                    />
+                                    {touched.device_name && errors.device_name && (
+                                        <FormHelperText>{errors.device_name}</FormHelperText>
+                                    )}
+                                </FormControl>
+
+                                <FormControl
+                                    fullWidth
                                     error={Boolean(touched.device_id && errors.device_id)}
                                     sx={{ mb: 2 }}
                                 >
@@ -115,22 +134,6 @@ const AddCamera = ({ onCameraAdded }) => {
                                     {touched.device_id && errors.device_id && (
                                         <FormHelperText>{errors.device_id}</FormHelperText>
                                     )}
-                                </FormControl>
-
-                                {/*add name field*/}
-                                <FormControl
-                                    fullWidth
-                                    sx={{ mb: 2 }} {/*define more CSS styles (margin-bottom in this case.*/}
-                                >
-                                
-                                    <InputLabel htmlFor="device_name">Device Name</InputLabel>
-                                    <OutlinedInput
-                                        label="Device Name"
-                                        name="device_name"
-                                        value={}
-
-
-
                                 </FormControl>
 
                                 <Button

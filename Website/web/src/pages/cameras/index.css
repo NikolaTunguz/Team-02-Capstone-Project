@@ -1,4 +1,5 @@
-.camera-container {
+.camera-container 
+{
     padding: 20px;
     margin-left: 70px;
 }
@@ -13,20 +14,29 @@
     
 }
 
-.camera-grid {
+.camera-grid 
+{
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
     gap: 90px;
 }
 
-.delete-icon {
-    position: absolute;
-    top: 0px;
-    left: 612px;
+.device-header
+{
+    display: flex;
+    align-items: center;
 }
 
-.switch-icon {
+.delete-icon 
+{
     position: absolute;
     top: 0px;
-    left: 525px;
+    left: 470px;
+}
+
+.switch-icon 
+{
+    position: absolute;
+    top: 0px;
+    left: 380px;
 }
