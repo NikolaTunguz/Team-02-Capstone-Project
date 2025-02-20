@@ -75,11 +75,15 @@ const AddCamera = ({ onCameraAdded }) => {
                     <Formik
                         initialValues={{
                             device_id: "",
+                            device_name: ""
                         }}
                         validationSchema={Yup.object({
                             device_id: Yup.string()
                                 .required("Device ID is required")
                                 .matches(/^\d+$/, "Device ID must be a number"),
+                            camera_name: Yup.string()
+                                .required("Device name is required")
+                                .min(3, "Device name must be at least 3 characters"),
                         })}
                         onSubmit={(values, { resetForm }) => {
                             handleAddCamera(values, { resetForm });
@@ -112,6 +116,23 @@ const AddCamera = ({ onCameraAdded }) => {
                                         <FormHelperText>{errors.device_id}</FormHelperText>
                                     )}
                                 </FormControl>
+
+                                {/*add name field*/}
+                                <FormControl
+                                    fullWidth
+                                    sx={{ mb: 2 }} {/*define more CSS styles (margin-bottom in this case.*/}
+                                >
+                                
+                                    <InputLabel htmlFor="device_name">Device Name</InputLabel>
+                                    <OutlinedInput
+                                        label="Device Name"
+                                        name="device_name"
+                                        value={}
+
+
+
+                                </FormControl>
+
                                 <Button
                                     type="submit"
                                     variant="contained"
