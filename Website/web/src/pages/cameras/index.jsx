@@ -69,29 +69,34 @@ export default function Cameras() {
             <div className="camera-grid">
                 {cameras.map((camera, index) => (
                     <div key={camera.device_id || index}>
-
-                        <header className="device-header">
-                            <Typography variant="h6" className="device-name">
+                        <div className="device-name">
+                            <Typography 
+                                variant="h6" 
+                                sx={{fontFamily: "fantasy", fontSize: "20px"}}
+                            >
                                 {camera.device_name}
                             </Typography>
+                        </div>
+                        
+                        <div className="feed-container">
+                            <div className="button-container">
+                                <IconButton
+                                    color="error"
+                                    onClick={() => handleDelete(camera, index + 1)}
+                                    className="delete-icon"
+                                >
+                                    <Delete />
+                                </IconButton>
 
-                            <IconButton
-                                color="error"
-                                onClick={() => handleDelete(camera, index + 1)}
-                                className="delete-icon"
-                            >
-                                <Delete />
-                            </IconButton>
-
-                            <Switch
-                                checked={cameraToggleSwitch?.[camera.device_id || index] || false}
-                                onChange={() => handleToggle(camera, index)}
-                                color="primary"
-                                className="switch-icon"
-                            />
-                        </header>
-            
-                        <LiveStream camera={camera} className="camera-display"/>
+                                <Switch
+                                    checked={cameraToggleSwitch?.[camera.device_id || index] || false}
+                                    onChange={() => handleToggle(camera, index)}
+                                    color="primary"
+                                    className="switch-icon"
+                                />
+                            </div>
+                            <LiveStream camera={camera} className="camera-display"/>
+                        </div>
                     </div>
                 ))}
             </div>
