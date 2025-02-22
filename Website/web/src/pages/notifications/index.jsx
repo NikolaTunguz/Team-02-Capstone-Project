@@ -19,7 +19,7 @@ export default function Notifications({ }) {
     return (
         <>
             <div>
-                <button onClick={triggerMockNotification}>Send Mock Notification</button>
+                {/* <button onClick={triggerMockNotification}>Send Mock Notification</button> */}
                 <NotificationDeck />
             </div>
         </>
