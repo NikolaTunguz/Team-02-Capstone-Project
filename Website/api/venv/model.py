@@ -25,6 +25,7 @@ class UserCameras (db.Model):
     __tablename__ = "user_cameras"
     device_id = db.Column(db.Integer)
     user_id = db.Column(db.String(32))
+    device_name = db.Column(db.String(100))
     __table_args__ = (db.PrimaryKeyConstraint(device_id, user_id),)
 
 class EmergencyContact (db.Model):
@@ -34,3 +35,6 @@ class EmergencyContact (db.Model):
     last_name = db.Column(db.String(100))
     email = db.Column(db.String(128), primary_key=True)
     phone = db.Column(db.String(15))
+    notify_pistol = db.Column(db.Boolean, default=False)
+    notify_person = db.Column(db.Boolean, default=False)
+    notify_package = db.Column(db.Boolean, default=False)

@@ -14,6 +14,9 @@ def create_emergency_contact():
     last_name = request.get_json().get("last_name")
     email = request.get_json().get("email")
     phone = request.get_json().get("phone")
+    notify_pistol = request.get_json().get("notify_pistol", False)
+    notify_package = request.get_json().get("notify_package", False)
+    notify_person = request.get_json().get("notify_person", False)
 
     exists = EmergencyContact.query.filter(
             (EmergencyContact.email == email) 
@@ -24,7 +27,11 @@ def create_emergency_contact():
         last_name = last_name,
         email=email, 
         phone=phone, 
-        user_id=user_id)
+        user_id=user_id,
+        notify_pistol=notify_pistol,
+        notify_package=notify_package,
+        notify_person=notify_person
+    )
     db.session.add(new_contact)
     db.session.commit()
     return jsonify({"message": "Emergency contact successfully added"}), 200
@@ -40,6 +47,9 @@ def update_emergency_contact():
     last_name = request.get_json().get("last_name")
     email = request.get_json().get("email")
     phone = request.get_json().get("phone")
+    notify_pistol = request.get_json().get("notify_pistol", False)
+    notify_package = request.get_json().get("notify_package", False)
+    notify_person = request.get_json().get("notify_person", False)
     contact = EmergencyContact.query.filter_by(user_id=user_id, email=previous_email).first()
     if not contact:
         return jsonify({"error": "Contact not found"}), 404
@@ -48,6 +58,9 @@ def update_emergency_contact():
     contact.last_name = last_name
     contact.email = email
     contact.phone = phone
+    contact.notify_pistol = notify_pistol
+    contact.notify_package = notify_package
+    contact.notify_person = notify_person
     db.session.commit()
     return jsonify({"message": "Emergency contact successfully updated"}), 200
 
@@ -78,7 +91,10 @@ def get_emergency_contacts():
                 "first_name": contact.first_name,
                 "last_name": contact.last_name,
                 "email": contact.email,
-                "phone": contact.phone
+                "phone": contact.phone,
+                "notify_pistol": contact.notify_pistol,
+                "notify_package": contact.notify_package,
+                "notify_person": contact.notify_person
             }
             for contact in contacts
         ]

@@ -40,7 +40,8 @@ export default function DeleteCamera({ open, onClose, camera, onCameraDeleted })
                 }}
             >
                 <Typography variant="h5" mb={2}>
-                    Are you sure you want to delete Camera {camera.cameraNum}?
+                    Are you sure you want to delete Camera: {camera.camera.device_name}{" "}
+                    with device ID: {camera.camera.device_id}?
                 </Typography>
                 <IconButton
                     onClick={onClose}
