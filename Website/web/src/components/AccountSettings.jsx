@@ -132,8 +132,16 @@ const AccountSettings = () => {
         } catch {
             setFormStatus({ ...formStatus, personalInfo: { success: false, message: "Failed to update account." } });
         }
-
     }
+
+    const getPasswordRequirements = (password) => {
+        return [
+            { label: "One uppercase letter", valid: /[A-Z]/.test(password) },
+            { label: "1 number or special character", valid: /[\d@$!%*?&]/.test(password) },
+            { label: "10 characters", valid: password.length >= 10 },
+        ];
+    };
+
 
     return (
         <>
@@ -282,7 +290,7 @@ const AccountSettings = () => {
                         }}
                         validationSchema={Yup.object().shape({
                             email: Yup.string().email("Must be a valid email").max(255),
-                            newPassword: Yup.string().min(8, "Password must be at least 8 characters"),
+                            newPassword: Yup.string(),
                             confPassword: Yup.string().oneOf([Yup.ref('newPassword')], 'Passwords must match')
 
                         })}
@@ -391,6 +399,19 @@ const AccountSettings = () => {
                                     {touched.newPassword && errors.newPassword && (
                                         <FormHelperText error>{errors.newPassword}</FormHelperText>
                                     )}
+                                    {touched.newPassword && values.newPassword && <ul style={{
+                                        display: 'grid',
+                                        gap: '10px',
+                                        paddingLeft: '20px',
+                                        fontSize: '13px',
+                                        marginTop: '10px',
+                                    }}>
+                                        {getPasswordRequirements(values.newPassword).map((req, index) => (
+                                            <li key={index} style={{ color: req.valid ? 'green' : '#d32f2f' }}>
+                                                {req.label}
+                                            </li>
+                                        ))}
+                                    </ul>}
 
                                     <InputLabel>Confirm New Password</InputLabel>
                                     <OutlinedInput
