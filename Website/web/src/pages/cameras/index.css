@@ -2,6 +2,7 @@
 {
     padding: 20px;
     margin-left: 70px;
+    width: 50px;
 }
 
 /*header*/
@@ -27,7 +28,7 @@
 .feed-container
 {
     position: relative;
-    width: 650px;
+    width: 320px;
     height: 500px;
 }
 
@@ -42,6 +43,7 @@
 
 .camera-display
 {
+    width: 350px;
     border-style: solid;
     border-width: 3px;
     border-color: rgb(0, 0, 0);
