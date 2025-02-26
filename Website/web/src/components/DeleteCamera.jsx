@@ -13,7 +13,7 @@ export default function DeleteCamera({ open, onClose, camera, onCameraDeleted })
     const handleDeleteCamera = async () => {
         try {
             const response = await httpClient.post("http://localhost:8080/delete_user_camera", {
-                device_id: camera.camera.device_id,
+                device_id: camera.device_id || camera.camera.device_id,
             });
             if (response.status === 200) {
                 onCameraDeleted(); 
