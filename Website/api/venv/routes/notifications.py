@@ -17,7 +17,7 @@ def database():
         return jsonify({"error": "Device not found"}), 404
     user_camera_name = user_camera.device_name
     user_id = user_camera.user_id 
-    user = User.query.filter_by(user_id=user_id).first()
+    user = User.query.filter_by(id=user_id).first()
     timestamp = request.get_json().get("timestamp")
     message = request.get_json().get("message")
     notification = Notification()
