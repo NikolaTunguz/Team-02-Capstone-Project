@@ -5,7 +5,7 @@ import "./index.css";
 import httpClient from "../httpClient";
 import AddCamera from "../../components/AddCamera.jsx";
 import DeleteCamera from "../../components/DeleteCamera.jsx";
-import { Typography, Box, IconButton, Switch } from "@mui/material";
+import { Typography, Box, IconButton } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 
 //React hooks
@@ -13,8 +13,6 @@ export default function Cameras() {
     const [cameras, setCameras] = React.useState([]);
     const [open, setOpen] = React.useState(false);
     const [cameraToDelete, setCameraToDelete] = React.useState(null);
-    const [cameraToggleSwitch, setCameraSwitchState] = React.useState({}); //True & False, no null in a switch.
-
     const getCameras = async () => {
         try {
             const response = await httpClient.get("http://localhost:8080/get_user_cameras");
@@ -22,15 +20,6 @@ export default function Cameras() {
         } catch (error) {
             console.error("Error fetching cameras:", error);
         }
-    };
-
-    //handle switch toggle
-    const handleToggle = (camera, cameraNum) => {
-        setCameraSwitchState((prev) => ({
-            ...prev,
-            [`${camera.device_id || cameraNum}`]: !prev[`${camera.device_id || cameraNum}`],
-        }));
-        setOpen(true);
     };
 
     //handle delete camera
@@ -88,12 +77,6 @@ export default function Cameras() {
                                     <Delete />
                                 </IconButton>
 
-                                <Switch
-                                    checked={cameraToggleSwitch?.[camera.device_id || index] || false}
-                                    onChange={() => handleToggle(camera, index)}
-                                    color="primary"
-                                    className="switch-icon"
-                                />
                             </div>
                             <LiveStream camera={camera} className="camera-display"/>
                         </div>
