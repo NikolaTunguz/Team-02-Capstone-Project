@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, session
 from flask_bcrypt import Bcrypt
 from model import db, Notification, UserCameras, User
 from sqlalchemy import select, desc
-from .notify_contacts import notify_emergency_contacts
+from .notify_contacts import notify_emergency_contacts, notify_user
 import json
 
 
@@ -15,7 +15,9 @@ def database():
     user_camera = UserCameras.query.filter_by(device_id=device_id).first()
     if not user_camera:
         return jsonify({"error": "Device not found"}), 404
+    user_camera_name = user_camera.device_name
     user_id = user_camera.user_id 
+    user = User.query.filter_by(user_id=user_id).first()
     timestamp = request.get_json().get("timestamp")
     message = request.get_json().get("message")
     notification = Notification()
@@ -24,7 +26,8 @@ def database():
     notification.message = message
     db.session.add(notification)
     db.session.commit()
-    notify_emergency_contacts(user_id, notification)
+    notify_emergency_contacts(user_id, notification, user_camera_name)
+    notify_user(user, notification, user_camera_name)
     return '', 200
     
 @notifications_bp.route('/notifications')

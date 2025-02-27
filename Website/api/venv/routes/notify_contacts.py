@@ -19,16 +19,16 @@ def send_email(recipient_email, subject, body):
         server.login(sender_email, sender_password)
         server.sendmail(sender_email, recipient_email, message)
 
-def notify_emergency_contacts(user_id, notification):
+def notify_emergency_contacts(user_id, notification, camera_name):
     contacts = EmergencyContact.query.filter_by(user_id=user_id).all()
     user = User.query.filter_by(id=user_id).first()
 
     for contact in contacts:
         subject = "Emergency Notification Alert"
         body = f"""
-        {contact.first_name + " " + contact.last_name},
+        Dear {contact.first_name + " " + contact.last_name},
 
-        An emergency alert has been triggered for {user.first_name  + " " +  user.last_name}.
+        An emergency alert has been triggered for {user.first_name  + " " +  user.last_name} for camera {camera_name}.
         
         Alert Details:
         ------------------------------
@@ -42,3 +42,23 @@ def notify_emergency_contacts(user_id, notification):
         """
         if contact.email:
             send_email(contact.email, subject, body)
+
+def notify_user(user, notification, camera_name): 
+        subject = "Emergency Notification Alert"
+        body = f"""
+        {user.first_name + " " + user.last_name},
+
+        An emergency alert has been triggered for your camera {camera_name}.
+        
+        Alert Details:
+        ------------------------------
+        Message: {notification.message}
+        Date and Time: {notification.timestamp}
+        
+        We advise you to take the necessary steps to ensure the safety and well-being of your contact as soon as possible.
+
+        Regards, 
+        SeeThru 
+        """
+        if user.email:
+            send_email(user.email, subject, body)
