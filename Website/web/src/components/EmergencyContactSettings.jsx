@@ -96,7 +96,6 @@ const EmergencyContacts = () => {
                                 key={contact.email}
                                 direction="row"
                                 spacing={3}
-                                alignItems="center"
                                 alignItems="flex-start"
                                 sx={{
                                     p: 3,
