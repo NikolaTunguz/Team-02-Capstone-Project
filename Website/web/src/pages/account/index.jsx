@@ -1,7 +1,7 @@
 import React from 'react'
 import AccountSettings from '../../components/AccountSettings.jsx';
 import EmergencyContactSettings from '../../components/EmergencyContactSettings.jsx';
-import NotificationSettings from '../../components/NotificationSettings.jsx';
+// import NotificationSettings from '../../components/NotificationSettings.jsx';
 
 export default function Account({ }) {
     return (
@@ -13,7 +13,7 @@ export default function Account({ }) {
                 <h3> Emergency Contacts </h3>
                 <EmergencyContactSettings />
                 <br /><br />
-                <NotificationSettings />
+                {/* <NotificationSettings /> */}
             </div>
         </div>
     )

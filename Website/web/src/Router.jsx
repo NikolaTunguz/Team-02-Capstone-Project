@@ -6,9 +6,10 @@ import Account from './pages/account/index'
 import Register from './pages/public/Register';
 import { useAuth } from "./context/AuthContext";
 import NavBar from "./components/NavBar";
-import AppLayout from "./AppLayout"
-import AboutUs from './pages/about_us'
-import NotFound from './pages/public/not_found/index.jsx'
+import AppLayout from "./AppLayout";
+import AboutUs from './pages/about_us';
+import NotFound from './pages/public/not_found/index.jsx';
+// import Feed from './pages/Feed.jsx';
 
 const Router = () => {
     const { isLoggedIn } = useAuth();
@@ -50,6 +51,11 @@ const Router = () => {
                         path="/account"
                         element={<AppLayout> <Account /> </AppLayout>}
                     />
+
+                    {/* <Route 
+                    path="/cameras/:deviceID/:deviceName"
+                    element={<AppLayout> <Feed /> </AppLayout>}
+                    /> */}
                 </>}
             </Routes>
         </BrowserRouter>
