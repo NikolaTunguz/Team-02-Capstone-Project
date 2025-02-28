@@ -15,12 +15,15 @@ import {
     Switch,
     FormControlLabel,
     Tooltip,
+    List,
+    ListItem,
+    ListItemIcon,
 } from "@mui/material";
 import {
     Delete,
     Edit,
     Cancel,
-    Info,
+    Check,
 } from "@mui/icons-material";
 import httpClient from "../pages/httpClient";
 import NotificationInfo from "./NotificationInfo";
@@ -93,7 +96,7 @@ const EmergencyContacts = () => {
                                 key={contact.email}
                                 direction="row"
                                 spacing={3}
-                                alignItems="center"
+                                alignItems="flex-start"
                                 sx={{
                                     p: 3,
                                     borderRadius: "8px",
@@ -112,8 +115,34 @@ const EmergencyContacts = () => {
                                     <Typography variant="body1" sx={{ fontSize: "1.1rem" }}>
                                         {contact.phone}
                                     </Typography>
+                                    <List dense>
+                                        {contact.notify_pistol && (
+                                            <ListItem>
+                                                <ListItemIcon>
+                                                    <Check color="success" />
+                                                </ListItemIcon>
+                                                Pistol Detection
+                                            </ListItem>
+                                        )}
+                                        {contact.notify_person && (
+                                            <ListItem>
+                                                <ListItemIcon>
+                                                    <Check color="success" />
+                                                </ListItemIcon>
+                                                Person Detection
+                                            </ListItem>
+                                        )}
+                                        {contact.notify_package && (
+                                            <ListItem>
+                                                <ListItemIcon>
+                                                    <Check color="success" />
+                                                </ListItemIcon>
+                                                Package Detection
+                                            </ListItem>
+                                        )}
+                                    </List>
                                 </Box>
-                                <Box sx={{ display: "flex", gap: 2 }}>
+                                <Box sx={{ gap: 2, }}>
                                     <IconButton
                                         onClick={() => {
                                             setEditingContact(contact);
