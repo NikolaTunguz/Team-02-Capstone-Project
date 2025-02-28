@@ -46,16 +46,15 @@ def notify_emergency_contacts(user_id, notification, camera_name):
 def notify_user(user, notification, camera_name): 
         subject = "Emergency Notification Alert"
         body = f"""
-        {user.first_name + " " + user.last_name},
+        Dear {user.first_name + " " + user.last_name},
 
-        An emergency alert has been triggered for your camera {camera_name}.
+        An emergency alert has been triggered for your camera "{camera_name}".
         
         Alert Details:
         ------------------------------
         Message: {notification.message}
         Date and Time: {notification.timestamp}
         
-        We advise you to take the necessary steps to ensure the safety and well-being of your contact as soon as possible.
 
         Regards, 
         SeeThru 
