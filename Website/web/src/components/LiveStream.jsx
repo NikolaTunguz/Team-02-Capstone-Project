@@ -1,101 +1,99 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Dialog, DialogContent, IconButton, Box } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import CameraSettings from "./CameraSettings"; 
 import "../App.css";
 
+import temp_team_photo from '../assets/images/team_photo.jpg'
+
 const LiveStream = ({ camera }) => {
     const [open, setOpen] = useState(false);
 
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    const peerConnectionRef = useRef(null);  
+    const signalingSocketRef = useRef(null);  
 
-    const signalingSocket = new WebSocket("ws://192.168.1.68:8765");
+    async function startStream() {
+        signalingSocketRef.current = await new WebSocket("ws://localhost:8765");
 
-    var peerConnection = null;
+        signalingSocketRef.current.onmessage = async (event) => {
+            const message = JSON.parse(event.data);
+    
+            if (message.type === "answer") {
+                delete message.target_id;
+                await peerConnectionRef.current.setRemoteDescription(message);
+            }
+        };
+        
+        const config = {
+            sdpSemantics: 'unified-plan'
+        };
+    
+        peerConnectionRef.current = new RTCPeerConnection(config);
+    
+        peerConnectionRef.current.addEventListener('track', (evt) => {
+            if (evt.track.kind === 'video') {
+                document.getElementById('video').srcObject = evt.streams[0];
+            } else {
+                document.getElementById('audio').srcObject = evt.streams[0];
+            }
+        });
+        await sendOffer(camera.device_id);
+    };
 
-    signalingSocket.onmessage = async (event) => {
-        const message = JSON.parse(event.data);
+    const handleOpen = async ()  => {
+        await startStream();
+        setOpen(true);
+    };
 
-        if (message.type === "answer") {
-            delete message.target_id
-            console.log(message)
-            await peerConnection.setRemoteDescription(message);
+    const handleClose = () => {
+        if (peerConnectionRef.current) {
+            peerConnectionRef.current.close();
         }
+        if (signalingSocketRef.current) {
+            signalingSocketRef.current.close();
+        }
+        setOpen(false);
     };
 
     async function sendOffer(targetId) {
-        peerConnection.addTransceiver('video', { direction: 'recvonly' });
-        peerConnection.addTransceiver('audio', { direction: 'recvonly' });
-        const offer = await peerConnection.createOffer();
-        await peerConnection.setLocalDescription(offer);
+        peerConnectionRef.current.addTransceiver('video', { direction: 'recvonly' });
+        peerConnectionRef.current.addTransceiver('audio', { direction: 'recvonly' });
+        const offer = await peerConnectionRef.current.createOffer();
+        await peerConnectionRef.current.setLocalDescription(offer);
     
         await new Promise((resolve) => {
-            if (peerConnection.iceGatheringState === 'complete') {
+            if (peerConnectionRef.current.iceGatheringState === 'complete') {
                 resolve();
             } else {
                 const checkState = () => {
-                    if (peerConnection.iceGatheringState === 'complete') {
-                        console.log("COMPLETE");
-                        peerConnection.removeEventListener('icegatheringstatechange', checkState);
+                    if (peerConnectionRef.current.iceGatheringState === 'complete') {
+                        peerConnectionRef.current.removeEventListener('icegatheringstatechange', checkState);
                         resolve();
                     }
                 };
-                peerConnection.addEventListener('icegatheringstatechange', checkState);
+                peerConnectionRef.current.addEventListener('icegatheringstatechange', checkState);
             }
         });
     
-        var offer_alt = peerConnection.localDescription;
-        console.log("INITIAL OFFER: " + offer_alt.sdp)
-        console.log(peerConnection.iceGatheringState)
-        signalingSocket.send(JSON.stringify({
+        const offer_alt = peerConnectionRef.current.localDescription;
+        signalingSocketRef.current.send(JSON.stringify({
             type: offer_alt.type,
             target_id: targetId,
             sdp: offer_alt.sdp,
         }));
     }
 
-    React.useEffect(() => {
-        const startup = async () => {
-            var config = {
-                sdpSemantics: 'unified-plan'
-            };
-        
-            // if (document.getElementById('use-stun').checked) {
-            //     config.iceServers = [{ urls: ['stun:stun.l.google.com:19302'] }];
-            // }
-        
-            peerConnection = new RTCPeerConnection(config);
-        
-            peerConnection.addEventListener('track', (evt) => {
-                if (evt.track.kind == 'video') {
-                    document.getElementById('video').srcObject = evt.streams[0];
-                } else {
-                    document.getElementById('audio').srcObject = evt.streams[0];
-                }
-            });
-        
-            // document.getElementById('start').style.display = 'none';
-            await sendOffer('2236119122624');
-            // document.getElementById('stop').style.display = 'inline-block';
-        };
-        startup();
-    }, []);
-
-
     return (
         <>
-            {/* <img 
-                src="http://localhost:5000/video_feed" 
+            <img 
+                src={temp_team_photo}
                 alt="Live Stream" 
                 className="camera-display" 
                 onClick={handleOpen} 
                 style={{ cursor: "pointer" }}
-            /> */}
+            />
 
-            <video id="video" autoplay="true" playsinline="true"></video>
-
-            {/* <Dialog fullScreen open={open} onClose={handleClose}>
+            <Dialog fullScreen open={open} onClose={handleClose}>
                 <DialogContent 
                     style={{ 
                         backgroundColor: "black", 
@@ -128,22 +126,14 @@ const LiveStream = ({ camera }) => {
                             overflow: "hidden" 
                         }}
                     >
-                        <img 
-                            src="http://localhost:5000/video_feed" 
-                            alt="Live Stream" 
-                            style={{ 
-                                width: "100%", 
-                                height: "100%", 
-                                objectFit: "cover", 
-                            }}
-                        />
+                        <video id="video" autoPlay playsInline></video>
                     </Box>
 
                     <Box style={{ marginLeft: "20px", display: "flex", alignItems: "center" }}>
-                        <CameraSettings camera={camera} setOpenDialog={setOpen}/>
+                        <CameraSettings camera={camera} setOpenDialog={setOpen} />
                     </Box>
                 </DialogContent>
-            </Dialog> */}
+            </Dialog>
         </>
     );
 };
