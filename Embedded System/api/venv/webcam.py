@@ -4,15 +4,14 @@ import logging
 import platform
 import websockets
 
-
 from aiortc import RTCPeerConnection, RTCSessionDescription
 from aiortc.contrib.media import MediaPlayer, MediaRelay
 
 relay = None
 
-peer_connection = RTCPeerConnection()
+connections = set()
 
-SIGNALING_SERVER_URI = "ws://192.168.1.172:8765"
+SIGNALING_SERVER_URI = "ws://localhost:8765"
 
 def create_local_tracks(play_from, decode):
     global relay, webcam
@@ -25,7 +24,8 @@ def create_local_tracks(play_from, decode):
         if relay is None:
             if platform.system() == "Windows":
                 webcam = MediaPlayer(
-                    "video=USB2.0 PC CAMERA", format="dshow", options=options
+                    # "video=USB2.0 PC CAMERA", format="dshow", options=options
+                    "video=Integrated Webcam", format="dshow", options=options
                 )
             else:
                 webcam = MediaPlayer("/dev/video0", format="v4l2", options=options)
@@ -35,6 +35,17 @@ def create_local_tracks(play_from, decode):
 
 async def on_offer(offer_sdp, target_id):
     offer = RTCSessionDescription(sdp=offer_sdp, type="offer")
+
+    peer_connection = RTCPeerConnection()
+
+    connections.add(peer_connection)
+
+    @peer_connection.on("connectionstatechange")
+    async def on_connectionstatechange():
+        print("Connection state is %s" % peer_connection.connectionState)
+        if peer_connection.connectionState == "failed":
+            await peer_connection.close()
+            connections.discard(peer_connection)
 
     audio, video = create_local_tracks(
         False, decode=not False
@@ -71,6 +82,11 @@ async def handle_signaling_messages(signaling_socket):
 async def connect_to_signaling_server():
     global signaling_socket
     signaling_socket = await websockets.connect(SIGNALING_SERVER_URI)
+    connection_message = {
+        "type": "setup",
+        "id": 14,
+    }
+    await signaling_socket.send(json.dumps(connection_message))
     print("Connected to signaling server")
 
     await handle_signaling_messages(signaling_socket)

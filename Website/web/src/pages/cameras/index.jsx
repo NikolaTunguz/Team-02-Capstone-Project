@@ -1,18 +1,14 @@
-//React imports
-import React from "react";
+import React, { useState, useEffect } from "react";
 import LiveStream from "../../components/LiveStream.jsx";
 import "./index.css";
 import httpClient from "../httpClient";
 import AddCamera from "../../components/AddCamera.jsx";
-import DeleteCamera from "../../components/DeleteCamera.jsx";
-import { Typography, Box, IconButton } from "@mui/material";
-import { Delete } from "@mui/icons-material";
+import { Typography, Box } from "@mui/material";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
-//React hooks
 export default function Cameras() {
-    const [cameras, setCameras] = React.useState([]);
-    const [open, setOpen] = React.useState(false);
-    const [cameraToDelete, setCameraToDelete] = React.useState(null);
+    const [cameras, setCameras] = useState([]);
+
     const getCameras = async () => {
         try {
             const response = await httpClient.get("http://localhost:8080/get_user_cameras");
@@ -22,76 +18,54 @@ export default function Cameras() {
         }
     };
 
-    //handle delete camera
-    const handleDelete = (camera, cameraNum) => {
-        setCameraToDelete({camera: camera, cameraNum: cameraNum});
-        setOpen(true);
-    };
-
-    //closes the add camera modal
-    const handleCloseModal = () => {
-        setOpen(false);
-        setCameraToDelete(null);
-    };
-
-    //initial page load function
-    React.useEffect(() => {
+    useEffect(() => {
         getCameras();
     }, []);
 
-    //React component to be returned.
+    const handleDragEnd = (result) => {
+        if (!result.destination) return;
+
+        const reorderedCameras = [...cameras];
+        const [movedCamera] = reorderedCameras.splice(result.source.index, 1);
+        reorderedCameras.splice(result.destination.index, 0, movedCamera);
+
+        setCameras(reorderedCameras);
+    };
+
     return (
         <>
-            <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                mb={2}
-                marginRight="40px"
-            >
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} marginRight="40px">
                 <h2>Camera Feeds</h2>
-                <AddCamera onCameraAdded={getCameras}/>
+                <AddCamera onCameraAdded={getCameras} />
             </Box>
-            
-            <div className="camera-container">
-            
-            <div className="camera-grid">
-                {cameras.map((camera, index) => (
-                    <div key={camera.device_id || index}>
-                        <div className="device-name">
-                            <Typography 
-                                variant="h6" 
-                                sx={{fontFamily: "fantasy", fontSize: "20px"}}
-                            >
-                                {camera.device_name}
-                            </Typography>
-                        </div>
-                        
-                        <div className="feed-container">
-                            <div className="button-container">
-                                <IconButton
-                                    color="error"
-                                    onClick={() => handleDelete(camera, index + 1)}
-                                    className="delete-icon"
-                                >
-                                    <Delete />
-                                </IconButton>
 
-                            </div>
-                            <LiveStream camera={camera} className="camera-display"/>
+            <DragDropContext onDragEnd={handleDragEnd}>
+                <Droppable droppableId="camera-list" direction="vertical">
+                    {(provided) => (
+                        <div className="camera-grid" {...provided.droppableProps} ref={provided.innerRef}>
+                            {cameras.map((camera, index) => (
+                                <Draggable key={camera.device_id || index} draggableId={String(camera.device_id || index)} index={index}>
+                                    {(provided, snapshot) => (
+                                        <div
+                                            ref={provided.innerRef}
+                                            {...provided.draggableProps}
+                                            {...provided.dragHandleProps}
+                                            className={`camera-item ${snapshot.isDragging ? "dragging" : ""}`}
+                                        >
+                                            <Typography variant="h6" sx={{ fontFamily: "BlinkMacSystemFont", fontSize: "20px" }}>
+                                                {camera.device_name}
+                                            </Typography>
+                                            <LiveStream camera={camera} className="camera-display" />
+                                        </div>
+                                    )}
+                                </Draggable>
+                            ))}
+                            {provided.placeholder && <div className="droppable-placeholder">{provided.placeholder}</div>}
                         </div>
-                    </div>
-                ))}
-            </div>
-            {cameraToDelete && (
-                <DeleteCamera
-                    open={open}
-                    onClose={handleCloseModal}
-                    camera={cameraToDelete}
-                    onCameraDeleted={getCameras}
-                />
-            )}
-        </div>
+                    )}
+                </Droppable>
+
+            </DragDropContext>
         </>
     );
 }

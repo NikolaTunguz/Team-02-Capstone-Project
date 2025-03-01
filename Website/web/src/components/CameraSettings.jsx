@@ -2,15 +2,15 @@ import React from "react";
 import { Box, Typography, Button, Switch } from "@mui/material";
 import DeleteCamera from "./DeleteCamera.jsx";
 import { useNavigate } from 'react-router-dom';
+import "../App.css";
 
 const CameraSettings = ({ camera, setOpenDialog }) => {
-    const [cameraToggleSwitch, setCameraSwitchState] = React.useState({}); //True & False, no null in a switch.
+    const [cameraToggleSwitch, setCameraSwitchState] = React.useState({});
     const [cameraToDelete, setCameraToDelete] = React.useState(null);
     const [open, setOpen] = React.useState(false);
     const navigate = useNavigate();
 
-    //handle switch toggle
-    const handleToggle = (camera, cameraNum) => {
+    const handleToggle = (camera) => {
         setCameraSwitchState((prev) => ({
             ...prev,
             [camera.device_id]: !prev[camera.device_id],
@@ -18,7 +18,7 @@ const CameraSettings = ({ camera, setOpenDialog }) => {
     };
 
     const handleDelete = (camera) => {
-        setCameraToDelete({camera: camera});
+        setCameraToDelete({ camera: camera });
         setOpen(true);
     };
 
@@ -27,34 +27,33 @@ const CameraSettings = ({ camera, setOpenDialog }) => {
         setCameraToDelete(null);
     };
 
-
     return (
-        <Box 
-            style={{ 
+        <Box
+            style={{
                 width: "25vw",
-                height: "80vh", 
-                backgroundColor: "#222", 
-                color: "white",
-                border: "3px solid white", 
+                height: "80vh",
+                backgroundColor: "white",
+                color: "black",
+                border: "3px solid white",
                 borderRadius: "8px",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                marginLeft: "10px"
+                marginLeft: "10px",
+                paddingTop: "10px",
             }}
         >
-            <Typography variant="h6" gutterBottom>Camera Settings</Typography>
+            <Typography variant="h4" gutterBottom> Camera Settings </Typography>
+
             <Typography variant="body1">Device Name: {camera.device_name}</Typography>
             <Typography variant="body1" gutterBottom>Device ID: {camera.device_id}</Typography>
 
-            <Box 
-                style={{ 
-                    display: "flex", 
-                    alignItems: "center", 
-                    justifyContent: "space-between",
-                    width: "100%",
-                    marginTop: "15px",
-                    padding: "10px"
+            <Box
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "90%",
+                    marginTop: "20px",
                 }}
             >
                 <Typography variant="body1">Thermal View</Typography>
@@ -64,18 +63,21 @@ const CameraSettings = ({ camera, setOpenDialog }) => {
                     color="primary"
                 />
             </Box>
-            <Button 
-                variant="contained" 
-                color="error" 
+
+            <Box style={{ flexGrow: 1 }} />
+
+            <Button
+                variant="contained"
+                color="error"
                 onClick={() => handleDelete(camera)}
-                style={{ 
-                    marginTop: "500px",
-                    bottom: "20px", 
-                    width: "80%" 
+                style={{
+                    width: "80%",
+                    marginBottom: "20px",
                 }}
             >
                 Delete Camera
             </Button>
+
             {cameraToDelete && (
                 <DeleteCamera
                     open={open}
@@ -83,7 +85,7 @@ const CameraSettings = ({ camera, setOpenDialog }) => {
                     camera={cameraToDelete}
                     onCameraDeleted={() => {
                         setOpenDialog(false);
-                        navigate(0)
+                        navigate(0);
                     }}
                 />
             )}
