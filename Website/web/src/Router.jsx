@@ -9,14 +9,15 @@ import NavBar from "./components/NavBar";
 import AppLayout from "./AppLayout";
 import AboutUs from './pages/about_us';
 import NotFound from './pages/public/not_found/index.jsx';
+import ManageUsers from './pages/manage_users/index.jsx';
 // import Feed from './pages/Feed.jsx';
 
 const Router = () => {
-    const { isLoggedIn } = useAuth();
+    const { isLoggedIn, isAdmin } = useAuth();
 
     return (
         <BrowserRouter>
-            {isLoggedIn && <NavBar />}
+            {isLoggedIn && !isAdmin && <NavBar />}
             <Routes>
                 <Route
                     path="/login"
@@ -38,7 +39,7 @@ const Router = () => {
                     path="*"
                     element={<NotFound />}
                 />
-                {isLoggedIn && <>
+                {isLoggedIn && !isAdmin && <>
                     <Route
                         path="/cameras"
                         element={<AppLayout> <Cameras /> </AppLayout>}
@@ -56,6 +57,14 @@ const Router = () => {
                     path="/cameras/:deviceID/:deviceName"
                     element={<AppLayout> <Feed /> </AppLayout>}
                     /> */}
+                </>}
+                {isLoggedIn && isAdmin && <>
+                    <Route 
+                        path = "/manage_users"
+                        element = {<ManageUsers />}
+                    />
+                    
+                
                 </>}
             </Routes>
         </BrowserRouter>

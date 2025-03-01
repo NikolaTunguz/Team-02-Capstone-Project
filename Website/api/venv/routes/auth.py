@@ -15,7 +15,8 @@ def get_cur_user():
     user = User.query.filter_by(id=user_id).first()
     return jsonify({
         "id": user.id,
-        "email": user.email
+        "email": user.email,
+        "account_type" : user.account_type
     })
 
 @auth_bp.route('/register', methods=["POST"])
@@ -48,7 +49,8 @@ def login_user():
     session["user_id"] = user.id
     return jsonify({
         "id": user.id,
-        "email": user.email
+        "email": user.email,
+        "account_type" : user.account_type
     })  
 
 @auth_bp.route('/update_email', methods=['POST'])
