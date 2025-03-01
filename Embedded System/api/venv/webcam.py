@@ -22,7 +22,7 @@ def create_local_tracks(play_from, decode):
     else:
         options = {"framerate": "30", "video_size": "640x480"}
         if relay is None:
-            if platform.system() == "Darwin":
+            if platform.system() == "Darwin": 
                 webcam = MediaPlayer(
                     "default:none", format="avfoundation", options=options
                 )
