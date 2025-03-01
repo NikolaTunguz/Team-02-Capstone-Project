@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Formik, Form } from 'formik';
-import { InputLabel, Stack, OutlinedInput, Button, InputAdornment, IconButton, FormHelperText, LinearProgress, Box } from '@mui/material';
+import { InputLabel, Stack, OutlinedInput, Button, InputAdornment, IconButton, FormHelperText, LinearProgress, Box, Grid2 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import * as yup from 'yup';
 import httpClient from '../httpClient';
@@ -56,7 +56,7 @@ const AuthRegister = () => {
         navigate('/cameras');
       }
     } catch (e) {
-      if (e.response?.status === 409) {
+      if (e.response?.status == 409) {
         setError('User already exists');
       } else {
         console.error('Registration error:', e.response?.data || e.message);
@@ -334,8 +334,13 @@ const AuthRegister = () => {
                 padding: '10px',
               }}
             >
-
+              <div style={{display:'flex', justifyContent:'center', alignItems:'center', paddingBottom:'10px'}}>
+              {error && (
+                      <FormHelperText error>{error}</FormHelperText>
+                    )}
+              </div>
               <div style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
+              
                 {activeStep > 0 && (
                   <Button
                     fullWidth
@@ -368,8 +373,9 @@ const AuthRegister = () => {
                   >
                     Next
                   </Button>
-
+                              
                 )}
+
               </div>
 
               {activeStep == 0 && (
