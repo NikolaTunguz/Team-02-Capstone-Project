@@ -22,6 +22,11 @@ class ModelInterface:
     def detect_pistol(self):
         image = self.thermal_image
         return self.thermal_interface.detect_pistol(image)
+    
+    def detect_and_bound_pistol(self):
+        image = self.thermal_image
+        detection, box_image = self.thermal_interface.detect_and_bound_pistol(image)
+        return detection, box_image
 
     def detect_person(self):
         image = self.normal_image
