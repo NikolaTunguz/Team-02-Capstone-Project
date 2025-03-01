@@ -132,7 +132,7 @@ const LiveStream = ({ camera }) => {
                     </Box>
 
                     <Box style={{ marginLeft: "20px", display: "flex", alignItems: "center" }}>
-                        <CameraSettings camera={camera} setOpenDialog={setOpen} />
+                        <CameraSettings camera={camera} setOpenDialog={setOpen}  />
                     </Box>
                 </DialogContent>
             </Dialog>
