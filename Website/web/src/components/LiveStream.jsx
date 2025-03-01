@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
-import { Dialog, DialogContent, IconButton, Box } from "@mui/material";
+import { Dialog, DialogContent, IconButton, Box, Tooltip } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import CameraSettings from "./CameraSettings"; 
+import CameraSettings from "./CameraSettings";
 import "../App.css";
 
 import temp_team_photo from '../assets/images/team_photo.jpg'
@@ -94,36 +94,38 @@ const LiveStream = ({ camera }) => {
             />
 
             <Dialog fullScreen open={open} onClose={handleClose}>
-                <DialogContent 
-                    style={{ 
-                        backgroundColor: "black", 
-                        display: "flex", 
-                        justifyContent: "flex-start", 
+                <DialogContent
+                    style={{
+                        backgroundColor: "#dbe6ef",
+                        display: "flex",
+                        justifyContent: "flex-start",
                         alignItems: "center",
                         height: "100vh",
-                        padding: "20px" 
+                        padding: "20px"
                     }}
                 >
-                    <IconButton 
-                        edge="start" 
-                        color="inherit" 
-                        onClick={handleClose} 
-                        aria-label="close"
-                        style={{ position: "absolute", top: 10, right: 10, color: "white" }}
-                    >
-                        <CloseIcon />
-                    </IconButton>
+                    <Tooltip title="Close live stream">
+                        <IconButton
+                            edge="start"
+                            color="inherit"
+                            onClick={handleClose}
+                            aria-label="close"
+                            style={{ position: "absolute", top: 10, right: 10, color: "black" }}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                    </Tooltip>
 
-                    <Box 
-                        style={{ 
-                            width: "70vw",  
+                    <Box
+                        style={{
+                            width: "70vw",
                             height: "80vh",
-                            border: "3px solid white", 
-                            borderRadius: "4px", 
+                            border: "3px solid white",
+                            borderRadius: "4px",
                             display: "flex",
                             justifyContent: "center",
                             alignItems: "center",
-                            overflow: "hidden" 
+                            overflow: "hidden"
                         }}
                     >
                         <video id="video" autoPlay playsInline></video>
