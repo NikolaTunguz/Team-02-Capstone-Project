@@ -1,39 +1,55 @@
-.camera-container 
-{
+.camera-container {
     padding: 20px;
     margin-left: 70px;
     width: 50px;
 }
 
 /*header*/
-.device-header
-{
+.device-header {
     display: flex;
     align-items: center;
 }
 
-.device-name
-{
+.device-name {
     width: 500px;
 }
 
 /*live feed*/
-.camera-grid 
-{
+.camera-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
-    gap: 90px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding: 10px;
+    align-items: start;
 }
 
-.feed-container
-{
+/* .camera-item {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    transition: transform 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+} */
+
+.dragging {
+    transform: scale(1.05);
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+.droppable-placeholder {
+    visibility: hidden;
+}
+
+
+.feed-container {
     position: relative;
     width: 320px;
     height: 500px;
 }
 
-.button-container
-{
+.button-container {
     position: absolute;
     top: -35px;
     right: 1px;
@@ -41,8 +57,7 @@
     align-items: center;
 }
 
-.camera-display
-{
+.camera-display {
     width: 350px;
     border-style: solid;
     border-width: 3px;
