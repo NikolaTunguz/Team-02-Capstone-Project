@@ -52,6 +52,7 @@ export default function Cameras() {
                 <h2>Camera Feeds</h2>
                 <AddCamera onCameraAdded={getCameras}/>
             </Box>
+            <LiveStream></LiveStream>
             
             <div className="camera-container">
             
