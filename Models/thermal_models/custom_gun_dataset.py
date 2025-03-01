@@ -26,11 +26,14 @@ class CustomDataset(Dataset):
     
     #function to collect info for each image
     def parse_data(self):
+        print(self.root_directory)
         for dir in self.sub_directory:
             image_path = os.path.join(self.root_directory, dir, 'images')
             label_path = os.path.join(self.root_directory, dir, 'labels')
+            #print(image_path)
 
             for image_name in os.listdir(image_path):
+                #print(image_name)
                 label_name = image_name.replace('.jpg', '.txt')
 
                 image_file = os.path.join(image_path, image_name)
@@ -53,5 +56,4 @@ class CustomDataset(Dataset):
     
     def __getitem__(self, index):
         return self.images[index], self.labels[index], self.bounding_boxes[index]
-    
 

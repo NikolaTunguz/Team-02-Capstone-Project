@@ -108,7 +108,9 @@ if __name__ == '__main__':
 
         camera.take_app_image()
         model_interface.set_thermal_image('localcache/test_thermal_image.jpg')
-        if model_interface.detect_pistol():
+        #model_interface.set_thermal_image('../../../Models/Data/test_image.jpg')
+        detection, image = model_interface.detect_and_bound_pistol()
+        if detection:
             print("pistol detected")
         else:
             print("no pistol detected")
