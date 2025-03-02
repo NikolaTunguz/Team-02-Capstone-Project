@@ -11,7 +11,7 @@ import { useAuth } from "../../context/AuthContext";
 const AccountMenu = () => {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const navigate = useNavigate();
-    const { setIsLoggedIn } = useAuth();
+    const { setIsLoggedIn, setIsAdmin } = useAuth();
     const { firstName, lastName, setFirstName, setLastName } = useAuth();
 
     React.useEffect(() => {
@@ -42,6 +42,7 @@ const AccountMenu = () => {
             if (resp.status === 200) {
                 handleMenuClose();
                 setIsLoggedIn(false);
+                setIsAdmin(false);
                 navigate('/')
             }
         } catch (e) {

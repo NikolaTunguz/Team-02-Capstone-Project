@@ -20,14 +20,17 @@ export const AuthProvider = ({ children }) => {
                     if (data.account_type){
                         setIsAdmin(true);
                     } else {
+                        setIsAdmin(false);
                         setIsLoggedIn(true);
                     }
                     setUser(data);
                     
                 } else {
+                    setIsAdmin(false);
                     setIsLoggedIn(false);
                 }
             } catch {
+                setIsAdmin(false);
                 setIsLoggedIn(false);
             }
         };

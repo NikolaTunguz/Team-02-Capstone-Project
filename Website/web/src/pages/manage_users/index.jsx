@@ -11,20 +11,34 @@ const ManageUsers = () => {
     const [users, setUsers] = React.useState([]);
     const [colDefs] = React.useState([
         { 
+            headerName: "Email", 
+            field: "email",
+            floatingFilter: true,
+            filter: "agTextColumnFilter",
+        },         
+        { 
             headerName: "First Name", 
             field: "first_name",
+            floatingFilter: true,
+            filter: "agTextColumnFilter",
         },         
         { 
             headerName: "Last Name", 
             field: "last_name",
+            floatingFilter: true,
+            filter: "agTextColumnFilter",
         },
-        { 
-            headerName: "Email", 
-            field: "email",
-        },         
         { 
             headerName: "Phone Number", 
             field: "phone",
+            floatingFilter: true,
+            filter: "agTextColumnFilter",
+        },
+        { 
+            headerName: "Account Type", 
+            field: "account_type",
+            floatingFilter: true,
+            filter: "agTextColumnFilter",
         }
     ]);
 
