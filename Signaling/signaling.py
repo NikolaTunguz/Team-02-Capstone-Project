@@ -16,13 +16,12 @@ async def handle_client(websocket):
             print(data.get("type"))
             if data.get("type") == "offer":
                 target_id = data.get("target_id")
-                target_id = client_ids[target_id]
-                if target_id in connected_clients:
+                if target_id in client_ids:
+                    target_id = client_ids[target_id]
                     data['target_id'] = client_id
                     await connected_clients[target_id].send(json.dumps(data))
                 else:
-                    print(f"Target client {target_id} not connected")
-            
+                    print(f"Target device {target_id} not connected")
             elif data.get("type") == "answer":
                 target_id = data.get("target_id")
                 if target_id in connected_clients:
