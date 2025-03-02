@@ -17,8 +17,9 @@ export const AuthProvider = ({ children }) => {
                 const response = await fetch("http://localhost:8080/@me", { credentials: "include" });
                 if (response.ok) {
                     const data = await response.json();
-                    if (data.account_type){
+                    if (data.account_type === 'admin'){
                         setIsAdmin(true);
+                        setIsLoggedIn(true);
                     } else {
                         setIsAdmin(false);
                         setIsLoggedIn(true);
@@ -35,7 +36,7 @@ export const AuthProvider = ({ children }) => {
             }
         };
         fetchCurrentUser();
-    }, []);
+    }, [setIsAdmin, setIsLoggedIn, setUser]);
 
     return (
         <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, user, setUser, firstName, setFirstName, lastName, setLastName, isAdmin, setIsAdmin }}>

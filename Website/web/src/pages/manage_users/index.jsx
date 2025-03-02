@@ -1,7 +1,7 @@
 import React from 'react';
 import './index.css';
 import httpClient from "../httpClient";
-import  { List, ListItem, ListItemText, Paper, Typography } from "@mui/material";
+import  { Box, Typography } from "@mui/material";
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 ModuleRegistry.registerModules([AllCommunityModule]);
 import { AgGridReact } from 'ag-grid-react'; 
@@ -9,8 +9,12 @@ import HeaderContent from "../../layout/Header";
 
 const ManageUsers = () => {
     const [users, setUsers] = React.useState([]);
+    const [selectedUser, setSelectedUser] = React.useState({});
     const [colDefs] = React.useState([
         { 
+            headerCheckboxSelection: true,  
+            checkboxSelection: true,            
+
             headerName: "Email", 
             field: "email",
             floatingFilter: true,
@@ -43,6 +47,7 @@ const ManageUsers = () => {
     ]);
 
     React.useEffect(() => {
+        setSelectedUser({});
         getUsers();
     }, [])
     
@@ -55,16 +60,44 @@ const ManageUsers = () => {
         }
     };
     
+    const gridSelect = (event) => {
+        if (event?.api?.getSelectedNodes?.().length > 0){
+            var node = event.api.getSelectedNodes()[0];
+            setSelectedUser(node?.data);
+        }
+        else{
+            setSelectedUser({})
+        }
+    }
+
     return (
         <>
             <HeaderContent />
             <div style={{ height: 500, marginTop: '7%'}}>
             <Typography variant="h4" gutterBottom> Current Users </Typography>
+                <Box sx = {{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Box sx={{ width: '67%' }}>
+                        <AgGridReact
+                                rowData={users}
+                                columnDefs={colDefs}
+                                domLayout = 'autoHeight'
+                                rowSelection="multiple"
+                                // suppressRowClickSelection={true}
+                                onCellClicked = {gridSelect}
+                            />
+                    </Box>
 
-                <AgGridReact
-                    rowData={users}
-                    columnDefs={colDefs}
-                />
+                    <Box sx={{width: '32%', backgroundColor: "white", borderRadius: '8px'}}>
+                        <p>
+                        Email: {selectedUser.email} <br/> 
+                        First Name: {selectedUser.first_name} <br/> 
+                        Last Name: {selectedUser.last_name} <br/> 
+                        Phone Number: {selectedUser.phone} <br/> 
+                        Account Type: {selectedUser.account_type} <br/> 
+                        </p>
+
+                    </Box>
+                </Box>
             </div>
         </>
         

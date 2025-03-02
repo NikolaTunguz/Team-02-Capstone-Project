@@ -31,3 +31,12 @@ def get_users():
         return jsonify({"users": user_list}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@manage_users_bp.route('/update_user', methods=['PUT'])
+def update_user():
+    pass
+
+@manage_users_bp.route('/delete_user', methods=['POST'])
+def delete_user():
+    pass
