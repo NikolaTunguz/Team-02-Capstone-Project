@@ -1,9 +1,11 @@
 import pytest
-from main import app, db  
-from model import User  
+from main import setup  
+from model import db, User  
 from flask_bcrypt import Bcrypt
 
 bcrypt = Bcrypt()
+
+app = setup("test")
 
 @pytest.fixture
 def client():
