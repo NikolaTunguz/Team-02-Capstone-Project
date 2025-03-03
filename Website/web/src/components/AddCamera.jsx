@@ -29,7 +29,7 @@ const AddCamera = ({ onCameraAdded }) => {
             await httpClient.post("http://localhost:8080/add_user_camera", values);
             resetForm();
             resetModal();
-            if (onCameraAdded) onCameraAdded(); 
+            if (onCameraAdded) onCameraAdded();
         } catch (e) {
             setError(e.response?.data?.error || "Failed to add camera.");
         }
@@ -102,9 +102,9 @@ const AddCamera = ({ onCameraAdded }) => {
                                 <FormControl
                                     fullWidth
                                     error={Boolean(touched.device_name && errors.device_name)}
-                                    sx={{ mb: 2 }} 
+                                    sx={{ mb: 2 }}
                                 >
-                                
+
                                     <InputLabel htmlFor="device_name">Device Name</InputLabel>
                                     <OutlinedInput
                                         label="Device Name"

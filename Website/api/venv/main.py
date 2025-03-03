@@ -26,7 +26,7 @@ def create_admin_user():
         if not User.query.filter_by(email="admin@admin").first():
             admin = User(
                 id=uuid4().hex, 
-                phone_number="0000000000",
+                phone_number="1234567890",
                 first_name="Admin",
                 last_name="Admin",
                 email="admin@admin",
