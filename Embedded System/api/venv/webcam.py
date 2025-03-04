@@ -3,6 +3,7 @@ import aioprocessing
 import json
 import websockets
 import sys
+import os
 import cv2
 from av import VideoFrame
 from aiortc import RTCPeerConnection, RTCSessionDescription
@@ -23,12 +24,27 @@ SIGNALING_SERVER_URI = "ws://localhost:8765"
 
 
 class TestTrack(VideoStreamTrack):
-    def __init__(self, camera_queue):
+    def __init__(self, camera_queue, webrtc_con):
         super().__init__()
         self.camera_queue = camera_queue
+        self.webrtc_con = webrtc_con
+        self.bbox = []
 
     async def recv(self):
         img = self.camera_queue.get()
+
+        if(self.webrtc_con.poll()):
+            self.bbox = self.webrtc_con.recv()
+
+        for box in self.bbox:
+            x1,y1,x2,y2 = box
+
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            class_name = "person"
+
+            img = cv2.rectangle(img, (x1, y1), (x2, y2), (255, 199, 46), 1) 
+            img = cv2.putText(img, class_name, (x1, y1-10), font, 0.6, (0, 0, 200), 1, cv2.LINE_AA)
+
         frame = VideoFrame.from_ndarray(img, format="bgr24")
         pts, time_base = await self.next_timestamp()
         frame.pts = pts
@@ -43,15 +59,17 @@ def camera_reader(camera_queue):
         ret, frame = cap.read()
         camera_queue.put(frame)
 
-def image_process(camera_queue):
+def image_process(camera_queue, im_pro_con):
     print("im_pro started")
     while(True):
         frame = camera_queue.get()
         cv2.imwrite("localcache/input_image.jpg", frame)
-        model_interface.set_normal_image("localcache/input_image.jpg") 
-        print(model_interface.detect_person())
+        model_interface.set_normal_image("localcache/input_image.jpg")
+        model_interface.detect_person()
+        im_pro_con.send(model_interface.normal_interface.bbox_out())
+        # print(model_interface.detect_person())
 
-async def on_offer(offer_sdp, target_id, camera_queue):
+async def on_offer(offer_sdp, target_id, camera_queue, webrtc_con):
     offer = RTCSessionDescription(sdp=offer_sdp, type="offer")
 
     peer_connection = RTCPeerConnection()
@@ -65,7 +83,7 @@ async def on_offer(offer_sdp, target_id, camera_queue):
             await peer_connection.close()
             connections.discard(peer_connection)
 
-    peer_connection.addTrack(TestTrack(camera_queue))
+    peer_connection.addTrack(TestTrack(camera_queue, webrtc_con))
 
     await peer_connection.setRemoteDescription(offer)
     answer = await peer_connection.createAnswer()
@@ -80,15 +98,15 @@ async def on_offer(offer_sdp, target_id, camera_queue):
     await signaling_socket.send(json.dumps(signaling_message))
 
 
-async def handle_signaling_messages(signaling_socket, camera_queue):
+async def handle_signaling_messages(signaling_socket, camera_queue, webrct_con):
     async for message in signaling_socket:
         data = json.loads(message)
 
 
         if data.get("type") == "offer":
-            await on_offer(data["sdp"], data["target_id"], camera_queue)
+            await on_offer(data["sdp"], data["target_id"], camera_queue, webrtc_con)
 
-async def connect_to_signaling_server(camera_queue):
+async def connect_to_signaling_server(camera_queue, webrtc_con):
     global signaling_socket
     signaling_socket = await websockets.connect(SIGNALING_SERVER_URI)
     connection_message = {
@@ -98,18 +116,18 @@ async def connect_to_signaling_server(camera_queue):
     await signaling_socket.send(json.dumps(connection_message))
     print("Connected to signaling server")
 
-    await handle_signaling_messages(signaling_socket, camera_queue)
+    await handle_signaling_messages(signaling_socket, camera_queue, webrtc_con)
 
-async def main(camera_queue):
-    await connect_to_signaling_server(camera_queue)
+async def main(camera_queue, webrtc_con):
+    await connect_to_signaling_server(camera_queue, webrtc_con)
 
 async def im_read(camera_queue):
     im_reader = aioprocessing.AioProcess(target=camera_reader, args=[camera_queue])
     im_reader.start()
     await im_reader.coro_join()
 
-async def run_im_pro(camera_queue):
-    im_pro = aioprocessing.AioProcess(target=image_process, args=[camera_queue])
+async def run_im_pro(camera_queue, im_pro_con):
+    im_pro = aioprocessing.AioProcess(target=image_process, args=[camera_queue, im_pro_con])
     im_pro.start()
     await im_pro.coro_join()
 
@@ -120,10 +138,15 @@ if __name__ == "__main__":
 
     camera_queue = aioprocessing.AioQueue(5)
 
+    webrtc_con, im_pro_con = aioprocessing.AioPipe(duplex=False)
+
     tasks = [
         asyncio.ensure_future(im_read(camera_queue)),
-        asyncio.ensure_future(main(camera_queue)),
-        asyncio.ensure_future(run_im_pro(camera_queue)),
+        asyncio.ensure_future(main(camera_queue, webrtc_con)),
+        asyncio.ensure_future(run_im_pro(camera_queue, im_pro_con)),
     ]
-    loop.run_until_complete(asyncio.wait(tasks))
+    try:
+        loop.run_until_complete(asyncio.wait(tasks))
+    except:
+        os.system('taskkill -f -im python*' if os.name == 'nt' else 'pkill -9 python')
     loop.close()
