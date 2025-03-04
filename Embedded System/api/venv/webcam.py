@@ -1,32 +1,19 @@
 import asyncio
+import aioprocessing
 import json
-import logging
-import platform
 import websockets
-
-from aiortc import RTCPeerConnection, RTCSessionDescription
-from aiortc.contrib.media import MediaPlayer, MediaRelay
-
-from aiortc import MediaStreamTrack
+import sys
 import cv2
 from av import VideoFrame
-import queue
-from queue import Queue
-import sys
-import multiprocessing
-import time
-from concurrent.futures import ProcessPoolExecutor
+from aiortc import RTCPeerConnection, RTCSessionDescription
+from aiortc import VideoStreamTrack
+
 from pathlib import Path
 base_path = Path(__file__).resolve().parents[3]
 print(base_path)
 sys.path.append(str(base_path))
 from Models.model_interface import ModelInterface
-import aioprocessing
-from aiortc import VideoStreamTrack
-
 model_interface = ModelInterface()
-
-
 
 relay = None
 
@@ -64,30 +51,6 @@ def image_process(camera_queue):
         model_interface.set_normal_image("localcache/input_image.jpg") 
         print(model_interface.detect_person())
 
-# def create_local_tracks(play_from, decode):
-#     global relay, webcam
-
-#     if play_from:
-#         player = MediaPlayer(play_from, decode=decode)
-#         return player.audio, player.video
-#     else:
-#         options = {"framerate": "30", "video_size": "640x480"}
-#         if relay is None:
-#             if platform.system() == "Darwin": 
-#                 webcam = MediaPlayer(
-#                     "default:none", format="avfoundation", options=options
-#                 )
-#             elif platform.system() == "Windows":
-#                 webcam = MediaPlayer(
-#                     # "video=USB2.0 PC CAMERA", format="dshow", options=options
-#                     "video=Integrated Webcam", format="dshow", options=options
-#                 )
-#             else:
-#                 webcam = MediaPlayer("/dev/video0", format="v4l2", options=options)
-#             relay = MediaRelay()
-#         return None, relay.subscribe(webcam.video)
-
-
 async def on_offer(offer_sdp, target_id, camera_queue):
     offer = RTCSessionDescription(sdp=offer_sdp, type="offer")
 
@@ -102,17 +65,6 @@ async def on_offer(offer_sdp, target_id, camera_queue):
             await peer_connection.close()
             connections.discard(peer_connection)
 
-    # audio, video = create_local_tracks(
-    #     False, decode=not False
-    # )
-
-    # if audio:
-    #     peer_connection.addTrack(audio)
-
-
-    # if video:
-    #     # peer_connection.addTrack(video)
-    #     peer_connection.addTrack(VideoTransformTrack(relay.subscribe(video), "custom"))
     peer_connection.addTrack(TestTrack(camera_queue))
 
     await peer_connection.setRemoteDescription(offer)
@@ -163,14 +115,10 @@ async def run_im_pro(camera_queue):
 
 
 if __name__ == "__main__":
-    # logging.basicConfig(level=logging.DEBUG)
-    # # asyncio.run(main())
-    # loop = asyncio.get_event_loop()
-    # loop.run_until_complete(main())
 
     loop = asyncio.get_event_loop()
 
-    camera_queue = aioprocessing.AioQueue()
+    camera_queue = aioprocessing.AioQueue(5)
 
     tasks = [
         asyncio.ensure_future(im_read(camera_queue)),
@@ -179,10 +127,3 @@ if __name__ == "__main__":
     ]
     loop.run_until_complete(asyncio.wait(tasks))
     loop.close()
-
-
-
-# if __name__ == "__main__":
-#     sys = system()
-#     while True:
-#         pass
