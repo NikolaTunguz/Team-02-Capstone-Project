@@ -132,7 +132,7 @@ const ManageUsers = () => {
                         <AgGridReact
                             rowData={users}
                             columnDefs={colDefs}
-                            // domLayout='autoHeight'
+                            domLayout='autoHeight'
                             rowSelection="multiple"
                             // suppressRowClickSelection={true}
                             onSelectionChanged={gridSelect}
@@ -159,7 +159,7 @@ const ManageUsers = () => {
                                             .required("Phone number is required"),
                                         account_type: Yup.string()
                                             .oneOf(["admin", "user"], "Account type must be either 'admin' or 'user'")
-                                            .required("Account type is required") //probably add real constrain for typing
+                                            .required("Account type is required") 
                                     })}
                                     onSubmit={(values) => {
                                         updateUser(
