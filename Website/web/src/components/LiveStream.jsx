@@ -37,6 +37,8 @@ const LiveStream = ({ camera }) => {
         const config = {
             sdpSemantics: 'unified-plan'
         };
+
+        config.iceServers = [{ urls: ['stun:stun.l.google.com:19302'] }];
     
         peerConnectionRef.current = new RTCPeerConnection(config);
     
