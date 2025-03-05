@@ -14,7 +14,7 @@ class User (db.Model):
     id = db.Column(db.String(32), primary_key=True, unique=True, default=get_uuid)
     email = db.Column(db.String(145), unique=True)
     password = db.Column(db.String(128), nullable=False)
-    account_type = db.Column(db.String(128), default = 'user')
+    account_type = db.Column(db.String(10), default = 'user')
 
 class Notification (db.Model):
     __tablename__ = "notifications"
