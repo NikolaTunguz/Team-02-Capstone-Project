@@ -24,7 +24,8 @@ relay = None
 
 connections = set()
 
-SIGNALING_SERVER_URI = "ws://localhost:8765"
+# SIGNALING_SERVER_URI = "ws://localhost:8765"
+SIGNALING_SERVER_URI = "ws://seethru.unr.dev"
 
 
 class TestTrack(VideoStreamTrack):
@@ -91,7 +92,7 @@ def image_process(camera_queue, im_pro_con):
                 "timestamp":date,
                 "message":"Person detected at camera."
             }
-            requests.post("http://127.0.0.1:8080/database", json=data, headers=headers)
+            # requests.post("http://127.0.0.1:8080/database", json=data, headers=headers)
         prev_detections.append(detected)
         
 async def on_offer(offer_sdp, target_id, camera_queue, webrtc_con):
