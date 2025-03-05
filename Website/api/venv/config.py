@@ -14,3 +14,9 @@ class ApplicationConfig:
     SESSION_PERMANENT=False
     SESSION_USE_SIGNER=True
     SESSION_REDIS = redis.from_url("redis://127.0.0.1:6379") 
+
+class TestConfig:
+    SECRET_KEY = os.urandom(24)
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    TESTING = True
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
