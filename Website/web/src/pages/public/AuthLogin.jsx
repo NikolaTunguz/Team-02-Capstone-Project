@@ -39,10 +39,10 @@ const AuthLogin = () => {
       });
       if (resp.status === 200) {
         setIsLoggedIn(true);
-        if (resp.data.account_type === "admin"){
+        if (resp.data.account_type === "admin") {
           setIsAdmin(true);
-          navigate("/manage_users"); 
-        } 
+          navigate("/manage_users");
+        }
         else {
           navigate("/cameras");
         }
@@ -72,8 +72,8 @@ const AuthLogin = () => {
         })}
         onSubmit={async ({ email, password }, { setErrors, setStatus }) => {
           try {
-            await login(email, password); 
-            setStatus({ success: true }); 
+            await login(email, password);
+            setStatus({ success: true });
           } catch (e) {
             setStatus({ success: false });
             setErrors({ submit: e.message });

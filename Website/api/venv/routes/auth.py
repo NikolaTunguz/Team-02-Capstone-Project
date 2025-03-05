@@ -48,7 +48,8 @@ def login_user():
     session["user_id"] = user.id
     return jsonify({
         "id": user.id,
-        "email": user.email
+        "email": user.email,
+        "account_type": user.account_type
     })  
 
 @auth_bp.route('/update_email', methods=['POST'])
