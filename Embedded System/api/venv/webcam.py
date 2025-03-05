@@ -2,6 +2,10 @@ import asyncio
 import aioprocessing
 import json
 import websockets
+import requests
+import time
+from collections import deque
+from datetime import datetime
 import sys
 import os
 import cv2
@@ -61,14 +65,35 @@ def camera_reader(camera_queue):
 
 def image_process(camera_queue, im_pro_con):
     print("im_pro started")
+    previous_notification = 0
+    prev_detections = deque(maxlen=3)
     while(True):
         frame = camera_queue.get()
         cv2.imwrite("localcache/input_image.jpg", frame)
         model_interface.set_normal_image("localcache/input_image.jpg")
-        model_interface.detect_person()
+        detected = model_interface.detect_person()
+        print(prev_detections)
         im_pro_con.send(model_interface.normal_interface.bbox_out())
-        # print(model_interface.detect_person())
+        current_time = time.time()
+        print(current_time - previous_notification > 60, ":", detected, ":", not (True in prev_detections))
+        if ((current_time - previous_notification > 60) and detected and not (True in prev_detections)):
+            previous_notification = current_time
+            date = datetime.now()
+            date = date.strftime("%m/%d/%Y, %H:%M:%S")
 
+            headers={
+                'Content-type':'application/json',
+                'Accept':'application/json'
+            }
+
+            data = {
+                "device_id":14,
+                "timestamp":date,
+                "message":"Person detected at camera."
+            }
+            requests.post("http://127.0.0.1:8080/database", json=data, headers=headers)
+        prev_detections.append(detected)
+        
 async def on_offer(offer_sdp, target_id, camera_queue, webrtc_con):
     offer = RTCSessionDescription(sdp=offer_sdp, type="offer")
 
