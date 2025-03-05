@@ -47,7 +47,8 @@ def update_user():
     first_name = request.get_json().get("first_name")
     last_name = request.get_json().get("last_name")
     email = request.get_json().get("email")
-    phone = request.get_json().get("phone_number") #changed this from 'phone' to 'phone_number'
+    phone = request.get_json().get('phone_number') #changed this from 'phone' to 'phone_number'
+    account_type = request.get_json().get('account_type')
     user = User.query.filter_by(email=previous_email).first()
     if not user:
         return jsonify({"error": "User not found"}), 404
@@ -57,6 +58,7 @@ def update_user():
     user.email = email
     #print('\n\n\n', phone, '\n\n\n') #this was printing none until the line above was changed
     user.phone_number = str(phone) #changed this line from user.phone to user.phone_number
+    user.account_type = account_type
     db.session.commit()
     return jsonify({"message": "User successfully updated"}), 200
 

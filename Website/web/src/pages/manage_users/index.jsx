@@ -93,7 +93,7 @@ const ManageUsers = () => {
         }
     }
 
-    const updateUser = async (email, firstName, lastName, phone) => {
+    const updateUser = async (email, firstName, lastName, phone, accountType) => {
         try {
             await httpClient.put("http://localhost:8080/update_user", {
                 previous_email: previousEmail,
@@ -101,6 +101,7 @@ const ManageUsers = () => {
                 first_name: firstName,
                 last_name: lastName,
                 phone_number: phone,
+                account_type: accountType
             });
             getUsers();
         } catch (error) {
@@ -147,6 +148,7 @@ const ManageUsers = () => {
                                         first_name: selectedUser.first_name,
                                         last_name: selectedUser.last_name,
                                         phone: selectedUser.phone,
+                                        account_type: selectedUser.account_type
                                     }}
                                     validationSchema={Yup.object({
                                         first_name: Yup.string().required("First name is required"),
@@ -155,6 +157,9 @@ const ManageUsers = () => {
                                         phone: Yup.string()
                                             .matches(/^\d{10,15}$/, "Phone number is not valid")
                                             .required("Phone number is required"),
+                                        account_type: Yup.string()
+                                            .oneOf(["admin", "user"], "Account type must be either 'admin' or 'user'")
+                                            .required("Account type is required") //probably add real constrain for typing
                                     })}
                                     onSubmit={(values) => {
                                         updateUser(
@@ -162,6 +167,7 @@ const ManageUsers = () => {
                                             values.first_name,
                                             values.last_name,
                                             values.phone,
+                                            values.account_type
                                         )
                                     }}
                                 >
@@ -211,6 +217,17 @@ const ManageUsers = () => {
                                                     error={Boolean(touched.phone && errors.phone)}
                                                 />
                                                 {touched.phone && errors.phone && <FormHelperText error>{errors.phone}</FormHelperText>}
+
+                                                <InputLabel>Account Type</InputLabel>
+                                                <OutlinedInput
+                                                    name="account_type"
+                                                    value={values.account_type}
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                    fullWidth
+                                                    error={Boolean(touched.account_type && errors.account_type)}
+                                                />
+                                                {touched.account_type && errors.account_type && <FormHelperText error>{errors.account_type}</FormHelperText>}
 
                                                 <Button
                                                     type="submit"
