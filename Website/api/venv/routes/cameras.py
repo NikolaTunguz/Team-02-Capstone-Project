@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request, session
 from model import UserCameras, db
+from datetime import datetime
 
 camera_bp = Blueprint('camera_bp', __name__)
 
@@ -71,3 +72,50 @@ def update_camera_name():
     db.session.commit()
 
     return jsonify({"message": "Camera name updated successfully"}), 200
+
+@camera_bp.route("/update_thumbnail", methods=["POST"])
+async def update_thumbnail():
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    logging.debug(f"Received request: {request.form}, {request.files}")
+
+    device_id = request.form.get("device_id")
+    file = request.files.get("thumbnail")
+
+    if not device_id or not file:
+        return jsonify({"error": "Missing required parameters"}), 400
+
+    camera = UserCameras.query.filter_by(device_id=device_id).first()
+    if not camera:
+        return jsonify({"error": "Camera not found"}), 404
+
+    camera.thumbnail = file.read()
+    camera.last_updated = datetime.utcnow()
+    db.session.commit()
+
+    await notify_thumbnail_update(device_id)  
+
+    return jsonify({"message": "Thumbnail updated successfully"}), 200
+
+@camera_bp.route("/get_thumbnail", methods=["GET"])
+def get_thumbnail():
+    user_id = session.get("user_id")
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    device_id = request.args.get("device_id")
+    if not device_id:
+        return jsonify({"error": "Missing device_id"}), 400
+
+    camera = UserCameras.query.filter_by(device_id=device_id).first()
+    if not camera or not camera.thumbnail:
+        return jsonify({"thumbnail": None, "last_updated": None})
+
+    encoded_thumbnail = base64.b64encode(camera.thumbnail).decode("utf-8")
+
+    return jsonify({
+        "thumbnail": encoded_thumbnail,
+        "last_updated": camera.last_updated
+    })

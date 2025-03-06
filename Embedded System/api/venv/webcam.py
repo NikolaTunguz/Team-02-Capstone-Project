@@ -95,6 +95,13 @@ async def connect_to_signaling_server():
 
     await handle_signaling_messages(signaling_socket)
 
+async def notify_thumbnail_update(device_id):
+    message = json.dumps({
+        "type": "thumbnail_update",
+        "device_id": 14
+    })
+    for client in connected_clients.values():
+        await client.send(message)
 
 async def main():
     await connect_to_signaling_server()
@@ -102,3 +109,4 @@ async def main():
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     asyncio.run(main())
+    asyncio.run(notify_thumbnail_update(device_id))
