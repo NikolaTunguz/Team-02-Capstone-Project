@@ -14,7 +14,7 @@ const LiveStream = ({ camera }) => {
 
     function websocketConnect() {
         return new Promise((resolve) => {
-            signalingSocketRef.current = new WebSocket("ws://seethru.unr.dev");
+            signalingSocketRef.current = new WebSocket("ws://localhost:8765");
             signalingSocketRef.current.onopen = () => {
                 console.log('WebSocket connection established');
                 resolve(signalingSocketRef.current);
