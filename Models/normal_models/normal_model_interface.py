@@ -98,6 +98,11 @@ class NormalInterface:
             image = cv2.putText(image, class_name, (x1, y1-10), font, 0.6, (0, 0, 200), 1, cv2.LINE_AA) 
 
         return image
+    
+    def bbox_out(self):
+        return self.person_bboxes.cpu().numpy().astype("int")
+        
+    
 
 #training and testing the class works. Not used.
 def main():

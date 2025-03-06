@@ -12,8 +12,18 @@ const LiveStream = ({ camera }) => {
     const peerConnectionRef = useRef(null);  
     const signalingSocketRef = useRef(null);  
 
+    function websocketConnect() {
+        return new Promise((resolve) => {
+            signalingSocketRef.current = new WebSocket("ws://localhost:8765");
+            signalingSocketRef.current.onopen = () => {
+                console.log('WebSocket connection established');
+                resolve(signalingSocketRef.current);
+            };
+        });
+    }
+
     async function startStream() {
-        signalingSocketRef.current = await new WebSocket("ws://localhost:8765");
+        await websocketConnect();
 
         signalingSocketRef.current.onmessage = async (event) => {
             const message = JSON.parse(event.data);
@@ -27,6 +37,8 @@ const LiveStream = ({ camera }) => {
         const config = {
             sdpSemantics: 'unified-plan'
         };
+
+        config.iceServers = [{ urls: ['stun:stun.l.google.com:19302'] }];
     
         peerConnectionRef.current = new RTCPeerConnection(config);
     
