@@ -28,6 +28,7 @@ def setup(mode):
 
     db.init_app(app)
     with app.app_context():
+        db.create_all()
         create_admin_user(app)
     return app
 
@@ -46,7 +47,7 @@ def create_admin_user(app):
             db.session.add(admin)
             db.session.commit()
             print("Admin user created successfully.")
-    db.create_all()
+    # db.create_all()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
