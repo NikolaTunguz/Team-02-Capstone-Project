@@ -6,7 +6,6 @@ from torchvision import transforms, datasets
 import os
 
 #general imports
-from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
 # import matplotlib.pyplot as plt
 from PIL import Image
 
@@ -128,7 +127,6 @@ class CustomCNN(nn.Module):
                 _, prediction_labels = torch.max(prediction, dim=1)
                 actual_labels = labels.cpu().numpy()
                 prediction_labels = prediction_labels.cpu().numpy()
-                batch_train_acc.append(accuracy_score(actual_labels, prediction_labels))
 
             #epoch accuracy & loss
             train_acc = sum(batch_train_acc) / len(batch_train_acc)
@@ -153,11 +151,7 @@ class CustomCNN(nn.Module):
                     _, prediction_labels = torch.max(prediction, dim=1)
                     actual_labels = labels.cpu().numpy()
                     prediction_labels = prediction_labels.cpu().numpy()
-                    batch_val_acc.append(accuracy_score(actual_labels, prediction_labels))
 
-                    #track validation labels for confusion matrix
-                    self.val_labels.extend(actual_labels)
-                    self.val_prediction_labels.extend(prediction_labels)
 
                 #epoch accuracy & loss
                 val_acc = sum(batch_val_acc) / len(batch_val_acc)
@@ -206,20 +200,3 @@ class CustomCNN(nn.Module):
             return 0
 
 
-
-    def display_confusion_matrix(self):
-        #display confusion matrix on validation set.
-        val_cm = confusion_matrix(self.val_labels, self.val_prediction_labels)
-        ConfusionMatrixDisplay(val_cm).plot()
-        plt.show()
-
-#training only
-# def main():
-#     classifier = CustomCNN()
-#     classifier.train_model()
-#     classifier.display_training_graphs()
-#     classifier.display_confusion_matrix()
-#     #best val loss: 0.4580
-
-# if __name__ == "__main__":
-#     main()

@@ -7,7 +7,6 @@ from torchvision import transforms, datasets
 import os
 
 #general imports
-from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
 # import matplotlib.pyplot as plt
 from PIL import Image
 
@@ -109,11 +108,6 @@ class FineTunedRN18():
                     _, prediction_labels = torch.max(prediction, dim=1)
                     actual_labels = labels.cpu().numpy()
                     prediction_labels = prediction_labels.cpu().numpy()
-                    batch_val_acc.append(accuracy_score(actual_labels, prediction_labels))
-
-                    #save all validation predictions for confusion matrix
-                    self.val_labels.extend(actual_labels)
-                    self.val_prediction_labels.extend(prediction_labels)
 
                 #epoch accuracy & loss
                 val_acc = sum(batch_val_acc) / len(batch_val_acc)
@@ -165,7 +159,3 @@ class FineTunedRN18():
             return 0
 
 
-    def displayConfusionMatrix(self):
-        #display confusion matrix for validation set
-        val_cm = confusion_matrix(self.val_labels, self.val_prediction_labels)
-        ConfusionMatrixDisplay(val_cm).plot()

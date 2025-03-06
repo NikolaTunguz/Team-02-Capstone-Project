@@ -54,22 +54,6 @@ class ThermalInterface:
         else:
             return 0
         
-    def detect_and_bound_pistol(self, image_path):
-        self.image = Image.open(image_path)
-        self.transform_image()
-
-        detected, result_image = self.bound_pistol_model.pistol_detected(self.image)
-        
-        if detected:
-            plt.imshow(result_image, cmap='gray')
-            plt.axis("off")
-            plt.title("Pistol Detected" if detected else "No Pistol Detected")
-            plt.show()
-            return 1, result_image  
-        else:
-            return 0, result_image
-
-
 #if __name__ == '__main__':
 #    thermal_interface = ThermalInterface()
 #    image_path = '../Data/test_image.jpg'
