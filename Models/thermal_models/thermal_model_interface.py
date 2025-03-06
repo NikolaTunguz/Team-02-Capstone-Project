@@ -6,7 +6,7 @@ import torch
 import torchvision.transforms as transforms
 from PIL import Image
 import os
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 #class imports
 from .concealed_pistol_classification import ConcealedPistol

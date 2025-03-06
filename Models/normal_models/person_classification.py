@@ -8,7 +8,7 @@ import os
 
 #general imports
 from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from PIL import Image
 
 class FineTunedRN18():
@@ -163,32 +163,6 @@ class FineTunedRN18():
         else:
             #print("No Person Detected.")
             return 0
-
-
-    def display_training_graphs(self):
-        plt.figure(figsize=(12, 6))
-        #accuracy
-        plt.subplot(1, 2, 1)
-        plt.title("Accuracy")
-        plt.xlabel("Epoch")
-        plt.ylabel("Accuracy")
-        plt.ylim(0, 1)
-
-        epochs = range(1,self.num_epochs+1)
-        plt.plot(epochs, self.epoch_train_acc, label="Training Accuracy")
-        plt.plot(epochs, self.epoch_val_acc, label="Validation Accuracy")
-        plt.legend()
-
-        #loss
-        plt.subplot(1, 2, 2)
-        plt.title("Loss")
-        plt.xlabel("Epoch")
-        plt.ylabel("Loss")
-
-        plt.plot(epochs, self.epoch_train_loss, label="Training Loss")
-        plt.plot(epochs, self.epoch_val_loss, label="Validation Loss")
-        plt.legend()
-        plt.show()
 
 
     def displayConfusionMatrix(self):
