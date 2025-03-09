@@ -2,12 +2,15 @@ import React, { useState, useRef } from "react";
 import { Dialog, DialogContent, IconButton, Box, Tooltip } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import CameraSettings from "./CameraSettings";
+import { useNavigate } from 'react-router-dom';
 import "../App.css";
 
 import temp_team_photo from '../assets/images/team_photo.jpg'
 
 const LiveStream = ({ camera }) => {
     const [open, setOpen] = useState(false);
+    const[originalName, setOriginalName] = useState(camera.device_name);
+    const navigate = useNavigate();
 
     const peerConnectionRef = useRef(null);  
     const signalingSocketRef = useRef(null);  
@@ -54,6 +57,7 @@ const LiveStream = ({ camera }) => {
 
     const handleOpen = async ()  => {
         await startStream();
+        setOriginalName(camera.device_name);
         setOpen(true);
     };
 
@@ -65,6 +69,11 @@ const LiveStream = ({ camera }) => {
             signalingSocketRef.current.close();
         }
         setOpen(false);
+
+        if(camera.device_name !== originalName)
+        {
+            navigate(0);
+        }
     };
 
     async function sendOffer(targetId) {
