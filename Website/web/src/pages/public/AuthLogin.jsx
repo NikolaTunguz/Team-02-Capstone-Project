@@ -12,7 +12,7 @@ const AuthLogin = () => {
   const [showPassword, setShowPassword] = React.useState(false)
   const [error, setError] = React.useState("")
   const navigate = useNavigate();
-  const { setIsLoggedIn } = useAuth();
+  const { setIsLoggedIn, setIsAdmin } = useAuth();
 
   // React.useEffect(() => {
   //   setIsLoggedIn(false);
@@ -39,7 +39,13 @@ const AuthLogin = () => {
       });
       if (resp.status === 200) {
         setIsLoggedIn(true);
-        navigate("/cameras");
+        if (resp.data.account_type === "admin") {
+          setIsAdmin(true);
+          navigate("/manage_users");
+        }
+        else {
+          navigate("/cameras");
+        }
       }
     } catch (e) {
       if (e.response?.status === 401) {
@@ -66,8 +72,8 @@ const AuthLogin = () => {
         })}
         onSubmit={async ({ email, password }, { setErrors, setStatus }) => {
           try {
-            await login(email, password); 
-            setStatus({ success: true }); 
+            await login(email, password);
+            setStatus({ success: true });
           } catch (e) {
             setStatus({ success: false });
             setErrors({ submit: e.message });

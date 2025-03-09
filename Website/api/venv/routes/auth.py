@@ -48,7 +48,8 @@ def login_user():
     session["user_id"] = user.id
     return jsonify({
         "id": user.id,
-        "email": user.email
+        "email": user.email,
+        "account_type": user.account_type
     })  
 
 @auth_bp.route('/update_email', methods=['POST'])
@@ -135,7 +136,7 @@ def update_phone_number():
     user = User.query.filter_by(id=user_id).first()
     user.phone_number = new_phone_number
     db.session.commit()
-    return jsonify({"message": "Phone number updated sucessfully"}), 200
+    return jsonify({"message": "Phone number updated successfully"}), 200
 
 @auth_bp.route('/first_last')
 def first_last():

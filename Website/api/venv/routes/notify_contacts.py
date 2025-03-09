@@ -59,5 +59,7 @@ def notify_user(user, notification, camera_name):
         Regards, 
         SeeThru 
         """
+        print("WASD", user.email)
+        print("WASD", user.id)
         if user.email:
             send_email(user.email, subject, body)

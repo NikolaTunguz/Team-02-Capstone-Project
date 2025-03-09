@@ -11,21 +11,21 @@ import { useAuth } from "../../context/AuthContext";
 const AccountMenu = () => {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const navigate = useNavigate();
-    const { setIsLoggedIn } = useAuth();
+    const { setIsLoggedIn, setIsAdmin, isAdmin } = useAuth();
     const { firstName, lastName, setFirstName, setLastName } = useAuth();
 
     React.useEffect(() => {
         const fetchFirstLast = async () => {
-            try{
+            try {
                 const response = await httpClient.get('http://localhost:8080/first_last');
                 setFirstName(response.data['first'])
                 setLastName(response.data['last'])
             } catch (error) {
                 console.error("Failed to fetch user name:", error);
             }
-          };
+        };
         fetchFirstLast()
-      }, []);
+    }, []);
 
 
     const handleMenuOpen = (event) => {
@@ -42,6 +42,7 @@ const AccountMenu = () => {
             if (resp.status === 200) {
                 handleMenuClose();
                 setIsLoggedIn(false);
+                setIsAdmin(false);
                 navigate('/')
             }
         } catch (e) {
@@ -53,7 +54,7 @@ const AccountMenu = () => {
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <IconButton onClick={handleMenuOpen}>
                 <AccountCircleIcon fontSize="large" />
-                <div style={{ fontSize: "medium", color: "black", marginLeft: "10px"}}>
+                <div style={{ fontSize: "medium", color: "black", marginLeft: "10px" }}>
                     {firstName}
                     {" "}
                     {lastName}
@@ -71,13 +72,13 @@ const AccountMenu = () => {
                     },
                 }}
             >
-                <MenuItem component={Link} to="/account" onClick={handleMenuClose}>
+                {!isAdmin && <MenuItem component={Link} to="/account" onClick={handleMenuClose}>
                     <ListItemIcon>
                         <SettingsIcon fontSize="small" />
                     </ListItemIcon>
                     Settings
-                </MenuItem>
-                <Divider style={{ margin: "10px 0" }} />
+                </MenuItem>}
+                {!isAdmin && <Divider style={{ margin: "10px 0" }} />}
                 <MenuItem onClick={logout}>
                     <ListItemIcon>
                         <LogoutIcon fontSize="small" />
