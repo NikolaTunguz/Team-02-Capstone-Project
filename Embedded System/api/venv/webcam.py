@@ -72,7 +72,7 @@ def image_process(camera_queue, im_pro_con):
         cv2.imwrite("localcache/input_image.jpg", frame)
         model_interface.set_normal_image("localcache/input_image.jpg")
         detected = model_interface.detect_person()
-        print(prev_detections)
+        #print(prev_detections)
         im_pro_con.send(model_interface.normal_interface.bbox_out())
         current_time = time.time()
         print(current_time - previous_notification > 60, ":", detected, ":", not (True in prev_detections))

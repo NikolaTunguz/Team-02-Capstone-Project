@@ -1,13 +1,20 @@
-import React from "react";
-import { Box, Typography, Button, Switch } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Box, Typography, Button, Switch, OutlinedInput, IconButton } from "@mui/material";
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
 import DeleteCamera from "./DeleteCamera.jsx";
 import { useNavigate } from 'react-router-dom';
+import httpClient from "../pages/httpClient";
 import "../App.css";
 
 const CameraSettings = ({ camera, setOpenDialog }) => {
     const [cameraToggleSwitch, setCameraSwitchState] = React.useState({});
     const [cameraToDelete, setCameraToDelete] = React.useState(null);
     const [open, setOpen] = React.useState(false);
+    const [editButton, setEditingState] = React.useState(false); 
+    const [deviceName, setDeviceName] = React.useState(camera.device_name);
+    const [error, setError] = React.useState("");
+    
     const navigate = useNavigate();
 
     const handleToggle = (camera) => {
@@ -27,6 +34,38 @@ const CameraSettings = ({ camera, setOpenDialog }) => {
         setCameraToDelete(null);
     };
 
+    const handleEditButton = () => 
+    {
+        setEditingState(!editButton);
+    };
+
+    const handleEditName = async () =>
+    {
+        try
+        {
+            await httpClient.post("http://localhost:8080/update_camera_name", 
+            {
+                device_id: camera.device_id, 
+                new_device_name: deviceName,
+            });
+            camera.device_name = deviceName;
+            setEditingState(false);
+            setError(""); 
+
+            //update name in camera dashboard (callback)
+            if(nameChange)
+            {
+                nameChange(camera.device_id, deviceName);
+            }
+
+        }
+        catch (e) 
+        {
+            setError(e.response?.data?.error || "Failed to update camera name.");
+        }
+    };
+
+
     return (
         <Box
             style={{
@@ -45,7 +84,39 @@ const CameraSettings = ({ camera, setOpenDialog }) => {
         >
             <Typography variant="h4" gutterBottom> Camera Settings </Typography>
 
-            <Typography variant="body1">Device Name: {camera.device_name}</Typography>
+
+            <Box
+            style={{
+                display: "flex",
+                alignItems: "center",
+            }}>
+                {editButton ? (
+                <>
+                    <OutlinedInput
+                    value={deviceName}
+                    onChange={(e) => setDeviceName(e.target.value)}
+                    />
+
+                    <IconButton 
+                    onClick={handleEditName}
+                    color="primary"
+                    >
+                    <SaveIcon/>
+                    </IconButton>
+                </>)
+                : 
+                (
+                    <Typography variant="body1">Device Name: {camera.device_name}</Typography>
+                )}
+                <IconButton 
+                onClick={handleEditButton}
+                color="primary"
+                sx={{ml: 1}}
+                >
+                    <EditIcon />
+                </IconButton>
+            </Box>
+
             <Typography variant="body1" gutterBottom>Device ID: {camera.device_id}</Typography>
 
             <Box
