@@ -47,8 +47,9 @@ class FineTunedFasterRCNNPerson():
 
         nms_indices = nms(bboxes[keep], scores[keep], 0.5) #last param, IoU threshold
         bboxes = bboxes[nms_indices]
+        scores = scores[nms_indices]
 
-        return bboxes
+        return bboxes, scores
     
 #testing, not directly called
 def main():
