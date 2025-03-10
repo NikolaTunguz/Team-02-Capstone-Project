@@ -21,6 +21,7 @@ class Notification (db.Model):
     device_id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column(db.String(25), primary_key=True)
     message = db.Column(db.String(50))
+    read = db.Column(db.Boolean, default=False)
 
 class UserCameras (db.Model):
     __tablename__ = "user_cameras"

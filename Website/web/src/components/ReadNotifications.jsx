@@ -4,17 +4,17 @@ import Expandable from './Expandable.jsx';
 import httpClient from '../pages/httpClient';
 import { Button, } from "@mui/material";
 import { Cancel } from "@mui/icons-material";
-import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
+import MarkAsUnreadIcon from '@mui/icons-material/MarkAsUnread';
 import { useNavigate } from 'react-router-dom';
 
-const NotificationDeck = () => {
+const ReadNotifications = () => {
   const [notifications, setNotifications] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const navigate = useNavigate();
 
-  React.useEffect(() => {
+React.useEffect(() => {
     const fetchNotifications = async () => {
-      const response = await httpClient.get('http://localhost:8080/notifications');
+      const response = await httpClient.get('http://localhost:8080/read-notifications');
       setNotifications(response.data);
       console.log(response.data)
       setLoading(false)
@@ -22,7 +22,20 @@ const NotificationDeck = () => {
     fetchNotifications();
   }, []);
 
-  const handleDelete = async (index) => {
+const handleMarkUnread = async (index) =>
+{
+    const notification = notifications[index];
+
+    await httpClient.post("http://localhost:8080/mark_unread",
+    {
+        device_id: notification.device_id,
+        timestamp: notification.timestamp,
+    });
+
+    setNotifications(notifications.filter((_, i) => i !== index));
+}
+
+const handleDelete = async (index) => {
     const updatedNotifications = notifications.filter((_, i) => i !== index);
     const data = {
       device_id:notifications[index]['device_id'],
@@ -30,73 +43,54 @@ const NotificationDeck = () => {
     };
     await httpClient.post("http://localhost:8080/remove_notification", data)
     setNotifications(updatedNotifications);
-  };
+};
 
-  const handleMarkRead = async (index) =>
-  {
-    const notification = notifications[index];
-
-    await httpClient.post("http://localhost:8080/mark_read",
-    {
-      device_id: notification.device_id,
-      timestamp: notification.timestamp,
-    });
-
-    setNotifications(notifications.filter((_, i) => i !== index));
-  }
-  
-  const handleMarkAllRead = async () =>
-  {
-    await httpClient.post("http://localhost:8080/mark_all_read");
+const handleDeleteAllRead = async () =>
+{
+    await httpClient.post("http://localhost:8080/delete_all_read");
     setNotifications([]);
-  };
+};
 
-  const handleViewReadNotifications = () =>
-  {
-    navigate('/read-notifications')
-  }
-
-  const createExpandables = () => {
+const createExpandables = () => {
     if (notifications.length > 0) {
-      return notifications.map((notification, index) => (
+    return notifications.map((notification, index) => (
         <div key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-          <Button 
+        <Button 
             onClick={() => handleDelete(index)}
-          >
+        >
             <Cancel sx={{ fontSize: 28, color: 'red'}} />
-          </Button>
-          <Button onClick={() => handleMarkRead(index)}>
-            <MarkEmailReadIcon/>
-          </Button>
-          <Expandable style={{marginLeft:"-3px"}} preview={notification['message']} content={notification['timestamp']} />
+        </Button>
+        <Button onClick={() => handleMarkUnread(index)}>
+            <MarkAsUnreadIcon/>
+        </Button>
+        <Expandable style={{marginLeft:"-3px"}} preview={notification['message']} content={notification['timestamp']} />
         </div>
-      ));
+    ));
     } else {
-      return 'No data available.';
+    return 'No data available.';
     }
-  }
+}
+if (loading) return <div>Loading...</div>;
 
-  if (loading) return <div>Loading...</div>;
-
-  return (
+return (
     <div>
-      <h2>Notifications Feed</h2>
+      <h2>Read Notifications Feed</h2>
 
       <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
         <Button
         variant="contained"
-        color="primary"
-        onClick={handleMarkAllRead}
+        sx={{backgroundColor: 'red', color: 'white'}}
+        onClick={handleDeleteAllRead}
         >
-          Mark All Read
+            Delete All Read
         </Button>
 
         <Button
         variant="contained"
         color="primary"
-        onClick={handleViewReadNotifications}
+        onClick={() => navigate('/notifications')}
         >
-          View Read Notifications
+          View Unread Notifications
         </Button>
       </div>
 
@@ -105,4 +99,4 @@ const NotificationDeck = () => {
   );
 };
 
-export default NotificationDeck;
+export default ReadNotifications;
