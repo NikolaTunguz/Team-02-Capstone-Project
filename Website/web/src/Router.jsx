@@ -10,6 +10,8 @@ import AppLayout from "./AppLayout";
 import AboutUs from './pages/about_us';
 import NotFound from './pages/public/not_found/index.jsx';
 import ManageUsers from './pages/manage_users/index.jsx';
+import ReadNotifications from './components/readNotifications';
+
 // import Feed from './pages/Feed.jsx';
 
 const Router = () => {
@@ -47,6 +49,10 @@ const Router = () => {
                     <Route
                         path="/notifications"
                         element={<AppLayout> <Notifications /></AppLayout>}
+                    />
+                    <Route
+                        path="/read-notifications"
+                        element={<AppLayout> <ReadNotifications /></AppLayout>}
                     />
                     <Route
                         path="/account"

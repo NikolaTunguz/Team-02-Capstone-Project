@@ -38,7 +38,8 @@ def notifications():
     ).select_from(UserCameras).join(
             Notification, UserCameras.device_id==Notification.device_id
     ).filter(
-        UserCameras.user_id == user_id
+        UserCameras.user_id == user_id,
+        Notification.read == False
     ).order_by(
         desc(Notification.timestamp)
     )
@@ -78,3 +79,94 @@ def mock_notification():
     notify_emergency_contacts(user_id, notification)
 
     return jsonify({"message": "Mock notification generated and email sent"}), 200
+
+@notifications_bp.route('/mark_read', methods=['POST'])
+def mark_read():
+    device_id = request.get_json().get("device_id")
+    timestamp = request.get_json().get("timestamp")
+
+    notification = Notification.query.filter_by(device_id=device_id, timestamp=timestamp).first()
+    if notification:
+        notification.read = True
+        db.session.commit()
+        return '', 200
+    else:
+        return jsonify({"error": "Notification not found"}), 404
+    
+@notifications_bp.route('/mark_unread', methods=['POST'])
+def mark_unread():
+    device_id = request.get_json().get("device_id")
+    timestamp = request.get_json().get("timestamp")
+
+    notification = Notification.query.filter_by(device_id=device_id, timestamp=timestamp).first()
+    if notification:
+        notification.read = False
+        db.session.commit()
+        return '', 200
+    else:
+        return jsonify({"error": "Notification not found"}), 404
+
+@notifications_bp.route('/mark_all_read', methods=['POST'])
+def mark_all_read():
+    user_id = session.get("user_id")
+
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    notifications = db.session.query(Notification).select_from(UserCameras).join(
+    Notification, UserCameras.device_id == Notification.device_id).filter(
+    UserCameras.user_id == user_id, Notification.read == False).all()
+
+    for notification in notifications:
+        notification.read = True
+    
+    db.session.commit()
+    return '', 200
+
+@notifications_bp.route('/delete_all_read', methods=['POST'])
+def delete_all_read():
+    user_id = session.get("user_id")
+
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    notifications = db.session.query(Notification).select_from(UserCameras).join(
+    Notification, UserCameras.device_id == Notification.device_id).filter(
+    UserCameras.user_id == user_id, Notification.read == True).all()
+
+    for notification in notifications:
+        db.session.delete(notification)
+        
+    db.session.commit()
+    return '', 200
+        
+
+@notifications_bp.route('/read-notifications')
+def read_notifications():
+    user_id = session.get("user_id")
+
+    if not user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    query = select(
+        Notification.timestamp, Notification.message, Notification.device_id
+    ).select_from(UserCameras).join(
+            Notification, UserCameras.device_id==Notification.device_id
+    ).filter(
+        UserCameras.user_id == user_id,
+        Notification.read == True
+    ).order_by(
+        desc(Notification.timestamp)
+    )
+
+    notifications = db.session.execute(query).all()
+
+    notifications = [
+        {"timestamp": str(notification[0]), "message": notification[1], "device_id": notification[2]}
+        for notification in notifications
+    ]
+
+    return json.dumps(notifications, default=str)
+
+
+
