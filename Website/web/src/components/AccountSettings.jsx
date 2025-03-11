@@ -39,7 +39,7 @@ const AccountSettings = () => {
     React.useEffect(() => {
         const fetchCurrentEmail = async () => {
             try {
-                const response = await httpClient.get("http://localhost:8080/@me");
+                const response = await httpClient.get("/api/@me");
                 setCurrentEmail(response.data.email);
             } catch (error) {
                 console.error("Failed to fetch current email:", error);
@@ -51,7 +51,7 @@ const AccountSettings = () => {
     React.useEffect(() => {
         const fetchCurrentPhoneNumber = async () => {
             try {
-                const response = await httpClient.get("http://localhost:8080/current_phone_number");
+                const response = await httpClient.get("/api/current_phone_number");
                 setCurrentPhoneNumber(response.data.phone_number);
             } catch (error) {
                 console.error("Failed to fetch current phone number:", error);
@@ -62,7 +62,7 @@ const AccountSettings = () => {
 
     const updateEmail = async (email) => {
         try {
-            const resp = await httpClient.post("http://localhost:8080/update_email", { email });
+            const resp = await httpClient.post("/api/update_email", { email });
             if (resp.status === 200) {
                 setCurrentEmail(email);
                 setFormStatus({ ...formStatus, loginInfo: { success: true, message: "Account updated successfully!" } });
@@ -80,7 +80,7 @@ const AccountSettings = () => {
 
     const updatePassword = async (currentPassword, newPassword) => {
         try {
-            const resp = await httpClient.post("http://localhost:8080/update_password", {
+            const resp = await httpClient.post("/api/update_password", {
                 current_password: currentPassword,
                 new_password: newPassword,
             });
@@ -100,7 +100,7 @@ const AccountSettings = () => {
 
     const updateFirstName = async (first_name) => {
         try {
-            const resp = await httpClient.post("http://localhost:8080/update_first_name", { first_name });
+            const resp = await httpClient.post("/api/update_first_name", { first_name });
             setFirstName(first_name)
             if (resp.status === 200) {
                 setFormStatus({ ...formStatus, personalInfo: { success: true, message: "Account updated successfully!" } });
@@ -112,7 +112,7 @@ const AccountSettings = () => {
 
     const updateLastName = async (last_name) => {
         try {
-            const resp = await httpClient.post("http://localhost:8080/update_last_name", { last_name });
+            const resp = await httpClient.post("/api/update_last_name", { last_name });
             setLastName(last_name)
             if (resp.status === 200) {
                 setFormStatus({ ...formStatus, personalInfo: { success: true, message: "Account updated successfully!" } });
@@ -124,7 +124,7 @@ const AccountSettings = () => {
 
     const updatePhoneNumber = async (phone_number) => {
         try {
-            const resp = await httpClient.post("http://localhost:8080/update_phone_number", { phone_number });
+            const resp = await httpClient.post("/api/update_phone_number", { phone_number });
             setCurrentPhoneNumber(phone_number)
             if (resp.status === 200) {
                 setFormStatus({ ...formStatus, personalInfo: { success: true, message: "Account updated successfuly!" } });

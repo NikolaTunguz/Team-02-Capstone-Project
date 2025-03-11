@@ -43,7 +43,7 @@ const EmergencyContacts = () => {
 
     const getContacts = async () => {
         try {
-            const response = await httpClient.get("http://localhost:8080/get_emergency_contacts");
+            const response = await httpClient.get("/api/get_emergency_contacts");
             setContacts(response.data.contacts || []);
         } catch (e) {
             console.error("Failed to fetch contacts:", e);
@@ -53,12 +53,12 @@ const EmergencyContacts = () => {
     const handleAddOrUpdate = async (values, { resetForm }) => {
         try {
             if (editingContact) {
-                await httpClient.put("http://localhost:8080/update_emergency_contact", {
+                await httpClient.put("/api/update_emergency_contact", {
                     ...values,
                     previous_email: editingContact.email,
                 });
             } else {
-                await httpClient.post("http://localhost:8080/create_emergency_contact", values);
+                await httpClient.post("/api/create_emergency_contact", values);
             }
             resetForm();
             resetModal();
@@ -70,7 +70,7 @@ const EmergencyContacts = () => {
 
     const deleteContact = async (email) => {
         try {
-            await httpClient.post("http://localhost:8080/delete_emergency_contact", { email });
+            await httpClient.post("/api/delete_emergency_contact", { email });
             getContacts();
         } catch (e) {
             console.error("Failed to delete contact:", e);

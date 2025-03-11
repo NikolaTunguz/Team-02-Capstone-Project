@@ -43,7 +43,7 @@ const CameraSettings = ({ camera, setOpenDialog }) => {
     {
         try
         {
-            await httpClient.post("http://localhost:8080/update_camera_name", 
+            await httpClient.post("/api/update_camera_name", 
             {
                 device_id: camera.device_id, 
                 new_device_name: deviceName,
