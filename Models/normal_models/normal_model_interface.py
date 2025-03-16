@@ -22,6 +22,7 @@ class NormalInterface:
 
         #initialize scores
         self.person_scores = []
+        self.package_scores = []
 
     def training(self):
         #only train if needed.
@@ -51,11 +52,23 @@ class NormalInterface:
 
     def detect_package(self, image_path):
         #packages
-        package_result = self.package_classifier.prediction(image_path)
-        if(package_result == 1):
-            self.package_bboxes = self.package_detector.prediction(image_path)
+        # package_result = self.package_classifier.prediction(image_path)
+        # if(package_result == 1):
+        #     self.package_bboxes = self.package_detector.prediction(image_path)
+        # else:
+        #     print("No package detected")
+
+        #if no detection, empty bboxes
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.package_bboxes = torch.empty((0, 4), device=device)
+        self.package_scores = torch.empty((0,), device=device)
+
+        self.package_bboxes, self.package_scores = self.package_detector.prediction(image_path)
+
+        if(self.package_bboxes.size(0) == 0):
+            return False
         else:
-            print("No package detected")
+            return True
             
 
     def get_output_image(self, image_path):
@@ -104,9 +117,17 @@ class NormalInterface:
 
         return image
     
-    def bbox_out(self):
-        return self.person_bboxes.cpu().numpy().astype("int")
+    # def bbox_out(self):
+    #     person_bboxes = self.person_bboxes.cpu().numpy().astype("int")
+    #     package_bboxes = self.package_bboxes.cpu().numpy().astype("int")
+
+    #     combined_bboxes = {
+    #         "person": person_bboxes,
+    #         "package": package_bboxes
+    #     }
         
+    #     return combined_bboxes
+
     
 
 #training and testing the class works. Not used.

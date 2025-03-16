@@ -40,7 +40,7 @@ class FineTunedFasterRCNNPerson():
         scores = scores[person_only]
         
         #NMS filtering
-        keep = torch.where(scores > 0.95)[0]
+        keep = torch.where(scores > 0.8)[0]
         #check if empty bboxes BEFORE nms
         if (keep.numel() == 0):
             return torch.empty((0, 4), device=self.device), torch.empty((0,), device=self.device)

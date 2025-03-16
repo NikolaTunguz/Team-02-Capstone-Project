@@ -146,11 +146,17 @@ class FinedTunedFasterRCNNPackage():
         bboxes, scores = pred[0]["boxes"], pred[0]["scores"]
         
         #NMS filtering
-        keep = torch.where(scores > 0.05)
+        keep = torch.where(scores > 0.99)[0]
+
+        #check for empty bboxes
+        if (keep.numel() == 0):
+            return torch.empty((0, 4), device=self.device), torch.empty((0,), device=self.device)
+
         nms_indices = nms(bboxes[keep], scores[keep], 1)
         bboxes = bboxes[nms_indices]
+        scores = scores[nms_indices]
 
-        return bboxes
+        return bboxes, scores
 
 
 #formatting annotation CSV into usable dataset for faster rcnn.
