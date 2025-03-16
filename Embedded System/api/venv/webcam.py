@@ -64,36 +64,37 @@ def camera_reader(camera_queue):
         camera_queue.put(frame)
 
 def image_process(camera_queue, im_pro_con):
-    print("im_pro started")
+    print("Image processing started")
     previous_notification = 0
     prev_detections = deque(maxlen=3)
-    while(True):
+    last_thumbnail_time = time.time()
+
+    while True:
         frame = camera_queue.get()
-        cv2.imwrite("localcache/input_image.jpg", frame)
-        model_interface.set_normal_image("localcache/input_image.jpg")
-        detected = model_interface.detect_person()
-        #print(prev_detections)
-        im_pro_con.send(model_interface.normal_interface.bbox_out())
-        current_time = time.time()
-        print(current_time - previous_notification > 60, ":", detected, ":", not (True in prev_detections))
-        if ((current_time - previous_notification > 60) and detected and not (True in prev_detections)):
-            previous_notification = current_time
-            date = datetime.now()
-            date = date.strftime("%m/%d/%Y, %H:%M:%S")
+        if frame is None or frame.size == 0:
+            print("Error: Empty frame")
+            continue
 
-            headers={
-                'Content-type':'application/json',
-                'Accept':'application/json'
-            }
+        if time.time() - last_thumbnail_time > 30:
+            try:
+                cv2.imwrite("localcache/thumbnail.jpg", frame)
+                with open("localcache/thumbnail.jpg", "rb") as img_file:
+                    response = requests.post(
+                        "http://127.0.0.1:8080/update_thumbnail", 
+                        files={"thumbnail": ("thumbnail.jpg", img_file, "image/jpeg")},
+                        data={"device_id": 14}
+                    )
+                    
+                    if response.status_code == 200:
+                        print("Thumbnail updated successfully")
+                    else:
+                        print(f"Failed to update thumbnail. Status code: {response.status_code}")
+            
+            except Exception as e:
+                print(f"Error in image processing: {e}")
 
-            data = {
-                "device_id":14,
-                "timestamp":date,
-                "message":"Person detected at camera."
-            }
-            requests.post("http://127.0.0.1:8080/database", json=data, headers=headers)
-        prev_detections.append(detected)
-        
+            last_thumbnail_time = time.time()
+
 async def on_offer(offer_sdp, target_id, camera_queue, webrtc_con):
     offer = RTCSessionDescription(sdp=offer_sdp, type="offer")
 
