@@ -72,39 +72,21 @@ def camera_reader(camera_queue):
         ret, frame = cap.read()
         camera_queue.put(frame)
 
-def image_process(camera_queue, im_pro_con_person, im_pro_con_package):
+def image_process(camera_queue, im_pro_con):
     print("im_pro started")
-    previous_person_notification = 0
-    previous_package_notification = 0 
-    prev_person_detections = deque(maxlen=3)
-    prev_package_detections = deque(maxlen=3)
-
-    frame_counter = 0
-
+    previous_notification = 0
+    prev_detections = deque(maxlen=3)
     while(True):
         frame = camera_queue.get()
         cv2.imwrite("localcache/input_image.jpg", frame)
         model_interface.set_normal_image("localcache/input_image.jpg")
-
-        #person detection
-        person_detected = model_interface.detect_person()
-        person_bboxes = model_interface.normal_interface.person_bboxes.cpu().numpy().astype("int")
-        im_pro_con_person.send(person_bboxes)
-
-        #every X frames do package detection
-        if frame_counter % 300 == 0:
-            package_detected = model_interface.detect_package()
-        else:
-            package_detected = False
-        package_bboxes = model_interface.normal_interface.package_bboxes.cpu().numpy().astype("int")
-
-        im_pro_con_package.send(package_bboxes)
-        
-        #notifications
+        detected = model_interface.detect_person()
+        #print(prev_detections)
+        im_pro_con.send(model_interface.normal_interface.bbox_out())
         current_time = time.time()
-        print(current_time - previous_person_notification > 60, ":", person_detected, ":", not (True in prev_person_detections))
-        if ((current_time - previous_person_notification > 60) and person_detected and not (True in prev_person_detections)):
-            previous_person_notification = current_time
+        print(current_time - previous_notification > 60, ":", detected, ":", not (True in prev_detections))
+        if ((current_time - previous_notification > 60) and detected and not (True in prev_detections)):
+            previous_notification = current_time
             date = datetime.now()
             date = date.strftime("%m/%d/%Y, %H:%M:%S")
 
@@ -119,29 +101,7 @@ def image_process(camera_queue, im_pro_con_person, im_pro_con_package):
                 "message":"Person detected at camera."
             }
             requests.post("http://127.0.0.1:8080/database", json=data, headers=headers)
-        prev_person_detections.append(person_detected)
-
-        print(current_time - previous_package_notification > 60, ":", package_detected, ":", not (True in prev_package_detections))
-        if ((current_time - previous_package_notification > 60) and package_detected and not (True in prev_package_detections)):
-            previous_package_notification = current_time
-            date = datetime.now()
-            date = date.strftime("%m/%d/%Y, %H:%M:%S")
-
-            headers={
-                'Content-type':'application/json',
-                'Accept':'application/json'
-            }
-
-            data = {
-                "device_id":14,
-                "timestamp":date,
-                "message":"Package detected at camera."
-            }
-            requests.post("http://127.0.0.1:8080/database", json=data, headers=headers)
-        prev_package_detections.append(package_detected)
-
-        frame_counter += 1
-
+        prev_detections.append(detected)
 
 async def on_offer(offer_sdp, target_id, camera_queue, webrtc_con_person, webrtc_con_package):
     offer = RTCSessionDescription(sdp=offer_sdp, type="offer")
