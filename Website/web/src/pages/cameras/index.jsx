@@ -56,6 +56,15 @@ export default function Cameras() {
                                                 {camera.device_name}
                                             </Typography>
                                             <LiveStream camera={camera} className="camera-display" />
+                                            <Typography
+                                                sx={{
+                                                    fontFamily: "BlinkMacSystemFont",
+                                                    fontSize: "12px",
+                                                    color: "black"
+                                                }}
+                                            >
+                                                Last Updated: {new Date(camera.last_updated).toLocaleString()}
+                                            </Typography>
                                         </div>
                                     )}
                                 </Draggable>

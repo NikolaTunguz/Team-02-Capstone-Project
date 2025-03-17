@@ -15,7 +15,8 @@ def get_user_cameras():
         camera_list = [
             {
                 "device_id": camera.device_id,
-                "device_name": camera.device_name
+                "device_name": camera.device_name,
+                "last_updated": camera.last_updated,
             } 
             for camera in cameras
         ]
