@@ -10,4 +10,5 @@ Models/Data/AnnotatedData
 Models/Data/test_image.jpg
 Embedded System/api/venv/localcache/input_image.jpg
 Embedded System/api/venv/localcache/test_thermal_image.jpg
+Embedded System/api/venv/localcache/thumbnail.jpg
 **/.DS_Store
