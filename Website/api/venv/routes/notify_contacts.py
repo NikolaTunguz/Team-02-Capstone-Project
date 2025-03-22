@@ -10,9 +10,18 @@ def send_email(recipient_email, subject, body):
     load_dotenv()
     sender_email = "seethrucapstone@gmail.com"
     sender_password = os.getenv('SMTP_APP_PASSWORD')
-    print(f"SMTP password: {sender_password}")
     
-    message = f"Subject: {subject}\n\n{body}"
+    message = EmailMessage()
+    message["Subject"] = subject
+    message["From"] = sender_email
+    message["To"] = recipient_email
+    message.set_content(body)
+
+    if image_path and os.path.exists(image_path):
+        with open(image_path, "rb") as img_file:
+            img_data = img_file.read()
+            msg.add_attachment(img_data, maintype="image", subtype="jpeg", filename="event_snapshot.jpg")
+
     
     with smtplib.SMTP("smtp.gmail.com", 587) as server:
         server.starttls()
@@ -41,7 +50,7 @@ def notify_emergency_contacts(user_id, notification, camera_name):
         SeeThru 
         """
         if contact.email:
-            send_email(contact.email, subject, body)
+            send_email(contact.email, subject, body, notification.image_path)
 
 def notify_user(user, notification, camera_name): 
         subject = "Emergency Notification Alert"
@@ -62,4 +71,4 @@ def notify_user(user, notification, camera_name):
         print("WASD", user.email)
         print("WASD", user.id)
         if user.email:
-            send_email(user.email, subject, body)
+                send_email(user.email, subject, body, notification.image_path)

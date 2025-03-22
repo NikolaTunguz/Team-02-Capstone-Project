@@ -11,24 +11,36 @@ bcrypt = Bcrypt()
 
 @notifications_bp.route('/database', methods=['POST'])
 def database(): 
-    device_id = request.get_json().get("device_id")
+    device_id = request.form.get("device_id") 
     user_camera = UserCameras.query.filter_by(device_id=device_id).first()
     if not user_camera:
         return jsonify({"error": "Device not found"}), 404
+
     user_camera_name = user_camera.device_name
     user_id = user_camera.user_id 
     user = User.query.filter_by(id=user_id).first()
-    timestamp = request.get_json().get("timestamp")
-    message = request.get_json().get("message")
+    timestamp = request.form.get("timestamp")
+    message = request.form.get("message")
+
     notification = Notification()
     notification.device_id = device_id
     notification.timestamp = timestamp
     notification.message = message
+
+    if "snapshot" in request.files:
+        image_file = request.files["snapshot"]
+        image_path = os.path.join("static/snapshots", f"{device_id}_{timestamp.replace('/', '-').replace(':', '-')}.jpg")
+        image_file.save(image_path)
+        notification.image_path = image_path  
+
     db.session.add(notification)
     db.session.commit()
+
     notify_emergency_contacts(user_id, notification, user_camera_name)
     notify_user(user, notification, user_camera_name)
+    
     return '', 200
+
     
 @notifications_bp.route('/notifications')
 def notifications():

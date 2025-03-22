@@ -80,18 +80,26 @@ def image_process(camera_queue, im_pro_con):
             previous_notification = current_time
             date = datetime.now()
             date = date.strftime("%m/%d/%Y, %H:%M:%S")
-
+            
+            snapshot_path = "localcache/event_snapshot.jpg"
+            cv2.imwrite(snapshot_path, frame)
             headers={
                 'Content-type':'application/json',
                 'Accept':'application/json'
             }
+            with open(snapshot_path, "rb") as img_file:
+                files = {"snapshot": ("event_snapshot.jpg", img_file, "image/jpeg")}
+                data = {
+                    "device_id": 14,
+                    "timestamp": date,
+                    "message": "Person detected at camera."
+                }
+                response = requests.post("http://127.0.0.1:8080/database", json=data, headers=headers, files=files)
 
-            data = {
-                "device_id":14,
-                "timestamp":date,
-                "message":"Person detected at camera."
-            }
-            requests.post("http://127.0.0.1:8080/database", json=data, headers=headers)
+                if response.status_code == 200:
+                    print("Notification and snapshot sent successfully")
+                else:
+                    print(f"Failed to send notification. Status code: {response.status_code}")
         prev_detections.append(detected)
         
 async def on_offer(offer_sdp, target_id, camera_queue, webrtc_con):
