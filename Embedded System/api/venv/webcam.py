@@ -94,7 +94,7 @@ def image_process(camera_queue, im_pro_con):
                     "timestamp": date,
                     "message": "Person detected at camera."
                 }
-                response = requests.post("http://127.0.0.1:8080/database", json=data, headers=headers, files=files)
+                response = requests.post("http://127.0.0.1:8080/database", data=data, headers=headers, files=files)
 
                 if response.status_code == 200:
                     print("Notification and snapshot sent successfully")
