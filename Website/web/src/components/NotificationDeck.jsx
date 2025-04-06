@@ -6,6 +6,7 @@ import { Button, } from "@mui/material";
 import { Cancel } from "@mui/icons-material";
 import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
 import { useNavigate } from 'react-router-dom';
+import useSound from 'use-sound';
 
 const NotificationDeck = () => {
   const [notifications, setNotifications] = React.useState([]);
@@ -21,6 +22,24 @@ const NotificationDeck = () => {
     };
     fetchNotifications();
   }, []);
+
+  const [play] = useSound('https://notificationsounds.com/storage/sounds/file-sounds-1154-pristine.mp3', {
+    volume: 0.5
+  });
+
+  React.useEffect(() => {
+    const eventSource = new EventSource('http://localhost:8080/subscribe');
+
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      setNotifications(prev => [...prev, data]);
+      play();  
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, [play]);
 
   const handleDelete = async (index) => {
     const updatedNotifications = notifications.filter((_, i) => i !== index);
