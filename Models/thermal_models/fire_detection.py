@@ -68,7 +68,8 @@ class FireDetection():
 
         #-20C is 0, 550C is 255
         #fire begins around ~200C, corresponds to ~86.8 in pixel value
-        _, thermal_image = cv2.threshold(thermal_image, 85, 255, cv2.THRESH_BINARY)
+        #lighter fires are tamer, ~100
+        _, thermal_image = cv2.threshold(thermal_image, 30, 255, cv2.THRESH_BINARY)
         #cv2.imshow('test',thermal_image)
         #cv2.waitKey(0)
 
@@ -80,7 +81,7 @@ class FireDetection():
 
         for contour in contours:
             area = cv2.contourArea(contour)
-            if area > 20:
+            if area > 10:
                 detected = True
                 num_fires += 1
                 true_contours.append(contour)
@@ -98,5 +99,9 @@ if __name__ == '__main__':
     fire = FireDetection()
 
     fire.set_thermal_image_path('../../Embedded System/api/venv/localcache/thermal_frame_0.npy')
-    detection, num_fires = fire.detect()
+    detection, num_fires, contours = fire.detect()
+    print(detection, num_fires)
+
+    fire.set_thermal_image_path('../../Embedded System/api/venv/localcache/thermal_frame_1.npy')
+    detection, num_fires, contours = fire.detect()
     print(detection, num_fires)
