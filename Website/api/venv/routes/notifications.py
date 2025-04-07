@@ -6,7 +6,6 @@ from .notify_contacts import notify_emergency_contacts, notify_user
 import json
 import time
 
-
 notifications_bp = Blueprint('notifications', __name__)
 bcrypt = Bcrypt()
 subscribers = []
