@@ -59,11 +59,25 @@ class FireDetection():
 
         return scaled_temp
 
+    def convert_raw_thermal_to_displayable(self, image):
+        image_data, thermal_data = np.array_split(image, 2, axis = 1)
+        hi = image_data[:, :, 0].astype(np.uint16)
+        lo = image_data[:, :, 1].astype(np.uint16)
+        raw_temp = hi * 256 + lo
+
+        #normalize for display (0–255)
+        normalized = cv2.normalize(raw_temp, None, 0, 255, cv2.NORM_MINMAX)
+        normalized = normalized.astype(np.uint8)
+
+        #apply a color map for visibility
+        colored = cv2.applyColorMap(normalized, cv2.COLORMAP_JET)
+
+        return colored
 
     def detect(self):
         image = np.load(self.image_path)
         thermal_image = self.convert_to_temperature(image)
-        #cv2.imshow('test',thermal_image)
+        #cv2.imshow('test', image)
         #cv2.waitKey(0)
 
         #-20C is 0, 550C is 255
@@ -87,9 +101,15 @@ class FireDetection():
                 true_contours.append(contour)
         
         #cv2.drawContours(thermal_image, true_contours, -1, (150), 2)
-        #cv2.imshow('test',thermal_image)
+        #cv2.imshow('test', thermal_image)
         #cv2.waitKey(0)
-        
+
+        #image = self.convert_raw_thermal_to_displayable(image)
+        #cv2.drawContours(image, true_contours, -1, (255, 255, 255), 2)
+        #image = cv2.resize(image, None, fx=3, fy=3, interpolation = cv2.INTER_CUBIC)
+        #cv2.imshow('test', image)
+        #cv2.waitKey(0)
+
         if detected:
             return True, num_fires, true_contours
         else:
