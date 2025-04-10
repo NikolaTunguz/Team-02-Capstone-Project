@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import useSound from 'use-sound';
+import notificationSound from '../assets/sounds/notification-pluck-off-269290.mp3';
 
 const NotificationListener = () => {
     const [canPlay, setCanPlay] = useState(false);
-    const [play] = useSound('https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg', {
+    const [play] = useSound(notificationSound, {
         volume: 0.5,
         interrupt: true,
     });
@@ -31,8 +32,8 @@ const NotificationListener = () => {
             play();
         };
 
-        return () => { 
-            eventSource.close(); 
+        return () => {
+            eventSource.close();
         };
     }, [canPlay, play]);
 
