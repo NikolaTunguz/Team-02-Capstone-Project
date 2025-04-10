@@ -11,4 +11,11 @@ Models/Data/test_image.jpg
 Embedded System/api/venv/localcache/input_image.jpg
 Embedded System/api/venv/localcache/test_thermal_image.jpg
 Embedded System/api/venv/localcache/thumbnail.jpg
+Embedded System/api/venv/localcache/test_img_1.jpg
+Embedded System/api/venv/localcache/test_img_2.jpg
+Embedded System/api/venv/localcache/test_img_3.jpg
+Embedded System/api/venv/localcache/test_img_4.jpg
+Embedded System/api/venv/localcache/*.jpg
+Embedded System/api/venv/localcache/*.npy
+Embedded System/api/venv/localcache/event_snapshot.jpg
 **/.DS_Store

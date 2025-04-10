@@ -63,7 +63,7 @@ def camera_reader(camera_queue):
         ret, frame = cap.read()
         camera_queue.put(frame)
 
-def image_process(camera_queue, im_pro_con):
+def image_process(camera_queue, im_pro_con, webrtc_con):
     print("im_pro started")
     previous_notification = 0
     prev_detections = deque(maxlen=3)
@@ -73,7 +73,11 @@ def image_process(camera_queue, im_pro_con):
         model_interface.set_normal_image("localcache/input_image.jpg")
         detected = model_interface.detect_person()
         #print(prev_detections)
+        print("pipe send")
+        if(webrtc_con.poll()):
+            webrtc_con.recv()
         im_pro_con.send(model_interface.normal_interface.bbox_out())
+        print("pip received")
         current_time = time.time()
         print(current_time - previous_notification > 60, ":", detected, ":", not (True in prev_detections))
         if ((current_time - previous_notification > 60) and detected and not (True in prev_detections)):
@@ -151,8 +155,8 @@ async def im_read(camera_queue):
     im_reader.start()
     await im_reader.coro_join()
 
-async def run_im_pro(camera_queue, im_pro_con):
-    im_pro = aioprocessing.AioProcess(target=image_process, args=[camera_queue, im_pro_con])
+async def run_im_pro(camera_queue, im_pro_con, webrtc_con):
+    im_pro = aioprocessing.AioProcess(target=image_process, args=[camera_queue, im_pro_con, webrtc_con])
     im_pro.start()
     await im_pro.coro_join()
 
@@ -202,7 +206,7 @@ if __name__ == "__main__":
     tasks = [
         asyncio.ensure_future(im_read(camera_queue)),
         asyncio.ensure_future(main(camera_queue, webrtc_con)),
-        asyncio.ensure_future(run_im_pro(camera_queue, im_pro_con)),
+        asyncio.ensure_future(run_im_pro(camera_queue, im_pro_con, webrtc_con)),
         asyncio.ensure_future(run_thumbnail_process(camera_queue)),
     ]
     try:
