@@ -17,4 +17,5 @@ Embedded System/api/venv/localcache/test_img_3.jpg
 Embedded System/api/venv/localcache/test_img_4.jpg
 Embedded System/api/venv/localcache/*.jpg
 Embedded System/api/venv/localcache/*.npy
+Embedded System/api/venv/localcache/event_snapshot.jpg
 **/.DS_Store

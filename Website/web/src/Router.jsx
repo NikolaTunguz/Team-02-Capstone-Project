@@ -11,7 +11,7 @@ import AboutUs from './pages/about_us';
 import NotFound from './pages/public/not_found/index.jsx';
 import ManageUsers from './pages/manage_users/index.jsx';
 import ReadNotifications from './components/readNotifications';
-
+import NotificationListener from './components/NotificationListener';
 // import Feed from './pages/Feed.jsx';
 
 const Router = () => {
@@ -19,7 +19,12 @@ const Router = () => {
 
     return (
         <BrowserRouter>
-            {isLoggedIn && !isAdmin && <NavBar />}
+            {isLoggedIn && !isAdmin &&
+                <>
+                    <NavBar />
+                    <NotificationListener />
+                </>
+            }
             <Routes>
                 <Route
                     path="/login"
@@ -65,12 +70,12 @@ const Router = () => {
                     /> */}
                 </>}
                 {isLoggedIn && isAdmin && <>
-                    <Route 
-                        path = "/manage_users"
-                        element = {<ManageUsers />}
+                    <Route
+                        path="/manage_users"
+                        element={<ManageUsers />}
                     />
-                    
-                
+
+
                 </>}
             </Routes>
         </BrowserRouter>
