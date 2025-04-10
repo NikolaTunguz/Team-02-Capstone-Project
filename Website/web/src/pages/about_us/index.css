@@ -5,15 +5,14 @@
     flex-direction: column;
     text-align: center;
     margin-top: 70px;
-    margin-left: 10%;
-    margin-right: 10%;
 }
 
 .product_h2 {
     color: #000000;
     text-align: left;
     font-size: 2rem;
-    padding-left: 25%;
+    padding-left: 40%;
+    padding-top: 3%;
 }
 
 .team_h2 {
@@ -21,13 +20,14 @@
     text-align: right;
     font-size: 2rem;
     padding-right: 25%;
+    padding-top: 3%;
 }
 
 .content {
     display: flex;
     flex-direction: row;
     justify-content: start;
-    align-items: center;
+    align-items: flex-start;
     width: 70%;
     padding-left: 15%;
     padding-right: 15%;
@@ -41,23 +41,45 @@
     width: auto;
 }
 
-.content img{
-    border:  3px solid #000000;
+.content img {
+    border: 2px solid #000000;
     border-color: #000000;
-    border-radius: 20%;
+    border-radius: 2%;
     width: 50%;
     align-self: center;
 }
 
 .product_section .content img {
-    width: 50%;  
-    height: auto;  
-    max-height: 250px;  
-    background-color: rgb(190, 214, 246);
+    width: 53%;
+    height: auto;
+    background-color: rgb(255, 255, 255);
 }
 
 .team_section .content img {
-    width: 50%; 
-    height: auto; 
-    max-height: 400px;
+    width: 50%;
+    height: auto;
+}
+
+.team_section {
+    padding-top: 1%;
+}
+
+.contact_section {
+    width: 100%;
+    background-color: #f9f9f9;
+    text-align: center;
+    margin-top: 13rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.contact_text {
+    font-size: 1.2rem;
+    color: #333333;
+    line-height: 1.6;
+}
+
+.contact_text a {
+    color: #0077cc;
+    text-decoration: none;
+    font-weight: bold;
 }
