@@ -27,15 +27,14 @@ import {
 } from "@mui/icons-material";
 import httpClient from "../pages/httpClient";
 import NotificationInfo from "./NotificationInfo";
+import { showSuccess, showError } from "./ToastUtils";
 
 const EmergencyContacts = () => {
     const [contacts, setContacts] = useState([]);
     const [editingContact, setEditingContact] = useState(null);
-    const [error, setError] = useState("");
     const [open, setOpen] = useState(false);
 
     const resetModal = () => {
-        setError("");
         setEditingContact(null);
         setOpen(false);
         getContacts();
@@ -60,11 +59,16 @@ const EmergencyContacts = () => {
             } else {
                 await httpClient.post("http://localhost:8080/create_emergency_contact", values);
             }
+            showSuccess(`Contact ${editingContact ? "updated" : "added"} successfully!`);
             resetForm();
             resetModal();
         } catch (e) {
-            if (e.response.status === 409) setError("Contact already exists")
-            else setError(e.response?.data?.error || "Failed to save contact.");
+            if (e.response.status === 409) {
+                showError("Contact already exists");
+            }
+            else {
+                showError(e.response?.data?.error || "Failed to save contact.");
+            }
         }
     };
 
@@ -72,9 +76,10 @@ const EmergencyContacts = () => {
         try {
             await httpClient.post("http://localhost:8080/delete_emergency_contact", { email });
             getContacts();
+            showSuccess("Contact deleted successfully!");
         } catch (e) {
             console.error("Failed to delete contact:", e);
-            setError("Could not delete contact.");
+            showError("Could not delete contact.");
         }
     };
 
@@ -401,11 +406,6 @@ const EmergencyContacts = () => {
                         )}
                     </Formik>
                     <br />
-                    {error && (
-                        <Typography variant="body2" color="error" sx={{ mb: 2 }}>
-                            {error}
-                        </Typography>
-                    )}
                 </Box>
             </Modal>
         </>
