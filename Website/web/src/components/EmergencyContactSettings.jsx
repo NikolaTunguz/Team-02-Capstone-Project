@@ -143,16 +143,20 @@ const EmergencyContacts = () => {
                                     </List>
                                 </Box>
                                 <Box sx={{ gap: 2, }}>
-                                    <IconButton
-                                        onClick={() => {
-                                            setEditingContact(contact);
-                                            setOpen(true);
-                                        }}
-                                    > <Edit sx={{ fontSize: 28 }} />
-                                    </IconButton>
-                                    <IconButton color="error" onClick={() => deleteContact(contact.email)}>
-                                        <Delete sx={{ fontSize: 28 }} />
-                                    </IconButton>
+                                    <Tooltip title="Edit Contact">
+                                        <IconButton
+                                            onClick={() => {
+                                                setEditingContact(contact);
+                                                setOpen(true);
+                                            }}
+                                        > <Edit sx={{ fontSize: 28 }} />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title="Delete Contact">
+                                        <IconButton color="error" onClick={() => deleteContact(contact.email)}>
+                                            <Delete sx={{ fontSize: 28 }} />
+                                        </IconButton>
+                                    </Tooltip>
                                 </Box>
                             </Stack>
                         ))}
