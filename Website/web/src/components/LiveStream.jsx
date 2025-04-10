@@ -5,7 +5,7 @@ import CameraSettings from "./CameraSettings";
 import { useNavigate } from 'react-router-dom';
 import "../App.css";
 import httpClient from '../pages/httpClient';
-import temp_team_photo from '../assets/images/team_photo.jpg'
+import temp_team_photo from '../assets/images/team_photo.png'
 
 const LiveStream = ({ camera }) => {
     const [open, setOpen] = useState(false);

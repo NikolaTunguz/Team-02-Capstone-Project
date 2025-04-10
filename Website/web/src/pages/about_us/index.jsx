@@ -1,7 +1,7 @@
 import React from 'react';
 import './index.css';
 import HomeNavBar from '../../components/HomeNavBar.jsx'
-import temp_team_photo from '../../assets/images/team_photo.jpg'
+import temp_team_photo from '../../assets/images/team_photo.png'
 import product_photo from '../../assets/images/product_photo.png'
 import { useAuth } from "../../context/AuthContext";
 
