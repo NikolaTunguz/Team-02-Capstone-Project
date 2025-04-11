@@ -109,6 +109,9 @@ def image_process(camera_queue, im_pro_con_person, im_pro_con_package):
             date = datetime.now()
             date = date.strftime("%m/%d/%Y, %H:%M:%S")
 
+            cv2.imwrite("localcache/event_snap.jpg", frame)
+            print(f"Saved notification image: ahhhh")
+
             headers={
                 'Content-type':'application/json',
                 'Accept':'application/json'
