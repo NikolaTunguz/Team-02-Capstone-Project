@@ -20,7 +20,7 @@ class FinedTunedFasterRCNNPackage():
     def __init__(self):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         
-        self.model = torchvision.models.detection.fasterrcnn_mobilenet_v3_large_fpn(weights="DEFAULT")
+        self.model = torchvision.models.detection.fasterrcnn_resnet50_fpn(weights="DEFAULT")
 
         #fine-tune to 2 classes by replacing with custom predictor.
         in_features = self.model.roi_heads.box_predictor.cls_score.in_features
@@ -126,7 +126,7 @@ class FinedTunedFasterRCNNPackage():
 
     def prediction(self, image_path):
         #prepare image
-        image = Image.open(image_path)
+        image = Image.open(image_path).convert("RGB")
 
         transform = transforms.Compose([
             transforms.ToTensor()
@@ -143,16 +143,28 @@ class FinedTunedFasterRCNNPackage():
             pred = self.model([image])
 
         #store output (don't need labels for binary prediction)
-        bboxes, scores = pred[0]["boxes"], pred[0]["scores"]
-        
-        #NMS filtering
-        keep = torch.where(scores > 0.99)[0]
+        bboxes, scores, labels = pred[0]["boxes"], pred[0]["scores"], pred[0]["labels"]
 
-        #check for empty bboxes
-        if (keep.numel() == 0):
+        #filter by confidence
+        score_threshold = 0.5
+        keep = torch.where(scores>score_threshold)[0]
+        if keep.numel() == 0: #check for empty bboxes
+            return torch.empty((0, 4), device=self.device), torch.empty((0,), device=self.device)
+        
+        bboxes = bboxes[keep]
+        scores = scores[keep]
+        labels = labels[keep]
+
+        #keep package labels only
+        package_only = torch.where(labels == 1)[0]
+        if package_only.numel() == 0: #check for empty bboxes
             return torch.empty((0, 4), device=self.device), torch.empty((0,), device=self.device)
 
-        nms_indices = nms(bboxes[keep], scores[keep], 1)
+        bboxes = bboxes[package_only]
+        scores = scores[package_only]
+
+        #NMS filtering
+        nms_indices = nms(bboxes, scores, 0.5)
         bboxes = bboxes[nms_indices]
         scores = scores[nms_indices]
 

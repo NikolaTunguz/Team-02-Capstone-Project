@@ -39,7 +39,6 @@ class NormalInterface:
         #if no detection, empty bboxes
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.person_bboxes = torch.empty((0, 4), device=device) #initialize empty bbox
-
         self.person_scores = torch.empty((0,), device=device) #initialize empty score
     
         self.person_bboxes, self.person_scores = self.person_detector.prediction(image_path)

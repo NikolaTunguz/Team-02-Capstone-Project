@@ -16,7 +16,7 @@ class FineTunedFasterRCNNPerson():
 
     def prediction(self, image_path):
         #prepare image
-        image = Image.open(image_path)
+        image = Image.open(image_path).convert("RGB")
 
         transform = transforms.Compose([
             transforms.ToTensor()
