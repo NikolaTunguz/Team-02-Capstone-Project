@@ -206,6 +206,40 @@ async def run_im_pro(camera_queue, im_pro_con_person, im_pro_con_package):
     im_pro.start()
     await im_pro.coro_join()
 
+def thumbnail_process(camera_queue):
+    last_thumbnail_time = time.time()
+
+    while True:
+        frame = camera_queue.get()
+        if frame is None or frame.size == 0:
+            print("Error: Empty frame")
+            continue
+
+        if time.time() - last_thumbnail_time > 30:
+            try:
+                cv2.imwrite("localcache/thumbnail.jpg", frame)
+                with open("localcache/thumbnail.jpg", "rb") as img_file:
+                    response = requests.post(
+                        "http://127.0.0.1:8080/update_thumbnail",
+                        files={"thumbnail": ("thumbnail.jpg", img_file, "image/jpeg")},
+                        data={"device_id": 14}
+                    )
+
+                    if response.status_code == 200:
+                        print("Thumbnail updated successfully")
+                    else:
+                        print(f"Failed to update thumbnail. Status code: {response.status_code}")
+
+            except Exception as e:
+                print(f"Error in thumbnail processing: {e}")
+
+            last_thumbnail_time = time.time()
+
+async def run_thumbnail_process(camera_queue):
+    thumbnail_proc = aioprocessing.AioProcess(target=thumbnail_process, args=[camera_queue])
+    thumbnail_proc.start()
+    await thumbnail_proc.coro_join()
+
 
 if __name__ == "__main__":
 
@@ -220,6 +254,7 @@ if __name__ == "__main__":
         asyncio.ensure_future(im_read(camera_queue)),
         asyncio.ensure_future(main(camera_queue, webrtc_con_person, webrtc_con_package)),
         asyncio.ensure_future(run_im_pro(camera_queue, im_pro_con_person, im_pro_con_package)),
+        asyncio.ensure_future(run_thumbnail_process(camera_queue)),
     ]
     try:
         loop.run_until_complete(asyncio.wait(tasks))
