@@ -1,13 +1,15 @@
-from flask import Blueprint, request, jsonify, session, send_file
+from flask import Blueprint, request, jsonify, session, Response, stream_with_context, send_file
 from flask_bcrypt import Bcrypt
 from model import db, Notification, UserCameras, User
 from sqlalchemy import select, desc
 from .notify_contacts import notify_emergency_contacts, notify_user
 import json
+import timefrom 
 from io import BytesIO
 
 notifications_bp = Blueprint('notifications', __name__)
 bcrypt = Bcrypt()
+subscribers = []
 
 @notifications_bp.route('/database', methods=['POST'])
 def database(): 
@@ -33,7 +35,34 @@ def database():
     db.session.commit()
     notify_user(user, notification, user_camera_name)
     notify_emergency_contacts(user_id, notification, user_camera_name)
+    notify_user(user, notification, user_camera_name)
+    notify_subscribers(json.dumps({
+        "message": message,
+        "timestamp": timestamp,
+        "device_id": device_id
+    }))
+
     return '', 200
+
+@notifications_bp.route('/subscribe')
+def subscribe():
+    def event_stream():
+        messages = []
+        subscribers.append(messages)
+        try:
+            while True:
+                if messages:
+                    msg = messages.pop(0)
+                    yield f'data: {msg}\n\n'
+                time.sleep(1)
+        except GeneratorExit:
+            subscribers.remove(messages)
+
+    return Response(stream_with_context(event_stream()), mimetype='text/event-stream')
+
+def notify_subscribers(message):
+    for sub in subscribers:
+        sub.append(message)
     
 @notifications_bp.route('/notifications')
 def notifications():
