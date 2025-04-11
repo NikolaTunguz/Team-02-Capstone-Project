@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import httpClient from ".././pages/httpClient";
 import { Cancel } from "@mui/icons-material";
+import { showSuccess, showError } from "./ToastUtils";
 
 export default function DeleteCamera({ open, onClose, camera, onCameraDeleted }) {
     const handleDeleteCamera = async () => {
@@ -18,9 +19,11 @@ export default function DeleteCamera({ open, onClose, camera, onCameraDeleted })
             if (response.status === 200) {
                 onCameraDeleted(); 
                 onClose(); 
+                showSuccess("Camera deleted succesfully!");
             }
         } catch (error) {
             console.error("Error deleting camera:", error);
+            showError("Error deleting camera.");
         }
     };
 
