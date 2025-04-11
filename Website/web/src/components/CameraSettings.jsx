@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Box, Typography, Button, Switch, OutlinedInput, IconButton } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
@@ -6,6 +6,7 @@ import DeleteCamera from "./DeleteCamera.jsx";
 import { useNavigate } from 'react-router-dom';
 import httpClient from "../pages/httpClient";
 import "../App.css";
+import { showSuccess, showError } from "./ToastUtils";
 
 const CameraSettings = ({ camera, setOpenDialog }) => {
     const [cameraToggleSwitch, setCameraSwitchState] = React.useState({});
@@ -51,7 +52,7 @@ const CameraSettings = ({ camera, setOpenDialog }) => {
             if (nameChange) {
                 nameChange(camera.device_id, deviceName);
             }
-
+            showSuccess("Camera name updated successfully!");
         }
         catch (e) {
             showError(e.response?.data?.error || "Failed to update camera name.");
