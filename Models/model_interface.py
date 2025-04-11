@@ -34,7 +34,7 @@ class ModelInterface:
 
     def detect_package(self):
         image = self.normal_image
-        self.normal_interface.detect_package(image)
+        return self.normal_interface.detect_package(image)
     
     def get_bbox_image(self):
         image = self.normal_image
