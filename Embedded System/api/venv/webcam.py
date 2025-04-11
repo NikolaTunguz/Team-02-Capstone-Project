@@ -92,11 +92,10 @@ def image_process(camera_queue, im_pro_con_person, im_pro_con_package):
         im_pro_con_person.send(person_bboxes)
 
         #every X frames do package detection
-        # if frame_counter % 300 == 0:
-        #     package_detected = model_interface.detect_package()
-        # else:
-        #     package_detected = False
-        package_detected = model_interface.detect_package()
+        if frame_counter % 300 == 0:
+            package_detected = model_interface.detect_package()
+        else:
+            package_detected = False
         package_bboxes = model_interface.normal_interface.package_bboxes.cpu().numpy().astype("int")
 
         im_pro_con_package.send(package_bboxes)
