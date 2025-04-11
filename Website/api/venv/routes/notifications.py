@@ -4,7 +4,7 @@ from model import db, Notification, UserCameras, User
 from sqlalchemy import select, desc
 from .notify_contacts import notify_emergency_contacts, notify_user
 import json
-import timefrom 
+import time
 from io import BytesIO
 
 notifications_bp = Blueprint('notifications', __name__)
