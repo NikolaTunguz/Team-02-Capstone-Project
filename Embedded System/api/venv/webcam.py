@@ -75,11 +75,11 @@ def camera_reader(camera_queue):
 def image_process(camera_queue, im_pro_con_person, im_pro_con_package):
     print("im_pro started")
     previous_person_notification = 0
-    previous_package_notification = 0 
+    # previous_package_notification = 0 
     prev_person_detections = deque(maxlen=3)
-    prev_package_detections = deque(maxlen=3)
+    # prev_package_detections = deque(maxlen=3)
 
-    frame_counter = 0
+    # frame_counter = 0
 
     while(True):
         frame = camera_queue.get()
@@ -96,10 +96,10 @@ def image_process(camera_queue, im_pro_con_person, im_pro_con_package):
         #     package_detected = model_interface.detect_package()
         # else:
         #     package_detected = False
-        package_detected = model_interface.detect_package()
-        package_bboxes = model_interface.normal_interface.package_bboxes.cpu().numpy().astype("int")
+        # package_detected = model_interface.detect_package()
+        # package_bboxes = model_interface.normal_interface.package_bboxes.cpu().numpy().astype("int")
 
-        im_pro_con_package.send(package_bboxes)
+        # im_pro_con_package.send(package_bboxes)
         
         #notifications
         current_time = time.time()
@@ -110,41 +110,43 @@ def image_process(camera_queue, im_pro_con_person, im_pro_con_package):
             date = date.strftime("%m/%d/%Y, %H:%M:%S")
 
             cv2.imwrite("localcache/event_snap.jpg", frame)
-            print(f"Saved notification image: ahhhh")
 
-            headers={
-                'Content-type':'application/json',
-                'Accept':'application/json'
-            }
-
-            data = {
-                "device_id":14,
-                "timestamp":date,
-                "message":"Person detected at camera."
-            }
-            requests.post("http://127.0.0.1:8080/database", json=data, headers=headers)
+            with open("localcache/event_snap.jpg", "rb") as img_file:
+                 response = requests.post(
+                    "http://127.0.0.1:8080/database",
+                    files={"snapshot": ("event_snap.jpg", img_file, "image/jpeg")},
+                    data = {
+                     "device_id": 14,
+                     "timestamp": date,
+                     "message": "Person detected at camera."
+                    }
+                 )
+                 if response.status_code == 200:
+                     print("Notification and snapshot sent successfully")
+                 else:
+                     print(f"Failed to send notification. Status code: {response.status_code}")
         prev_person_detections.append(person_detected)
 
-        print(current_time - previous_package_notification > 60, ":", package_detected, ":", not (True in prev_package_detections))
-        if ((current_time - previous_package_notification > 60) and package_detected and not (True in prev_package_detections)):
-            previous_package_notification = current_time
-            date = datetime.now()
-            date = date.strftime("%m/%d/%Y, %H:%M:%S")
+        # print(current_time - previous_package_notification > 60, ":", package_detected, ":", not (True in prev_package_detections))
+        # if ((current_time - previous_package_notification > 60) and package_detected and not (True in prev_package_detections)):
+        #     previous_package_notification = current_time
+        #     date = datetime.now()
+        #     date = date.strftime("%m/%d/%Y, %H:%M:%S")
 
-            headers={
-                'Content-type':'application/json',
-                'Accept':'application/json'
-            }
+        #     headers={
+        #         'Content-type':'application/json',
+        #         'Accept':'application/json'
+        #     }
 
-            data = {
-                "device_id":14,
-                "timestamp":date,
-                "message":"Package detected at camera."
-            }
-            requests.post("http://127.0.0.1:8080/database", json=data, headers=headers)
-        prev_package_detections.append(package_detected)
+        #     data = {
+        #         "device_id":14,
+        #         "timestamp":date,
+        #         "message":"Package detected at camera."
+        #     }
+        #     requests.post("http://127.0.0.1:8080/database", json=data, headers=headers)
+        # prev_package_detections.append(package_detected)
 
-        frame_counter += 1
+        # frame_counter += 1
 
 
 async def on_offer(offer_sdp, target_id, camera_queue, webrtc_con_person, webrtc_con_package):

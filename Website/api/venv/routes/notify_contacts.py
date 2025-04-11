@@ -20,7 +20,7 @@ def send_email(recipient_email, subject, body_text, image_bytes=None):
     html_body = f"""
     <html>
       <body>
-        <p>{body_text.replace('\n', '<br>')}</p>
+        <p>{body_text.replace(chr(10), '<br>')}</p>
         { '<img src="cid:snapshot_image" alt="Snapshot" style="max-width:600px;"/>' if image_bytes else '' }
       </body>
     </html>
