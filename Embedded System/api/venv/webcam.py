@@ -76,10 +76,9 @@ def image_process(camera_queue, im_pro_con_person, im_pro_con_package):
     print("im_pro started")
     previous_person_notification = 0
     previous_package_notification = 0 
+    package_timer = 0
     prev_person_detections = deque(maxlen=3)
-    prev_package_detections = deque(maxlen=3)
-
-    # frame_counter = 0
+    package_detected = False
 
     while(True):
         frame = camera_queue.get()
@@ -91,19 +90,23 @@ def image_process(camera_queue, im_pro_con_person, im_pro_con_package):
         person_bboxes = model_interface.normal_interface.person_bboxes.cpu().numpy().astype("int")
         im_pro_con_person.send(person_bboxes)
 
-        #every X frames do package detection
-        # if frame_counter % 300 == 0:
-        #     package_detected = model_interface.detect_package()
-        # else:
-        #     package_detected = False
-        package_detected = model_interface.detect_package()
-        package_bboxes = model_interface.normal_interface.package_bboxes.cpu().numpy().astype("int")
-
-        im_pro_con_package.send(package_bboxes)
-        
-        #notifications
         current_time = time.time()
-        print(current_time - previous_person_notification > 60, ":", person_detected, ":", not (True in prev_person_detections))
+
+
+        #every X seconds do package detection
+        if (current_time - previous_package_notification > package_timer):
+            previous_package_notification = current_time
+            package_detected = model_interface.detect_package()
+            package_bboxes = model_interface.normal_interface.package_bboxes.cpu().numpy().astype("int")
+            im_pro_con_package.send(package_bboxes)
+            # Update times as necessary (hours-minutes likely)
+            if(package_detected):
+                package_timer = 60
+            else:
+                package_timer = 15
+   
+        #notifications
+        # print(current_time - previous_person_notification > 60, ":", person_detected, ":", not (True in prev_person_detections))
         if ((current_time - previous_person_notification > 60) and person_detected and not (True in prev_person_detections)):
             previous_person_notification = current_time
             date = datetime.now()
@@ -127,26 +130,29 @@ def image_process(camera_queue, im_pro_con_person, im_pro_con_package):
                      print(f"Failed to send notification. Status code: {response.status_code}")
         prev_person_detections.append(person_detected)
 
-        print(current_time - previous_package_notification > 60, ":", package_detected, ":", not (True in prev_package_detections))
-        if ((current_time - previous_package_notification > 60) and package_detected and not (True in prev_package_detections)):
+        if (package_detected):
             previous_package_notification = current_time
             date = datetime.now()
             date = date.strftime("%m/%d/%Y, %H:%M:%S")
 
-            headers={
-                'Content-type':'application/json',
-                'Accept':'application/json'
-            }
+            cv2.imwrite("localcache/event_snap.jpg", frame)
 
-            data = {
-                "device_id":14,
-                "timestamp":date,
-                "message":"Package detected at camera."
-            }
-            requests.post("http://127.0.0.1:8080/database", json=data, headers=headers)
-        prev_package_detections.append(package_detected)
+            with open("localcache/event_snap.jpg", "rb") as img_file:
+                    response = requests.post(
+                    "http://127.0.0.1:8080/database",
+                    files={"snapshot": ("event_snap.jpg", img_file, "image/jpeg")},
+                    data = {
+                        "device_id": 14,
+                        "timestamp": date,
+                        "message": "Package detected at camera."
+                    }
+                    )
+                    if response.status_code == 200:
+                        print("Notification and snapshot sent successfully")
+                    else:
+                        print(f"Failed to send notification. Status code: {response.status_code}")
+            package_detected = False
 
-        #frame_counter += 1
 
 
 async def on_offer(offer_sdp, target_id, camera_queue, webrtc_con_person, webrtc_con_package):
