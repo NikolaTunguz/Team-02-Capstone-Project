@@ -19,8 +19,8 @@ const NotificationDeck = () => {
     const fetchNotifications = async () => {
       const response = 
         viewingReadNotifications ?
-          await httpClient.get('http://localhost:8080/notifications') :
-          await httpClient.get('http://localhost:8080/read-notifications');
+          await httpClient.get('http://localhost:8080/read-notifications') :
+          await httpClient.get('http://localhost:8080/notifications');
           
       setNotifications(response.data);
       setLoading(false);
@@ -211,6 +211,16 @@ const NotificationDeck = () => {
 
         <div style={{ display: 'flex', 
           gap: '10px', marginBottom: '15px', marginTop: '15px' }}>
+          
+          {viewingReadNotifications ? (
+              <Button 
+              variant="contained"
+              color="error"
+              onClick={handleDeleteAllRead}
+              >
+                Delete All
+              </Button>
+          ) : (
           <Button
           variant="contained"
           color="primary"
@@ -218,6 +228,7 @@ const NotificationDeck = () => {
           >
             Mark All Read
           </Button>
+          )}
 
           <Button
           variant="contained"
