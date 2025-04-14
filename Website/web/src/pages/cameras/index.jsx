@@ -22,15 +22,24 @@ export default function Cameras() {
         getCameras();
     }, []);
 
-    const handleDragEnd = (result) => {
+    const handleDragEnd = async (result) => {
         if (!result.destination) return;
-
+    
         const reorderedCameras = [...cameras];
         const [movedCamera] = reorderedCameras.splice(result.source.index, 1);
         reorderedCameras.splice(result.destination.index, 0, movedCamera);
-
         setCameras(reorderedCameras);
+    
+        const ordered_ids = reorderedCameras.map((cam) => cam.device_id);
+        try {
+            await httpClient.post("http://localhost:8080/update_camera_order", {
+                ordered_ids
+            });
+        } catch (error) {
+            console.error("Error saving camera order:", error);
+        }
     };
+    
 
     return (
         <>
@@ -56,6 +65,15 @@ export default function Cameras() {
                                                 {camera.device_name}
                                             </Typography>
                                             <LiveStream camera={camera} className="camera-display" />
+                                            <Typography
+                                                sx={{
+                                                    fontFamily: "BlinkMacSystemFont",
+                                                    fontSize: "12px",
+                                                    color: "black"
+                                                }}
+                                            >
+                                                Last Updated: {camera.last_Updated ? new Date(camera.last_updated).toLocaleString() : "N/A"}
+                                            </Typography>
                                         </div>
                                     )}
                                 </Draggable>

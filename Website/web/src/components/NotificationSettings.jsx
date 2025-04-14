@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import httpClient from "../pages/httpClient";
 import Expandable from './Expandable.jsx';
+import { showSuccess, showError } from "./ToastUtils";
 
 const NotificationSettings = ({ contact }) => {
     const [settings, setSettings] = useState({
@@ -33,9 +34,11 @@ const NotificationSettings = ({ contact }) => {
                 email: contact.email,
                 settings: updatedSettings,
             });
+            showSuccess("Contact settings updated successfully!");
         } catch (e) {
             console.error("Failed to update settings", e);
-        }
+            showError("Failed to update settings.");
+        }   
     };
 
     return (

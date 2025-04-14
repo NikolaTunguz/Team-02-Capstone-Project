@@ -22,12 +22,16 @@ class Notification (db.Model):
     timestamp = db.Column(db.String(25), primary_key=True)
     message = db.Column(db.String(50))
     read = db.Column(db.Boolean, default=False)
+    snapshot = db.Column(db.LargeBinary) 
 
 class UserCameras (db.Model):
     __tablename__ = "user_cameras"
     device_id = db.Column(db.Integer)
     user_id = db.Column(db.String(32))
     device_name = db.Column(db.String(100))
+    thumbnail = db.Column(db.LargeBinary) 
+    last_updated = db.Column(db.DateTime, nullable=True)
+    order = db.Column(db.Integer, default=0)
     __table_args__ = (db.PrimaryKeyConstraint(device_id, user_id),)
 
 class EmergencyContact (db.Model):

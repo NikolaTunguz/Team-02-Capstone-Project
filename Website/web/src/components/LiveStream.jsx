@@ -1,19 +1,20 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Dialog, DialogContent, IconButton, Box, Tooltip } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import CameraSettings from "./CameraSettings";
 import { useNavigate } from 'react-router-dom';
 import "../App.css";
-
-import temp_team_photo from '../assets/images/team_photo.jpg'
+import httpClient from '../pages/httpClient';
+import temp_team_photo from '../assets/images/team_photo.png'
 
 const LiveStream = ({ camera }) => {
     const [open, setOpen] = useState(false);
-    const[originalName, setOriginalName] = useState(camera.device_name);
+    const [originalName, setOriginalName] = useState(camera.device_name);
     const navigate = useNavigate();
 
-    const peerConnectionRef = useRef(null);  
-    const signalingSocketRef = useRef(null);  
+    const peerConnectionRef = useRef(null);
+    const signalingSocketRef = useRef(null);
+    const [thumbnail, setThumbnail] = useState(temp_team_photo);
 
     function websocketConnect() {
         return new Promise((resolve) => {
@@ -30,21 +31,21 @@ const LiveStream = ({ camera }) => {
 
         signalingSocketRef.current.onmessage = async (event) => {
             const message = JSON.parse(event.data);
-    
+
             if (message.type === "answer") {
                 delete message.target_id;
                 await peerConnectionRef.current.setRemoteDescription(message);
             }
         };
-        
+
         const config = {
             sdpSemantics: 'unified-plan'
         };
 
         config.iceServers = [{ urls: ['stun:stun.l.google.com:19302'] }];
-    
+
         peerConnectionRef.current = new RTCPeerConnection(config);
-    
+
         peerConnectionRef.current.addEventListener('track', (evt) => {
             if (evt.track.kind === 'video') {
                 document.getElementById('video').srcObject = evt.streams[0];
@@ -55,7 +56,7 @@ const LiveStream = ({ camera }) => {
         await sendOffer(camera.device_id);
     };
 
-    const handleOpen = async ()  => {
+    const handleOpen = async () => {
         await startStream();
         setOriginalName(camera.device_name);
         setOpen(true);
@@ -70,8 +71,7 @@ const LiveStream = ({ camera }) => {
         }
         setOpen(false);
 
-        if(camera.device_name !== originalName)
-        {
+        if (camera.device_name !== originalName) {
             navigate(0);
         }
     };
@@ -81,7 +81,7 @@ const LiveStream = ({ camera }) => {
         peerConnectionRef.current.addTransceiver('audio', { direction: 'recvonly' });
         const offer = await peerConnectionRef.current.createOffer();
         await peerConnectionRef.current.setLocalDescription(offer);
-    
+
         await new Promise((resolve) => {
             if (peerConnectionRef.current.iceGatheringState === 'complete') {
                 resolve();
@@ -95,7 +95,7 @@ const LiveStream = ({ camera }) => {
                 peerConnectionRef.current.addEventListener('icegatheringstatechange', checkState);
             }
         });
-    
+
         const offer_alt = peerConnectionRef.current.localDescription;
         signalingSocketRef.current.send(JSON.stringify({
             type: offer_alt.type,
@@ -104,13 +104,42 @@ const LiveStream = ({ camera }) => {
         }));
     }
 
+    async function fetchThumbnail(deviceId) {
+        try {
+            const response = await httpClient.get(`http://localhost:8080/get_thumbnail/${deviceId}`, {
+                responseType: "blob",
+                withCredentials: true,
+                headers: {
+                    "Cache-Control": "no-cache, no-store, must-revalidate",
+                    "Pragma": "no-cache",
+                    "Expires": "0"
+                }
+            });
+            const blob = response.data;
+            const imageURL = URL.createObjectURL(blob);
+            setThumbnail(imageURL);
+        } catch (error) {
+            console.error("Error fetching thumbnail:", error);
+        }
+    }
+
+    useEffect(() => {
+        const interval = setInterval(async () => {
+            fetchThumbnail(camera.device_id);
+        }, 30000);
+
+        fetchThumbnail(camera.device_id);
+
+        return () => clearInterval(interval);
+    }, [camera.device_id]);
+
     return (
         <>
-            <img 
-                src={temp_team_photo}
-                alt="Live Stream" 
-                className="camera-display" 
-                onClick={handleOpen} 
+            <img
+                src={thumbnail}
+                alt="Live Stream"
+                className="camera-display"
+                onClick={handleOpen}
                 style={{ cursor: "pointer" }}
             />
 
@@ -153,7 +182,7 @@ const LiveStream = ({ camera }) => {
                     </Box>
 
                     <Box style={{ marginLeft: "20px", display: "flex", alignItems: "center" }}>
-                        <CameraSettings camera={camera} setOpenDialog={setOpen}  />
+                        <CameraSettings camera={camera} setOpenDialog={setOpen} />
                     </Box>
                 </DialogContent>
             </Dialog>

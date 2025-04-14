@@ -10,16 +10,25 @@ import AppLayout from "./AppLayout";
 import AboutUs from './pages/about_us';
 import NotFound from './pages/public/not_found/index.jsx';
 import ManageUsers from './pages/manage_users/index.jsx';
-import ReadNotifications from './components/ReadNotifications';
+import ReadNotifications from './components/readNotifications';
+import NotificationListener from './components/NotificationListener';
 
 // import Feed from './pages/Feed.jsx';
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const Router = () => {
     const { isLoggedIn, isAdmin } = useAuth();
 
     return (
         <BrowserRouter>
-            {isLoggedIn && !isAdmin && <NavBar />}
+            {isLoggedIn && !isAdmin &&
+                <>
+                    <NavBar />
+                    <NotificationListener />
+                    <ToastContainer />
+                </>
+            }
             <Routes>
                 <Route
                     path="/login"
@@ -65,12 +74,12 @@ const Router = () => {
                     /> */}
                 </>}
                 {isLoggedIn && isAdmin && <>
-                    <Route 
-                        path = "/manage_users"
-                        element = {<ManageUsers />}
+                    <Route
+                        path="/manage_users"
+                        element={<ManageUsers />}
                     />
-                    
-                
+
+
                 </>}
             </Routes>
         </BrowserRouter>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import {
@@ -14,13 +14,12 @@ import {
 } from "@mui/material";
 import { Cancel, Add } from "@mui/icons-material";
 import httpClient from "../pages/httpClient";
+import { showSuccess, showError } from "./ToastUtils";
 
 const AddCamera = ({ onCameraAdded }) => {
     const [open, setOpen] = useState(false);
-    const [error, setError] = useState("");
 
     const resetModal = () => {
-        setError("");
         setOpen(false);
     };
 
@@ -30,8 +29,9 @@ const AddCamera = ({ onCameraAdded }) => {
             resetForm();
             resetModal();
             if (onCameraAdded) onCameraAdded();
+            showSuccess("Camera successfully added!");
         } catch (e) {
-            setError(e.response?.data?.error || "Failed to add camera.");
+            showError(e.response?.data?.error || "Failed to add camera.");
         }
     };
 
@@ -148,11 +148,6 @@ const AddCamera = ({ onCameraAdded }) => {
                             </Form>
                         )}
                     </Formik>
-                    {error && (
-                        <Typography variant="body2" color="error" mt={2}>
-                            {error}
-                        </Typography>
-                    )}
                 </Box>
             </Modal>
         </>
