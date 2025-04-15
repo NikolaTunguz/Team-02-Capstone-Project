@@ -70,7 +70,7 @@ const ManageUsers = () => {
 
     const getUsers = async () => {
         try {
-            const response = await httpClient.get("/api/get_users");
+            const response = await httpClient.get("http://localhost:8080/get_users");
             setUsers(response.data.users || []);
         } catch (error) {
             console.error("Error fetching users:", error);
@@ -85,7 +85,7 @@ const ManageUsers = () => {
         if (!selectedUser) return;
         const email = selectedUser.email;
         try {
-            await httpClient.post("/api/delete_user", { email });
+            await httpClient.post("http://localhost:8080/delete_user", { email });
             getUsers();
             setOpenDeleteModal(false);
         } catch (error) {
@@ -95,7 +95,7 @@ const ManageUsers = () => {
 
     const updateUser = async (email, firstName, lastName, phone, accountType) => {
         try {
-            await httpClient.put("/api/update_user", {
+            await httpClient.put("http://localhost:8080/update_user", {
                 previous_email: previousEmail,
                 email: email,
                 first_name: firstName,

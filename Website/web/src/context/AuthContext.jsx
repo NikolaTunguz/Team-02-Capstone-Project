@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const fetchCurrentUser = async () => {
             try {
-                const response = await fetch("/api/@me", { credentials: "include" });
+                const response = await fetch("http://localhost:8080/@me", { credentials: "include" });
                 if (response.ok) {
                     const data = await response.json();
                     if (data.account_type === 'admin'){

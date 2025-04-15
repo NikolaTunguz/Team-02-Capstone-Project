@@ -25,7 +25,7 @@ const AddCamera = ({ onCameraAdded }) => {
 
     const handleAddCamera = async (values, { resetForm }) => {
         try {
-            await httpClient.post("/api/add_user_camera", values);
+            await httpClient.post("http://localhost:8080/add_user_camera", values);
             resetForm();
             resetModal();
             if (onCameraAdded) onCameraAdded();

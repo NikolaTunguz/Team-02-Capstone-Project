@@ -11,7 +11,7 @@ export default function Cameras() {
 
     const getCameras = async () => {
         try {
-            const response = await httpClient.get("/api/get_user_cameras");
+            const response = await httpClient.get("http://localhost:8080/get_user_cameras");
             setCameras(response.data.cameras || []);
         } catch (error) {
             console.error("Error fetching cameras:", error);

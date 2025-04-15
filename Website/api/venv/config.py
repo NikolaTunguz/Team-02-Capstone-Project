@@ -8,7 +8,7 @@ class ApplicationConfig:
     SECRET_KEY = os.urandom(24)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = True
-    SQLALCHEMY_DATABASE_URI = f"postgresql://postgres:{os.getenv('DATABASE_PASSWORD')}@localhost:5432/capstone"
+    SQLALCHEMY_DATABASE_URI = f"postgresql://postgres:{os.getenv('DATABASE_PASSWORD')}@localhost:5432/Capstone"
 
     SESSION_TYPE="redis"
     SESSION_PERMANENT=False

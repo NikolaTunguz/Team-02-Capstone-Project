@@ -4,7 +4,7 @@ import NotificationDeck from '../../components/NotificationDeck.jsx';
 
 // const triggerMockNotification = async () => {
 //     try {
-//         const response = await httpClient.post("/api/mock_notification", {
+//         const response = await httpClient.post("http://localhost:8080/mock_notification", {
 //             device_id: 14,
 //             message: "Test Alert"
 //         });

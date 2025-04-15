@@ -33,7 +33,7 @@ const AuthLogin = () => {
 
   const login = async (email, password) => {
     try {
-      const resp = await httpClient.post("/api/login", {
+      const resp = await httpClient.post("http://localhost:8080/login", {
         email: email,
         password: password,
       });

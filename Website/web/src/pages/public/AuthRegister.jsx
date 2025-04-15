@@ -44,7 +44,7 @@ const AuthRegister = () => {
 
   const register = async (phoneNumber, firstName, lastName, email, password) => {
     try {
-      const resp = await httpClient.post('/api/register', {
+      const resp = await httpClient.post('http://localhost:8080/register', {
         phone_number: phoneNumber,
         first_name: firstName,
         last_name: lastName,

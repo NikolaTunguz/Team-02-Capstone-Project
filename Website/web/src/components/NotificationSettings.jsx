@@ -30,7 +30,7 @@ const NotificationSettings = ({ contact }) => {
         setSettings(updatedSettings);
 
         try {
-            await httpClient.put("/api/update_contact_settings", {
+            await httpClient.put("http://localhost:8080/update_contact_settings", {
                 email: contact.email,
                 settings: updatedSettings,
             });
