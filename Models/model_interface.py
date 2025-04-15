@@ -1,6 +1,8 @@
 #interface to interact with all of the models with the rest of the system
 
 #class imports
+import numpy as np
+import cv2
 from .thermal_models.thermal_model_interface import ThermalInterface
 from .normal_models.normal_model_interface import NormalInterface
 
@@ -11,14 +13,57 @@ class ModelInterface:
         self.thermal_interface = ThermalInterface()
 
         self.normal_image = None
+
+        self.thermal_npy_path = None
         self.thermal_image = None
+        self.thermal_data = None
 
     def set_normal_image(self, image_path):
         self.normal_image = image_path
 
-    def set_thermal_image(self, image_path):
-        self.thermal_image = image_path
+    def set_thermal_npy(self, npy_path):
+        self.thermal_npy_path = npy_path
+        self.convert_raw_thermal()
 
+    def convert_raw_thermal(self):
+        npy_file = np.load(self.thermal_npy_path)
+        image_data, thermal_data = np.array_split(npy_file, 2, axis = 1)
+        
+        #first section for image conversion
+        thermal_viewable = self.thermal_to_image(image_data)
+        self.thermal_image = thermal_viewable
+    
+        #second section for thermal conversion
+        thermal_temps = self.thermal_to_temp(thermal_data)
+        self.thermal_data = thermal_temps
+
+    def thermal_to_image(self, image_data):
+        hi = image_data[:, :, 0].astype(np.uint16)
+        lo = image_data[:, :, 1].astype(np.uint16)
+        raw_temp = hi * 256 + lo
+
+        #normalize for display (0–255)
+        normalized = cv2.normalize(raw_temp, None, 0, 255, cv2.NORM_MINMAX)
+        normalized = normalized.astype(np.uint8)
+
+        #apply a color map for visibility
+        colored = cv2.applyColorMap(normalized, cv2.COLORMAP_JET)
+        return colored
+
+    def thermal_to_temp(self, thermal_data):
+        min_temp = -20
+        max_temp = 550
+        
+        hi = thermal_data[:, :, 0].astype(np.uint16)
+        lo = thermal_data[:, :, 1].astype(np.uint16)
+
+        temperatures = ((lo * 256 + hi) / 64) - 273.15
+
+        scaled_temp = (temperatures - min_temp) / (max_temp - min_temp) * 255
+        scaled_temp = np.clip(scaled_temp, 0, 255).astype(np.uint8)
+        return scaled_temp
+
+    
     def detect_pistol(self):
         image = self.thermal_image
         return self.thermal_interface.detect_pistol(image)
@@ -27,6 +72,11 @@ class ModelInterface:
         image = self.thermal_image
         detection, box_image = self.thermal_interface.detect_and_bound_pistol(image)
         return detection, box_image
+
+    def detect_fire(self):
+        thermal_data = self.thermal_data
+        detection, num_fires, contours = self.thermal_interface.detect_fire(thermal_data)
+        return detection, num_fires, contours
 
     def detect_person(self):
         image = self.normal_image
