@@ -8,8 +8,8 @@ import httpClient from "../pages/httpClient";
 import "../App.css";
 import { showSuccess, showError } from "./ToastUtils";
 
-const CameraSettings = ({ camera, setOpenDialog }) => {
-    const [cameraToggleSwitch, setCameraSwitchState] = React.useState({});
+const CameraSettings = ({ camera, setOpenDialog, sendToggle }) => {
+    const [cameraToggleSwitch, setCameraSwitchState] = React.useState(false);
     const [cameraToDelete, setCameraToDelete] = React.useState(null);
     const [open, setOpen] = React.useState(false);
     const [editButton, setEditingState] = React.useState(false);
@@ -17,11 +17,9 @@ const CameraSettings = ({ camera, setOpenDialog }) => {
 
     const navigate = useNavigate();
 
-    const handleToggle = (camera) => {
-        setCameraSwitchState((prev) => ({
-            ...prev,
-            [camera.device_id]: !prev[camera.device_id],
-        }));
+    const handleToggle = (value) => {
+        setCameraSwitchState(!value)
+        sendToggle(cameraToggleSwitch);
     };
 
     const handleDelete = (camera) => {
@@ -123,8 +121,8 @@ const CameraSettings = ({ camera, setOpenDialog }) => {
             >
                 <Typography variant="body1">Thermal View</Typography>
                 <Switch
-                    checked={cameraToggleSwitch[camera.device_id] || false}
-                    onChange={() => handleToggle(camera)}
+                    checked={cameraToggleSwitch || false}
+                    onChange={() => handleToggle(cameraToggleSwitch)}
                     color="primary"
                 />
             </Box>

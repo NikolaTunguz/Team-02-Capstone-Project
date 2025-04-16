@@ -64,13 +64,23 @@ class TestTrack(VideoStreamTrack):
         frame.time_base = time_base
         return frame
 
-def camera_reader(camera_queue):
+def camera_reader(camera_queue, thermal_queue):
     print("loading")
-    cap = cv2.VideoCapture(0)
+    cap_standard = cv2.VideoCapture(0)
+    cap_thermal = cv2.VideoCapture(1)
     print("loaded")
     while(True):
-        ret, frame = cap.read()
-        camera_queue.put(frame)
+        _, frame = cap_standard.read()
+        try: 
+            camera_queue.put_nowait(frame)
+        except:
+            pass
+            
+        _, frame = cap_thermal.read()
+        try:
+            thermal_queue.put_nowait(frame)
+        except:
+            pass
 
 def image_process(camera_queue, im_pro_con_person, im_pro_con_package):
     print("im_pro started")
@@ -170,6 +180,7 @@ async def on_offer(offer_sdp, target_id, camera_queue, webrtc_con_person, webrtc
             connections.discard(peer_connection)
 
     peer_connection.addTrack(TestTrack(camera_queue, webrtc_con_person, webrtc_con_package))
+    peer_connection.addTrack(TestTrack(thermal_queue, webrtc_con_person, webrtc_con_package))
 
     await peer_connection.setRemoteDescription(offer)
     answer = await peer_connection.createAnswer()
@@ -207,8 +218,8 @@ async def connect_to_signaling_server(camera_queue, webrtc_con_person, webrtc_co
 async def main(camera_queue, webrtc_con_person, webrtc_con_package):
     await connect_to_signaling_server(camera_queue, webrtc_con_person, webrtc_con_package)
 
-async def im_read(camera_queue):
-    im_reader = aioprocessing.AioProcess(target=camera_reader, args=[camera_queue])
+async def im_read(camera_queue, thermal_queue):
+    im_reader = aioprocessing.AioProcess(target=camera_reader, args=[camera_queue, thermal_queue])
     im_reader.start()
     await im_reader.coro_join()
 
@@ -257,15 +268,16 @@ if __name__ == "__main__":
     loop = asyncio.get_event_loop()
 
     camera_queue = aioprocessing.AioQueue(5)
+    thermal_queue = aioprocessing.AioQueue(5)
 
     webrtc_con_person, im_pro_con_person = aioprocessing.AioPipe(duplex=False)
     webrtc_con_package, im_pro_con_package = aioprocessing.AioPipe(duplex=False)
 
     tasks = [
-        asyncio.ensure_future(im_read(camera_queue)),
+        asyncio.ensure_future(im_read(camera_queue, thermal_queue)),
         asyncio.ensure_future(main(camera_queue, webrtc_con_person, webrtc_con_package)),
-        asyncio.ensure_future(run_im_pro(camera_queue, im_pro_con_person, im_pro_con_package)),
-        asyncio.ensure_future(run_thumbnail_process(camera_queue)),
+        # asyncio.ensure_future(run_im_pro(camera_queue, im_pro_con_person, im_pro_con_package)),
+        # asyncio.ensure_future(run_thumbnail_process(camera_queue)),
     ]
     try:
         loop.run_until_complete(asyncio.wait(tasks))
