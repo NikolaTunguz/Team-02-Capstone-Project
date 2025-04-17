@@ -8,6 +8,7 @@ Website/api/venv/routes/__pycache__/auth.cpython-312.pyc
 Models/Data/ConcealedTestDataset/
 Models/Data/AnnotatedData
 Models/Data/collected_data
+Models/Data/CombinedData
 Models/Data/test_image.jpg
 Embedded System/api/venv/localcache/input_image.jpg
 Embedded System/api/venv/localcache/test_thermal_image.jpg
