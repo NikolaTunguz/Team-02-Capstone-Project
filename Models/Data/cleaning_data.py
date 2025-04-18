@@ -149,6 +149,15 @@ def combine_datasets(folder_path_one, folder_path_two, destination_folder_path):
                 with open(os.path.join(destination_labels_path, new_label_name), 'w') as f_out:
                     f_out.write(label_information)
 
+def change_no_gun_labels(no_gun_label_folder_path):
+    labels_path = os.path.join(no_gun_label_folder_path)
+
+    files = sorted(os.listdir(labels_path))
+    for index, label_name in enumerate(files):
+        label_path = os.path.join(no_gun_label_folder_path, label_name)
+
+        with open(label_path, 'w') as f:
+            f.write("0 0.5 0.5 1.0 1.0\n")
 
 def main():
     base_path = "Data/AnnotatedData"
@@ -171,6 +180,8 @@ def main():
     new_dataset_path = os.path.join('collected_data', 'annotated')
     destination_path = os.path.join('CombinedData')
     #combine_datasets(previous_dataset_path, new_dataset_path, destination_path)
+    #change_no_gun_labels(os.path.join('CombinedData', 'without gun', 'labels'))
+
     
 
 if __name__ == "__main__":

@@ -72,8 +72,8 @@ class ModelInterface:
     
     def detect_and_bound_pistol(self):
         image = self.thermal_image
-        detection, box_image = self.thermal_interface.detect_and_bound_pistol(image)
-        return detection, box_image
+        detection, pred_bbox, box_image = self.thermal_interface.detect_and_bound_pistol(image)
+        return detection, pred_bbox, box_image
 
     def detect_fire(self):
         thermal_data = self.thermal_data

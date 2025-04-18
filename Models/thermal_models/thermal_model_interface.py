@@ -34,9 +34,10 @@ class ThermalInterface:
     def transform_image(self):
         #shape and grayscale image
         transform = transforms.Compose([
-            transforms.Resize((256, 256)),
+            transforms.Resize((256, 256)), 
             transforms.Grayscale(),
-            transforms.ToTensor()
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.5], std=[0.5])
         ])
 
         #transform, and change to have right dimensionality
@@ -60,16 +61,16 @@ class ThermalInterface:
         self.image = Image.fromarray(image)
         self.transform_image()
 
-        detected, result_image = self.bound_pistol_model.pistol_detected(self.image)
+        detected, pred_bbox, result_image = self.bound_pistol_model.pistol_detected(self.image)
         
         if detected:
             #plt.imshow(result_image, cmap='gray')
             #plt.axis("off")
             #plt.title("Pistol Detected" if detected else "No Pistol Detected")
             #plt.show()
-            return 1, result_image  
+            return 1, pred_bbox, result_image  
         else:
-            return 0, result_image
+            return 0, pred_bbox, result_image
 
     def detect_fire(self, thermal_data):
         self.fire_detection_model.set_thermal_data(thermal_data)
