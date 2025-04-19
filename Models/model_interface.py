@@ -66,8 +66,8 @@ class ModelInterface:
     
     def detect_pistol(self):
         image = self.thermal_image
-        cv2.imshow('test', image)
-        cv2.waitKey(2000)
+        #cv2.imshow('test', image)
+        #cv2.waitKey(2000)
         return self.thermal_interface.detect_pistol(image)
     
     def detect_and_bound_pistol(self):

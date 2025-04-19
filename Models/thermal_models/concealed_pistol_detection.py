@@ -197,7 +197,7 @@ class BoundPistol(nn.Module):
                                 (pred_bbox[2], pred_bbox[3]), 
                                 (255, 0, 0), 2)
         
-        print(pred_bbox)
-        cv2.imshow('test', image)
-        cv2.waitKey(0)
+        #print(pred_bbox)
+        #cv2.imshow('test', image)
+        #cv2.waitKey(0)
         return image

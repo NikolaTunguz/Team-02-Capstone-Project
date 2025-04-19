@@ -37,7 +37,7 @@ class ThermalInterface:
             transforms.Resize((256, 256)), 
             transforms.Grayscale(),
             transforms.ToTensor(),
-            transforms.Normalize(mean=[0.5], std=[0.5])
+            #transforms.Normalize(mean=[0.5], std=[0.5])
         ])
 
         #transform, and change to have right dimensionality
