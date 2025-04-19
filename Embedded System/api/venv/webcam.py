@@ -122,6 +122,7 @@ def image_process(camera_queue, im_pro_con_person, im_pro_con_package):
                      "device_id": 14,
                      "timestamp": date,
                      "message": "Person detected at camera."
+                    "notif_type": "person", 
                     }
                  )
                  if response.status_code == 200:
@@ -144,7 +145,8 @@ def image_process(camera_queue, im_pro_con_person, im_pro_con_package):
                     data = {
                         "device_id": 14,
                         "timestamp": date,
-                        "message": "Package detected at camera."
+                        "message": "Package detected at camera.",
+                        "notif_type": "package",
                     }
                     )
                     if response.status_code == 200:

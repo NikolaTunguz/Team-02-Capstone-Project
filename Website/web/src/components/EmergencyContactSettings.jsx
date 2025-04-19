@@ -145,6 +145,14 @@ const EmergencyContacts = () => {
                                                 Package Detection
                                             </ListItem>
                                         )}
+                                        {contact.notify_fire && (
+                                            <ListItem>
+                                                <ListItemIcon>
+                                                    <Check color="success" />
+                                                </ListItemIcon>
+                                                Fire Detection
+                                            </ListItem>
+                                        )}
                                     </List>
                                 </Box>
                                 <Box sx={{ gap: 2, }}>
@@ -222,6 +230,7 @@ const EmergencyContacts = () => {
                             notify_pistol: editingContact?.notify_pistol || false,
                             notify_person: editingContact?.notify_person || false,
                             notify_package: editingContact?.notify_package || false,
+                            notify_fire: editingContact?.notify_fire || false,
                         }}
 
                         validationSchema={Yup.object({
@@ -343,7 +352,7 @@ const EmergencyContacts = () => {
                                                 width: "auto"
                                             }}
                                         />
-
+                                        <Box sx={{ width: 100 }} />
                                         <FormControlLabel
                                             control={
                                                 <Tooltip title="Alert this contact when a person is detected">
@@ -366,7 +375,8 @@ const EmergencyContacts = () => {
                                                 width: "auto"
                                             }}
                                         />
-
+                                    </Stack>
+                                    <Stack direction="row" spacing={2} alignItems="center" >
                                         <FormControlLabel
                                             control={
                                                 <Tooltip title="Alert this contact when a package is detected">
@@ -381,6 +391,29 @@ const EmergencyContacts = () => {
                                                 </Tooltip>
                                             }
                                             label="Package Detection"
+                                            sx={{
+                                                color: "#333",
+                                                marginLeft: 0,
+                                                alignItems: "center",
+                                                justifyContent: "flex-start",
+                                                width: "auto"
+                                            }}
+                                        />
+                                        <Box sx={{ width: 77 }} />
+                                        <FormControlLabel
+                                            control={
+                                                <Tooltip title="Alert this contact when a fire is detected">
+                                                    <Switch
+                                                        label="notify_fire"
+                                                        name="notify_fire"
+                                                        checked={values.notify_fire}
+                                                        onChange={handleChange}
+                                                        onBlur={handleBlur}
+                                                        color="primary"
+                                                    />
+                                                </Tooltip>
+                                            }
+                                            label="Fire Detection"
                                             sx={{
                                                 color: "#333",
                                                 marginLeft: 0,

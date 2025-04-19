@@ -21,6 +21,7 @@ class Notification (db.Model):
     device_id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column(db.String(25), primary_key=True)
     message = db.Column(db.String(50))
+    notif_type = db.Column(db.String(25))
     read = db.Column(db.Boolean, default=False)
     snapshot = db.Column(db.LargeBinary) 
 
@@ -43,3 +44,4 @@ class EmergencyContact (db.Model):
     notify_pistol = db.Column(db.Boolean, default=False)
     notify_person = db.Column(db.Boolean, default=False)
     notify_package = db.Column(db.Boolean, default=False)
+    notify_fire = db.Column(db.Boolean, default=False)
