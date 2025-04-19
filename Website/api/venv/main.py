@@ -10,8 +10,13 @@ from routes.notifications import notifications_bp
 from routes.manage_users import manage_users_bp
 from uuid import uuid4
 from flask_bcrypt import Bcrypt
+from dotenv import load_dotenv
+import os
 
 bcrypt = Bcrypt()
+
+load_dotenv()
+admin_pass = os.getenv("ADMIN_PASSWORD")
 
 def setup(mode):
     app = Flask(__name__)
@@ -41,7 +46,7 @@ def create_admin_user(app):
                 first_name="Admin",
                 last_name="Admin",
                 email="admin@admin",
-                password=bcrypt.generate_password_hash("Password123").decode("utf-8"), 
+                password=bcrypt.generate_password_hash(admin_pass).decode("utf-8"), 
                 account_type="admin"
             )
             db.session.add(admin)
