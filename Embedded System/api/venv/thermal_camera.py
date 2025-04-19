@@ -5,6 +5,7 @@ import usb.util
 
 import pygetwindow as gw
 from PIL import ImageGrab
+import os
 
 #model interface import
 import sys
@@ -100,17 +101,40 @@ if __name__ == '__main__':
     #taking screenshot from the TC View app
     #camera.take_app_image()
 
-    while True:
-        #using cv2 bc its an easy exit without implementing anything else
-        key = cv2.waitKey(100)
-        if key == ord('q'):
-            break
+    base_path = Path(__file__).resolve().parents[0]
+    
+    path =  os.path.join(base_path, 'localcache', 'thermal_frame_0.npy')
+    model_interface.set_thermal_npy(path)
+    detection, num_fires, contours = model_interface.detect_fire()
+    if detection:
+        print("fire detected ", num_fires)
+    else:
+        print("no fire detected ", num_fires)
 
-        camera.take_app_image()
-        model_interface.set_thermal_image('localcache/test_thermal_image.jpg')
-        #model_interface.set_thermal_image('../../../Models/Data/test_image.jpg')
-        detection, image = model_interface.detect_and_bound_pistol()
-        if detection:
-            print("pistol detected")
-        else:
-            print("no pistol detected")
+    path =  os.path.join(base_path, 'localcache', 'thermal_frame_1.npy')
+    model_interface.set_thermal_npy(path)
+    detection, num_fires, contours = model_interface.detect_fire()
+    if detection:
+        print("fire detected ", num_fires)
+    else:
+        print("no fire detected ", num_fires)
+
+    path =  os.path.join(base_path, 'localcache', 'thermal_frame_appendix.npy')
+    model_interface.set_thermal_npy(path)
+    detection, result_image = model_interface.detect_and_bound_pistol()
+    if detection:
+        print("pistol detected ")
+    else:
+        print("no pistol detected ")
+    cv2.imshow('test', result_image)
+    cv2.waitKey(3000)
+
+    path =  os.path.join(base_path, 'localcache', 'thermal_frame_pocket.npy')
+    model_interface.set_thermal_npy(path)
+    detection, result_image = model_interface.detect_and_bound_pistol()
+    if detection:
+        print("pistol detected ")
+    else:
+        print("no pistol detected ")
+    cv2.imshow('test', result_image)
+    cv2.waitKey(3000)

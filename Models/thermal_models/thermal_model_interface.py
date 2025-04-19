@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 #class imports
 from .concealed_pistol_classification import ConcealedPistol
 from .concealed_pistol_detection import BoundPistol
+from .fire_detection import FireDetection
 
 
 class ThermalInterface:
@@ -19,6 +20,7 @@ class ThermalInterface:
 
         self.concealed_pistol_model = ConcealedPistol()
         self.bound_pistol_model = BoundPistol()
+        self.fire_detection_model = FireDetection()
 
         current_dir = os.path.dirname(os.path.abspath(__file__))
         concealed_model_path = os.path.join(current_dir, 'best_concealed_model.pth')
@@ -41,9 +43,9 @@ class ThermalInterface:
         self.image = transform(self.image)
         self.image = self.image.unsqueeze(0) 
 
-    def detect_pistol(self, image_path):
+    def detect_pistol(self, image):
         #process image
-        self.image = Image.open(image_path)
+        self.image = Image.fromarray(image)
         self.transform_image()
 
         #send to model to detect
@@ -54,20 +56,25 @@ class ThermalInterface:
         else:
             return 0
         
-    def detect_and_bound_pistol(self, image_path):
-        self.image = Image.open(image_path)
+    def detect_and_bound_pistol(self, image):
+        self.image = Image.fromarray(image)
         self.transform_image()
 
         detected, result_image = self.bound_pistol_model.pistol_detected(self.image)
         
         if detected:
-            plt.imshow(result_image, cmap='gray')
-            plt.axis("off")
-            plt.title("Pistol Detected" if detected else "No Pistol Detected")
-            plt.show()
+            #plt.imshow(result_image, cmap='gray')
+            #plt.axis("off")
+            #plt.title("Pistol Detected" if detected else "No Pistol Detected")
+            #plt.show()
             return 1, result_image  
         else:
             return 0, result_image
+
+    def detect_fire(self, thermal_data):
+        self.fire_detection_model.set_thermal_data(thermal_data)
+        detection, num_fires, contours = self.fire_detection_model.detect()
+        return detection, num_fires, contours
 
 
 #if __name__ == '__main__':

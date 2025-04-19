@@ -22,10 +22,12 @@ def database():
     user = User.query.filter_by(id=user_id).first()
     timestamp = request.form.get("timestamp")
     message = request.form.get("message")
+    notif_type = request.form.get("notif_type")
     notification = Notification()
     notification.device_id = device_id
     notification.timestamp = timestamp
     notification.message = message
+    notification.notif_type = notif_type
     file = request.files.get("snapshot")
     if not file:
         return jsonify({"error": "No image provided"}), 400
