@@ -64,7 +64,7 @@ def notify_emergency_contacts(user_id, notification, camera_name):
     user = User.query.filter_by(id=user_id).first()
 
     for contact in contacts:
-        notify = getattr(contact, f'notify_{notification.type}', False)
+        notify = getattr(contact, f'notify_{notification.notif_type}', False)
         if notify: 
             subject = "Emergency Notification Alert"
             body = f"""
