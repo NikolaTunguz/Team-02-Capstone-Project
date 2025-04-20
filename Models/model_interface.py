@@ -77,8 +77,13 @@ class ModelInterface:
 
     def detect_fire(self):
         thermal_data = self.thermal_data
-        detection, num_fires, contours = self.thermal_interface.detect_fire(thermal_data)
-        return detection, num_fires, contours
+        detection, bboxes = self.thermal_interface.detect_fire(thermal_data)
+
+        result_image = self.thermal_image
+        for x1,y1, x2,y2 in bboxes:
+            cv2.rectangle(result_image, (x1, y1), (x2, y2), (255, 255, 255), 2)
+
+        return detection, bboxes, result_image
 
     def detect_person(self):
         image = self.normal_image

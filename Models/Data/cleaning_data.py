@@ -23,8 +23,8 @@ def rename_with_gun_files(folder_path):
         image_extension = os.path.splitext(image_file_name)[1]
         label_extension = os.path.splitext(label_file_name)[1]
 
-        new_image_name = f"gun_{171 + index}{image_extension}"
-        new_label_name = f"gun_{171 + index}{label_extension}"
+        new_image_name = f"gun_{193 + index}{image_extension}"
+        new_label_name = f"gun_{193 + index}{label_extension}"
 
         os.rename(
             os.path.join(images_path, image_file_name),
@@ -59,18 +59,18 @@ def rename_without_gun_files(folder_path):
     for index, image_file_name in enumerate(images):
         image_extension = os.path.splitext(image_file_name)[1]
 
-        new_image_name = f"no_gun_{187 + index}{image_extension}"
+        new_image_name = f"no_gun_{207 + index}{image_extension}"
 
         os.rename(
             os.path.join(images_path, image_file_name),
             os.path.join(images_path, new_image_name)
             )
         
-        new_label_name = f"no_gun_{187 + index}.txt"
+        new_label_name = f"no_gun_{207 + index}.txt"
         label_file_path = os.path.join(labels_path, new_label_name)
 
         with open(label_file_path, 'w') as f:
-            f.write("0 0 0 0 0\n")
+            f.write("0 0.5 0.5 1.0 1.0\n")
 
 def convert_raw_thermal_to_displayable(npy_file):
     image = npy_file
@@ -182,7 +182,15 @@ def main():
     #combine_datasets(previous_dataset_path, new_dataset_path, destination_path)
     #change_no_gun_labels(os.path.join('CombinedData', 'without gun', 'labels'))
 
-    
+    new_npy_path = os.path.join('new_data', 'npy_files')
+    new_jpg_path = os.path.join('new_data', 'jpg_files')
+    #separate_npy_to_jpg(new_npy_path, new_jpg_path)
+    new_annotated_gun = os.path.join('new_data', 'annotated', 'with gun')
+    new_annotated_no_gun = os.path.join('new_data', 'annotated', 'without gun')
+    #rename_with_gun_files(new_annotated_gun)
+    #rename_without_gun_files(new_annotated_no_gun)
+
+
 
 if __name__ == "__main__":
     main()

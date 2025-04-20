@@ -46,7 +46,7 @@ class BoundPistol(nn.Module):
         self.bn9 = nn.BatchNorm2d(128)
 
         #16 x 16 x 128 comes from sizing, the pool in each layer cut dimensionality in half, 256 is out channels
-        self.fc1 = nn.Linear(in_features = (16 * 16 * 128), out_features = 64)
+        self.fc1 = nn.Linear(in_features = (24 * 24 * 128), out_features = 64)
         self.fc2 = nn.Linear(in_features = 64, out_features = 32)
         self.fc3 = nn.Linear(in_features = 32, out_features = 32)
         self.fc4 = nn.Linear(in_features = 32, out_features = 32)
@@ -134,7 +134,7 @@ class BoundPistol(nn.Module):
         output_skip_3 = output
 
         #forward pass flattening
-        output = output.view(-1, 128 * 16 * 16)
+        output = output.view(-1, 128 * 24 * 24)
 
         #forward pass fully connected layers
         output = self.fc1(output)

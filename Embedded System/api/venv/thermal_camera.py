@@ -37,7 +37,6 @@ class ThermalCamera:
 
         #window.minimize()
         
-        
     def webcam_feed(self):
         #default camera/webcam feed (testing purposes)
         cap = cv2.VideoCapture(0)
@@ -105,23 +104,27 @@ if __name__ == '__main__':
     
     path =  os.path.join(base_path, 'localcache', 'thermal_frame_0.npy')
     model_interface.set_thermal_npy(path)
-    detection, num_fires, contours = model_interface.detect_fire()
+    detection, bboxes, result_image = model_interface.detect_fire()
     if detection:
-        print("fire detected ", num_fires)
+        print("fire detected ", bboxes)
+        cv2.imshow('test', result_image)
+        cv2.waitKey(0)
     else:
-        print("no fire detected ", num_fires)
+        print("no fire detected ", bboxes)
 
     path =  os.path.join(base_path, 'localcache', 'thermal_frame_1.npy')
     model_interface.set_thermal_npy(path)
-    detection, num_fires, contours = model_interface.detect_fire()
+    detection, bboxes, result_image = model_interface.detect_fire()
     if detection:
-        print("fire detected ", num_fires)
+        print("fire detected ", bboxes)
+        cv2.imshow('test', result_image)
+        cv2.waitKey(3000)
     else:
-        print("no fire detected ", num_fires)
+        print("no fire detected ", bboxes)
 
     path =  os.path.join(base_path, 'localcache', 'thermal_frame_appendix.npy')
     model_interface.set_thermal_npy(path)
-    detection, result_image = model_interface.detect_and_bound_pistol()
+    detection, bbox, result_image = model_interface.detect_and_bound_pistol()
     if detection:
         print("pistol detected ")
     else:
@@ -131,7 +134,7 @@ if __name__ == '__main__':
 
     path =  os.path.join(base_path, 'localcache', 'thermal_frame_pocket.npy')
     model_interface.set_thermal_npy(path)
-    detection, result_image = model_interface.detect_and_bound_pistol()
+    detection, bbox, result_image = model_interface.detect_and_bound_pistol()
     if detection:
         print("pistol detected ")
     else:

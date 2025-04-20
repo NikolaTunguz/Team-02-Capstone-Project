@@ -10,6 +10,7 @@ Models/Data/AnnotatedData
 Models/Data/collected_data
 Models/Data/CombinedData
 Models/Data/CombinedImages
+Models/Data/new_data
 Models/Data/test_image.jpg
 Embedded System/api/venv/localcache/input_image.jpg
 Embedded System/api/venv/localcache/test_thermal_image.jpg
