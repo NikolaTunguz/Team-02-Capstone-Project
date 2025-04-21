@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Dialog, DialogContent, IconButton, Box, Tooltip } from "@mui/material";
+import { Dialog, DialogContent, IconButton, Box, Tooltip, CircularProgress } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import CameraSettings from "./CameraSettings";
 import { useNavigate } from 'react-router-dom';
 import "../App.css";
 import httpClient from '../pages/httpClient';
-import temp_team_photo from '../assets/images/team_photo.png'
+import default_thumbnail from '../assets/images/default_thumbnail.png'
 
 const LiveStream = ({ camera }) => {
     const [open, setOpen] = useState(false);
@@ -14,7 +14,8 @@ const LiveStream = ({ camera }) => {
 
     const peerConnectionRef = useRef(null);
     const signalingSocketRef = useRef(null);
-    const [thumbnail, setThumbnail] = useState(temp_team_photo);
+    const [thumbnail, setThumbnail] = useState(default_thumbnail);
+    const [loading, setLoading] = useState(false);
 
     function websocketConnect() {
         return new Promise((resolve) => {
@@ -39,27 +40,35 @@ const LiveStream = ({ camera }) => {
         };
 
         const config = {
-            sdpSemantics: 'unified-plan'
+            sdpSemantics: 'unified-plan',
+            iceServers: [{ urls: ['stun:stun.l.google.com:19302'] }],
         };
-
-        config.iceServers = [{ urls: ['stun:stun.l.google.com:19302'] }];
 
         peerConnectionRef.current = new RTCPeerConnection(config);
 
         peerConnectionRef.current.addEventListener('track', (evt) => {
-            if (evt.track.kind === 'video') {
-                document.getElementById('video').srcObject = evt.streams[0];
-            } else {
-                document.getElementById('audio').srcObject = evt.streams[0];
+            const videoEl = document.getElementById(evt.track.kind);
+            setLoading(false);
+            if (videoEl) {
+                videoEl.srcObject = evt.streams[0];
             }
         });
+
+
         await sendOffer(camera.device_id);
-    };
+
+        return;
+    }
 
     const handleOpen = async () => {
-        await startStream();
-        setOriginalName(camera.device_name);
+        setLoading(true);
         setOpen(true);
+        setOriginalName(camera.device_name);
+        try {
+            await startStream();
+        } catch (e) {
+            console.error("Failed to start stream:", e);
+        }
     };
 
     const handleClose = () => {
@@ -178,7 +187,18 @@ const LiveStream = ({ camera }) => {
                             overflow: "hidden"
                         }}
                     >
-                        <video id="video" autoPlay playsInline></video>
+                        {loading && 
+                            <>
+                                <CircularProgress />
+                                <p> Live stream loading...</p>
+                            </>
+                        }
+                        <video 
+                             id="video" 
+                             autoPlay 
+                             playsInline 
+                             style={{ display: !loading ? 'block' : 'none' }}>
+                        </video>
                     </Box>
 
                     <Box style={{ marginLeft: "20px", display: "flex", alignItems: "center" }}>
