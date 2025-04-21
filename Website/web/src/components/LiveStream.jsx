@@ -48,6 +48,7 @@ const LiveStream = ({ camera }) => {
 
         peerConnectionRef.current.addEventListener('track', (evt) => {
             const videoEl = document.getElementById(evt.track.kind);
+            setLoading(false);
             if (videoEl) {
                 videoEl.srcObject = evt.streams[0];
             }
@@ -110,7 +111,6 @@ const LiveStream = ({ camera }) => {
             target_id: targetId,
             sdp: offer_alt.sdp,
         }));
-        setLoading(false);
     }
 
     async function fetchThumbnail(deviceId) {
@@ -187,15 +187,18 @@ const LiveStream = ({ camera }) => {
                             overflow: "hidden"
                         }}
                     >
-                        {loading ? (
+                        {loading && 
                             <>
                                 <CircularProgress />
                                 <p> Live stream loading...</p>
                             </>
-                        ) : (
-                            <video id="video" autoPlay playsInline></video>
-
-                        )}
+                        }
+                        <video 
+                             id="video" 
+                             autoPlay 
+                             playsInline 
+                             style={{ display: !loading ? 'block' : 'none' }}>
+                        </video>
                     </Box>
 
                     <Box style={{ marginLeft: "20px", display: "flex", alignItems: "center" }}>
