@@ -11,6 +11,7 @@ const LiveStream = ({ camera }) => {
     const [open, setOpen] = useState(false);
     const [originalName, setOriginalName] = useState(camera.device_name);
     const navigate = useNavigate();
+    const [cameraToggleSwitch, setCameraToggleSwitch] = useState(true)
 
     const peerConnectionRef = useRef(null);
     const signalingSocketRef = useRef(null);
@@ -19,7 +20,7 @@ const LiveStream = ({ camera }) => {
 
     function websocketConnect() {
         return new Promise((resolve) => {
-            signalingSocketRef.current = new WebSocket("ws://localhost:8765");
+            signalingSocketRef.current = new WebSocket("ws://seethru-wss.unr.dev");
             signalingSocketRef.current.onopen = () => {
                 console.log('WebSocket connection established');
                 resolve(signalingSocketRef.current);
@@ -46,14 +47,21 @@ const LiveStream = ({ camera }) => {
 
         peerConnectionRef.current = new RTCPeerConnection(config);
 
+
+        let counter = 0;
         peerConnectionRef.current.addEventListener('track', (evt) => {
-            const videoEl = document.getElementById(evt.track.kind);
-            setLoading(false);
-            if (videoEl) {
-                videoEl.srcObject = evt.streams[0];
+
+            if (evt.track.kind === 'video') {
+                // document.getElementById('video').srcObject = evt.streams[0];
+                setLoading(false)
+                if (counter == 0) {
+                    document.getElementById('thermal').srcObject = new MediaStream([evt.track])
+                    counter += 1;
+                } else if (counter > 0) {
+                    document.getElementById('video').srcObject = new MediaStream([evt.track])
+                }
             }
         });
-
 
         await sendOffer(camera.device_id);
 
@@ -86,6 +94,7 @@ const LiveStream = ({ camera }) => {
     };
 
     async function sendOffer(targetId) {
+        peerConnectionRef.current.addTransceiver('video', { direction: 'recvonly' });
         peerConnectionRef.current.addTransceiver('video', { direction: 'recvonly' });
         peerConnectionRef.current.addTransceiver('audio', { direction: 'recvonly' });
         const offer = await peerConnectionRef.current.createOffer();
@@ -130,6 +139,10 @@ const LiveStream = ({ camera }) => {
         } catch (error) {
             console.error("Error fetching thumbnail:", error);
         }
+    }
+
+    const handleToggle = (value) => {
+        setCameraToggleSwitch(value)
     }
 
     useEffect(() => {
@@ -187,22 +200,31 @@ const LiveStream = ({ camera }) => {
                             overflow: "hidden"
                         }}
                     >
-                        {loading && 
+                      
+                      {loading && 
                             <>
                                 <CircularProgress />
                                 <p> Live stream loading...</p>
                             </>
                         }
+
                         <video 
-                             id="video" 
-                             autoPlay 
-                             playsInline 
-                             style={{ display: !loading ? 'block' : 'none' }}>
+                            id="video" 
+                            autoPlay 
+                            playsInline 
+                            style={{ display: (!loading && cameraToggleSwitch) ? 'block' : 'none' }}>
+                        </video>
+
+                        <video 
+                            id="thermal" 
+                            autoPlay 
+                            playsInline 
+                            style={{ display: (!loading && !cameraToggleSwitch) ? 'block' : 'none' }}>
                         </video>
                     </Box>
 
                     <Box style={{ marginLeft: "20px", display: "flex", alignItems: "center" }}>
-                        <CameraSettings camera={camera} setOpenDialog={setOpen} />
+                        <CameraSettings camera={camera} setOpenDialog={setOpen} sendToggle={handleToggle} />
                     </Box>
                 </DialogContent>
             </Dialog>
