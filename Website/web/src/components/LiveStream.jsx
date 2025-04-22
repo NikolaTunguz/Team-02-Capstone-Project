@@ -11,7 +11,7 @@ const LiveStream = ({ camera }) => {
     const [open, setOpen] = useState(false);
     const [originalName, setOriginalName] = useState(camera.device_name);
     const navigate = useNavigate();
-    const [cameraToggleSwitch, setCameraToggleSwitch] = useState(false)
+    const [cameraToggleSwitch, setCameraToggleSwitch] = useState(true)
 
     const peerConnectionRef = useRef(null);
     const signalingSocketRef = useRef(null);
@@ -19,7 +19,7 @@ const LiveStream = ({ camera }) => {
 
     function websocketConnect() {
         return new Promise((resolve) => {
-            signalingSocketRef.current = new WebSocket("ws://localhost:8765");
+            signalingSocketRef.current = new WebSocket("ws://seethru-wss.unr.dev");
             signalingSocketRef.current.onopen = () => {
                 console.log('WebSocket connection established');
                 resolve(signalingSocketRef.current);
@@ -53,17 +53,12 @@ const LiveStream = ({ camera }) => {
             if (evt.track.kind === 'video') {
                 // document.getElementById('video').srcObject = evt.streams[0];
                 if (counter == 0) {
-                    document.getElementById('video').srcObject = new MediaStream([evt.track])
+                    document.getElementById('thermal').srcObject = new MediaStream([evt.track])
                     counter += 1;
                 } else if (counter > 0) {
-                    document.getElementById('thermal').srcObject = new MediaStream([evt.track])
-                    
+                    document.getElementById('video').srcObject = new MediaStream([evt.track])
                 }
             }
-                
-            // } else {
-            //     document.getElementById('audio').srcObject = evt.streams[0];
-            // }
         });
 
         
@@ -201,13 +196,13 @@ const LiveStream = ({ camera }) => {
                             id="video" 
                             autoPlay 
                             playsInline 
-                            style={{ display: !cameraToggleSwitch ? 'block' : 'none' }}>
+                            style={{ display: cameraToggleSwitch ? 'block' : 'none' }}>
                         </video>
                         <video 
                             id="thermal" 
                             autoPlay 
                             playsInline 
-                            style={{ display: cameraToggleSwitch ? 'block' : 'none' }}>
+                            style={{ display: !cameraToggleSwitch ? 'block' : 'none' }}>
                         </video>
                     </Box>
 

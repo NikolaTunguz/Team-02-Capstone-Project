@@ -25,7 +25,7 @@ relay = None
 
 connections = set()
 
-SIGNALING_SERVER_URI = "ws://localhost:8765"
+SIGNALING_SERVER_URI = "ws://seethru-wss.unr.dev"
 
 class TestTrack(VideoStreamTrack):
     def __init__(self, camera_queue, webrtc_con_person, webrtc_con_package):
@@ -70,20 +70,16 @@ def camera_reader(camera_queue, thermal_queue):
     cap_standard = Picamera2()
     cap_standard.configure(cap_standard.create_video_configuration(main={"format":'BGR888', "size":(640, 480)}))
     cap_standard.start()
-    cap_thermal = cv2.VideoCapture(1)
+    cap_thermal = cv2.VideoCapture(0)
     print("loaded")
     while(True):
         frame = cap_standard.capture_array()
-        try: 
+        if not camera_queue.full():
             camera_queue.put_nowait(frame)
-        except:
-            pass
-            
+        
         _, frame = cap_thermal.read()
-        try:
+        if not thermal_queue.full():
             thermal_queue.put_nowait(frame)
-        except:
-            pass
 
 def image_process(camera_queue, im_pro_con_person, im_pro_con_package):
     print("im_pro started")
@@ -188,6 +184,11 @@ async def on_offer(offer_sdp, target_id, camera_queue, webrtc_con_person, webrtc
     await peer_connection.setRemoteDescription(offer)
     answer = await peer_connection.createAnswer()
     await peer_connection.setLocalDescription(answer)
+    
+    answer = RTCSessionDescription(
+        type = peer_connection.localDescription.type,
+        sdp = peer_connection.localDescription.sdp,
+    )
 
 
     signaling_message = {
