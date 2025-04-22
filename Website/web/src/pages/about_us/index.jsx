@@ -1,7 +1,7 @@
 import React from 'react';
 import './index.css';
 import HomeNavBar from '../../components/HomeNavBar.jsx'
-import temp_team_photo from '../../assets/images/team_photo.png'
+import team_photo from '../../assets/images/team_photo.png'
 import product_photo from '../../assets/images/product_photo.png'
 import { useAuth } from "../../context/AuthContext";
 
@@ -40,7 +40,7 @@ const AboutUs = () => {
                 <div className='content'>
                     <img
                         alt='Team Photo'
-                        src={temp_team_photo}
+                        src={team_photo}
                     />
                     <p>
                         We are Team 02: SeeThru, a dedicated group of students from the University of Nevada, Reno.
