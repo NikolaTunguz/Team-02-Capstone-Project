@@ -9,6 +9,7 @@ from datetime import datetime
 import sys
 import os
 import cv2
+from picamera2 import Picamera2
 from av import VideoFrame
 from aiortc import RTCPeerConnection, RTCSessionDescription
 from aiortc import VideoStreamTrack
@@ -66,11 +67,13 @@ class TestTrack(VideoStreamTrack):
 
 def camera_reader(camera_queue, thermal_queue):
     print("loading")
-    cap_standard = cv2.VideoCapture(0)
+    cap_standard = Picamera2()
+    cap_standard.configure(cap_standard.create_video_configuration(main={"format":'BGR888', "size":(640, 480)}))
+    cap_standard.start()
     cap_thermal = cv2.VideoCapture(1)
     print("loaded")
     while(True):
-        _, frame = cap_standard.read()
+        frame = cap_standard.capture_array()
         try: 
             camera_queue.put_nowait(frame)
         except:
