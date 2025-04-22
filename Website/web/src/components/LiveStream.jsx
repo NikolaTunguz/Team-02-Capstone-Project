@@ -53,6 +53,7 @@ const LiveStream = ({ camera }) => {
 
             if (evt.track.kind === 'video') {
                 // document.getElementById('video').srcObject = evt.streams[0];
+                setLoading(false)
                 if (counter == 0) {
                     document.getElementById('thermal').srcObject = new MediaStream([evt.track])
                     counter += 1;
