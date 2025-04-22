@@ -48,8 +48,8 @@ class BoundPistol(nn.Module):
         #16 x 16 x 128 comes from sizing, the pool in each layer cut dimensionality in half, 256 is out channels
         self.fc1 = nn.Linear(in_features = (24 * 24 * 128), out_features = 64)
         self.fc2 = nn.Linear(in_features = 64, out_features = 32)
-        self.fc3 = nn.Linear(in_features = 32, out_features = 32)
-        self.fc4 = nn.Linear(in_features = 32, out_features = 32)
+        #self.fc3 = nn.Linear(in_features = 32, out_features = 32)
+        #self.fc4 = nn.Linear(in_features = 32, out_features = 32)
         self.fc_class = nn.Linear(in_features = 32, out_features = num_classes)
         self.fc_bbox = nn.Linear(in_features = 32, out_features = 4)
 
@@ -145,13 +145,13 @@ class BoundPistol(nn.Module):
         output = self.leaky_relu(output)
         output = self.dropout(output)
 
-        output = self.fc3(output)
-        output = self.leaky_relu(output)
-        output = self.dropout(output)
+        #output = self.fc3(output)
+        #output = self.leaky_relu(output)
+        #output = self.dropout(output)
 
-        output = self.fc4(output)
-        output = self.leaky_relu(output)
-        output = self.dropout(output)
+        #output = self.fc4(output)
+        #output = self.leaky_relu(output)
+        #output = self.dropout(output)
 
         output_class = self.fc_class(output)
         
@@ -182,7 +182,7 @@ class BoundPistol(nn.Module):
 
             #check prediction class, 0 is no gun, 1 is gun
             predicted_class = torch.argmax(pred_class, dim = 1).item()
-            if predicted_class == 1:
+            if predicted_class == 0:
                 return True, pred_bbox, self.get_bounded_image(pred_bbox)
             else:
                 return False, pred_bbox, self.get_bounded_image(pred_bbox)

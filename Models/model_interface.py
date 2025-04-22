@@ -72,7 +72,10 @@ class ModelInterface:
     
     def detect_and_bound_pistol(self):
         image = self.thermal_image
+        cv2.imshow('input image', image)
+        cv2.waitKey(0)
         detection, pred_bbox, box_image = self.thermal_interface.detect_and_bound_pistol(image)
+        cv2.imshow('boxed output', box_image)
         return detection, pred_bbox, box_image
 
     def detect_fire(self):
