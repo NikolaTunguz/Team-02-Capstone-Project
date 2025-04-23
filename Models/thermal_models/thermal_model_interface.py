@@ -31,6 +31,11 @@ class ThermalInterface:
         self.concealed_pistol_model.load_state_dict(torch.load(concealed_model_path, weights_only = True, map_location = device))
         self.bound_pistol_model.load_state_dict(torch.load(bound_model_path, weights_only = True, map_location = device))
 
+        self.concealed_pistol_model.to(device)
+        self.bound_pistol_model.to(device)
+        self.concealed_pistol_model.eval()
+        self.bound_pistol_model.eval()
+
 
     def transform_image(self):
         #shape and grayscale image
@@ -38,12 +43,13 @@ class ThermalInterface:
             transforms.Resize((384, 384)), 
             transforms.Grayscale(),
             transforms.ToTensor(),
-            #transforms.Normalize(mean=[0.5], std=[0.5])
+            transforms.Normalize(mean=[0.5], std=[0.5])
         ])
 
         #transform, and change to have right dimensionality
         self.image = transform(self.image)
         self.image = self.image.unsqueeze(0) 
+        return self.image
 
     def detect_pistol(self, image):
         #process image
@@ -60,7 +66,7 @@ class ThermalInterface:
         
     def detect_and_bound_pistol(self, image):
         self.image = Image.fromarray(image)
-        self.transform_image()
+        self.image = self.transform_image()
 
         detected, pred_bbox, result_image = self.bound_pistol_model.pistol_detected(self.image)
         

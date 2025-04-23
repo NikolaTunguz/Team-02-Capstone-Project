@@ -27,13 +27,15 @@ if __name__ == '__main__':
             image = model_interface.thermal_image
             cv2.imshow('test', image)
             cv2.waitKey(10)
-           
+
+            pure_classification = model_interface.detect_pistol()
+            print('classification: ', pure_classification)
             detection, bbox, result_image = model_interface.detect_and_bound_pistol()
             cv2.imshow('output', result_image)
             if detection:
                 print('pistol detected', bbox)
                 cv2.imshow('pistol', result_image)
-                cv2.waitKey(0)
+                cv2.waitKey(10)
             else:
                 print('no pistol detected', bbox)
             cv2.imshow('output', result_image)

@@ -166,15 +166,15 @@ class ConcealedPistol(nn.Module):
 
         self.eval()
         with torch.no_grad():
-            self.current_image.to(device)
+            self.current_image = self.current_image.to(device)
 
             #this class is the model, self(self.current) passes into inherited
             #goes through call function, which runs forward pass
-            prediction, _ = self(self.current_image)
+            prediction, _ = self.forward(self.current_image)
 
-            #check prediction class, 0 is gun, 1 no gun
+            #check prediction class, 0 is no gun, 1 gun
             predicted_class = torch.argmax(prediction, dim = 1).item()
-            if predicted_class == 0:
+            if predicted_class == 1:
                 return True
             return False
 

@@ -12,10 +12,7 @@ class BoundPistol(nn.Module):
     def __init__(self):
         super(BoundPistol, self).__init__()
 
-        self.current_image = None
-        num_classes = 2
-
-        #model takes input of 256 x 256 x 1
+        #model takes input of 384 x 384 x 1
         #make sure in_channels aligns with out_channels from the previous layer
 
         self.conv1 = nn.Conv2d(in_channels = 1, out_channels = 32, kernel_size = 3, stride = 1, padding = 1)
@@ -50,7 +47,7 @@ class BoundPistol(nn.Module):
         self.fc2 = nn.Linear(in_features = 64, out_features = 32)
         #self.fc3 = nn.Linear(in_features = 32, out_features = 32)
         #self.fc4 = nn.Linear(in_features = 32, out_features = 32)
-        self.fc_class = nn.Linear(in_features = 32, out_features = num_classes)
+        self.fc_class = nn.Linear(in_features = 32, out_features = 2)
         self.fc_bbox = nn.Linear(in_features = 32, out_features = 4)
 
         self.pool = nn.MaxPool2d(2,2)
@@ -58,7 +55,7 @@ class BoundPistol(nn.Module):
         self.sigmoid = nn.Sigmoid()
         self.dropout = nn.Dropout(0.5)
 
-    #model's foward pass
+
     def forward(self, input):
         #forward pass first block, no pool
         output = self.conv1(input)
@@ -155,8 +152,8 @@ class BoundPistol(nn.Module):
 
         output_class = self.fc_class(output)
         
-        output_bbox = self.fc_bbox(output)
-        output_bbox = self.sigmoid(output_bbox)
+        output_bbox = self.sigmoid(output)
+        output_bbox = self.fc_bbox(output_bbox)
 
         return output_class, output_bbox
     
@@ -167,22 +164,34 @@ class BoundPistol(nn.Module):
 
         self.eval()
         with torch.no_grad():
-            self.current_image.to(device)
+            #print(self.current_image.shape, self.current_image.dtype) #1 1 384 384, torch.float32
+            self.current_image = self.current_image.to(device)
 
             #this class is the model, self(self.current) passes into inherited
             #goes through call function, which runs forward pass
-            pred_class, pred_bbox = self(self.current_image)
+            
+            pred_class, pred_bbox = self.forward(self.current_image)
+            #print(pred_bbox) # 1. 1. 1. 1. device = cuda:0
+            pred_bbox = pred_bbox[0]
+            #print(pred_bbox)# 1. 1. 1. 1. device = cuda:0
+
             pred_bbox = pred_bbox.cpu().detach().numpy().flatten()
+            #print(pred_bbox) # 1. 1. 1. 1.
+
+            pred_bbox = [ int(pred_bbox[0] ), int(pred_bbox[1]), int(pred_bbox[2] ), int(pred_bbox[3] )]
+           # print(pred_bbox) #1 1 1 1
 
             #convert bbox coordinates to pixel values
             image = self.current_image.squeeze(0).permute(1, 2, 0).cpu().numpy()  
             image = (image * 255).astype(np.uint8)  
             height, width, _ = image.shape
-            pred_bbox = [ int(pred_bbox[0] * width), int(pred_bbox[1] * height), int(pred_bbox[2] * width), int(pred_bbox[3] * height)]
+            #pred_bbox = [ int(pred_bbox[0] * width), int(pred_bbox[1] * height), int(pred_bbox[2] * width), int(pred_bbox[3] * height)]
+            pred_bbox = [ int(pred_bbox[0]), int(pred_bbox[1] ), int(pred_bbox[2]), int(pred_bbox[3] )]
+            #print(pred_bbox) #1 1 1 1
 
             #check prediction class, 0 is no gun, 1 is gun
             predicted_class = torch.argmax(pred_class, dim = 1).item()
-            if predicted_class == 0:
+            if predicted_class == 1:
                 return True, pred_bbox, self.get_bounded_image(pred_bbox)
             else:
                 return False, pred_bbox, self.get_bounded_image(pred_bbox)

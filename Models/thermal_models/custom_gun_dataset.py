@@ -51,10 +51,10 @@ class CustomDataset(Dataset):
                 width = float(width) * image_width
                 height = float(height) * image_height
 
-                x1 = x_center - (width / 2)
-                y1 = y_center - (height / 2)
-                x2 = x_center + (width / 2)
-                y2 = y_center + (height / 2)
+                x1 = int(x_center - (width / 2))
+                y1 = int(y_center - (height / 2))
+                x2 = int(x_center + (width / 2))
+                y2 = int(y_center + (height / 2))
 
                 self.images.append(transformed_image)
                 self.labels.append(int(class_label))
