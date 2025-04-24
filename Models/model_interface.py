@@ -24,7 +24,8 @@ class ModelInterface:
 
     def set_thermal_npy(self, npy_path):
         self.thermal_npy_path = npy_path
-        self.convert_raw_thermal()
+        t_image, t_gray, t_data = self.convert_raw_thermal()
+        return t_image, t_gray, t_data
 
     def convert_raw_thermal(self):
         npy_file = np.load(self.thermal_npy_path)
@@ -37,6 +38,8 @@ class ModelInterface:
         #second section for thermal conversion
         thermal_temps = self.thermal_to_temp(thermal_data)
         self.thermal_data = thermal_temps
+
+        return self.thermal_image, self.thermal_grayscale, self.thermal_data
 
     def thermal_to_image(self, image_data):
         hi = image_data[:, :, 0].astype(np.uint16)
