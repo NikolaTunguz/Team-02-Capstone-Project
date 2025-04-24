@@ -68,6 +68,15 @@ class ModelInterface:
         return np.array(scaled_temp)
 
     
+    def set_thermal_grayscale(self, image):
+        self.thermal_grayscale = image
+    
+    def set_thermal_image(self, image):
+        self.thermal_image = image
+
+    def set_thermal_data(self, data):
+        self.thermal_data = data
+        
     def detect_pistol(self):
         image = self.thermal_grayscale
         #cv2.imshow('test', image)
