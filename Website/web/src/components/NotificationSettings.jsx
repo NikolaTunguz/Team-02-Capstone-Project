@@ -4,53 +4,67 @@ import {
     Switch,
     FormControlLabel,
     Tooltip,
-    Box
+    Box,
+    CircularProgress,
 } from "@mui/material";
 import httpClient from "../pages/httpClient";
 import Expandable from './Expandable.jsx';
 import { showSuccess, showError } from "./ToastUtils";
 
-const NotificationSettings = ({ contact }) => {
-    const [settings, setSettings] = useState({
-        pistolDetection: contact?.settings?.pistolDetection || false,
-        personDetection: contact?.settings?.personDetection || false,
-        packageDetection: contact?.settings?.packageDetection || false,
+const NotificationSettings = () => {
+    const [values, setValues] = useState({
+        notify_pistol: false,
+        notify_person: false,
+        notify_package: false,
+        notify_fire: false
     });
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        setSettings({
-            pistolDetection: contact?.settings?.pistolDetection || false,
-            personDetection: contact?.settings?.personDetection || false,
-            packageDetection: contact?.settings?.packageDetection || false,
-        });
-    }, [contact]);
+        httpClient.get("http://localhost:8080/notification_settings")
+            .then(response => {
+                setValues(response.data);
+            })
+            .catch(error => {
+                console.error("Failed to fetch user settings", error);
+                showError("Failed to load notification settings.");
+            })
+            .finally(() => setLoading(false));
+    }, []);
 
-    const handleToggle = async (setting) => {
-        const updatedSettings = { ...settings, [setting]: !settings[setting] };
-        setSettings(updatedSettings);
+    const handleChange = async (event) => {
+        const { name, checked } = event.target;
+        const updatedValues = { ...values, [name]: checked };
+        setValues(updatedValues);
 
         try {
-            await httpClient.put("http://localhost:8080/update_contact_settings", {
-                email: contact.email,
-                settings: updatedSettings,
-            });
-            showSuccess("Contact settings updated successfully!");
+            await httpClient.post("http://localhost:8080/notification_settings", updatedValues);
+            showSuccess("Notification settings updated successfully!");
         } catch (e) {
             console.error("Failed to update settings", e);
             showError("Failed to update settings.");
-        }   
+        }
     };
 
+    if (loading) {
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" minHeight="100px">
+                <CircularProgress />
+            </Box>
+        );
+    }
+
     return (
-        <Expandable preview='Contact Notification Settings' content={
+        <Expandable preview='Notification Settings' style={{ minWidth: '760px' }} content={
             <Stack spacing={3} sx={{ width: "100%", color: "#333" }}>
-                <Box display="flex" flexDirection="column" alignItems="flex-start" gap={3} sx={{ width: "100%" }}>
+                <Stack direction="row" spacing={2} alignItems="center">
                     <FormControlLabel
                         control={
-                            <Tooltip title="Alert emergency contacts when a firearm is detected">
+                            <Tooltip title="Alert this contact when a firearm is detected">
                                 <Switch
-                                    checked={settings.pistolDetection}
-                                    // onChange={() => handleToggle("pistolDetection")}
+                                    namex="notify_pistol"
+                                    checked={values.notify_pistol}
+                                    onChange={handleChange}
                                     color="primary"
                                 />
                             </Tooltip>
@@ -58,19 +72,20 @@ const NotificationSettings = ({ contact }) => {
                         label="Pistol Detection"
                         sx={{
                             color: "#333",
-                            marginLeft: 0,  
+                            marginLeft: 0,
                             alignItems: "center",
                             justifyContent: "flex-start",
-                            width: "auto" 
+                            width: "auto"
                         }}
                     />
-
+                    <Box sx={{ width: 100 }} />
                     <FormControlLabel
                         control={
-                            <Tooltip title="Alert emergency contacts when a person is detected">
+                            <Tooltip title="Alert this contact when a person is detected">
                                 <Switch
-                                    checked={settings.personDetection}
-                                    onChange={() => handleToggle("personDetection")}
+                                    name="notify_person"
+                                    checked={values.notify_person}
+                                    onChange={handleChange}
                                     color="primary"
                                 />
                             </Tooltip>
@@ -84,13 +99,16 @@ const NotificationSettings = ({ contact }) => {
                             width: "auto"
                         }}
                     />
+                </Stack>
 
+                <Stack direction="row" spacing={2} alignItems="center">
                     <FormControlLabel
                         control={
-                            <Tooltip title="Alert emergency contacts for package deliveries">
+                            <Tooltip title="Alert this contact when a package is detected">
                                 <Switch
-                                    checked={settings.packageDetection}
-                                    onChange={() => handleToggle("packageDetection")}
+                                    name="notify_package"
+                                    checked={values.notify_package}
+                                    onChange={handleChange}
                                     color="primary"
                                 />
                             </Tooltip>
@@ -104,12 +122,30 @@ const NotificationSettings = ({ contact }) => {
                             width: "auto"
                         }}
                     />
-                </Box>
-
+                    <Box sx={{ width: 77 }} />
+                    <FormControlLabel
+                        control={
+                            <Tooltip title="Alert this contact when a fire is detected">
+                                <Switch
+                                    name="notify_fire"
+                                    checked={values.notify_fire}
+                                    onChange={handleChange}
+                                    color="primary"
+                                />
+                            </Tooltip>
+                        }
+                        label="Fire Detection"
+                        sx={{
+                            color: "#333",
+                            marginLeft: 0,
+                            alignItems: "center",
+                            justifyContent: "flex-start",
+                            width: "auto"
+                        }}
+                    />
+                </Stack>
             </Stack>
-        }
-            style={{ minWidth: '760px' }}
-        >
+        }>
         </Expandable>
     );
 };

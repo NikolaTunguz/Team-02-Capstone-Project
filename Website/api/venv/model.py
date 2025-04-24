@@ -15,6 +15,10 @@ class User (db.Model):
     email = db.Column(db.String(145), unique=True)
     password = db.Column(db.String(128), nullable=False)
     account_type = db.Column(db.String(10), default = 'user')
+    notify_pistol = db.Column(db.Boolean, default=True)
+    notify_person = db.Column(db.Boolean, default=True)
+    notify_package = db.Column(db.Boolean, default=True)
+    notify_fire = db.Column(db.Boolean, default=True)
 
 class Notification (db.Model):
     __tablename__ = "notifications"
@@ -45,3 +49,12 @@ class EmergencyContact (db.Model):
     notify_person = db.Column(db.Boolean, default=False)
     notify_package = db.Column(db.Boolean, default=False)
     notify_fire = db.Column(db.Boolean, default=False)
+
+class UserNotificationSettings(db.Model):
+    __tablename__ = "user_notification_settings"
+    user_id = db.Column(db.String(32), db.ForeignKey('users.id'), primary_key=True)
+    notify_pistol = db.Column(db.Boolean, default=True)
+    notify_person = db.Column(db.Boolean, default=True)
+    notify_package = db.Column(db.Boolean, default=True)
+    notify_fire = db.Column(db.Boolean, default=True)
+    user = db.relationship("User", backref=db.backref("notification_settings", uselist=False))

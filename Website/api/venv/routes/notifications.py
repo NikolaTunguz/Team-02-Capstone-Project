@@ -13,16 +13,30 @@ subscribers = []
 
 @notifications_bp.route('/database', methods=['POST'])
 def database(): 
-    device_id = request.form.get("device_id")
+    data = request.get_json()
+    device_id = data.get("device_id")
+    timestamp = data.get("timestamp")
+    message = data.get("message")
+    notif_type = data.get("notif_type")
+
     user_camera = UserCameras.query.filter_by(device_id=device_id).first()
     if not user_camera:
         return jsonify({"error": "Device not found"}), 404
     user_camera_name = user_camera.device_name
     user_id = user_camera.user_id 
     user = User.query.filter_by(id=user_id).first()
-    timestamp = request.form.get("timestamp")
-    message = request.form.get("message")
-    notif_type = request.form.get("notif_type")
+
+    settings = NotificationSettings.query.filter_by(user_id=user_id).first()
+    if not settings:
+        return jsonify({"error": "Notification settings not found"}), 404
+
+    should_notify = (
+        (notif_type == "pistol" and settings.notify_pistol) or
+        (notif_type == "person" and settings.notify_person) or
+        (notif_type == "package" and settings.notify_package) or
+        (notif_type == "fire" and settings.notify_fire)
+    )
+
     notification = Notification()
     notification.device_id = device_id
     notification.timestamp = timestamp
@@ -33,11 +47,12 @@ def database():
         return jsonify({"error": "No image provided"}), 400
     image_data = file.read()
     notification.snapshot = image_data
+
     db.session.add(notification)
     db.session.commit()
-    notify_user(user, notification, user_camera_name)
+    if should_notify:
+        notify_user(user, notification, user_camera_name)
     notify_emergency_contacts(user_id, notification, user_camera_name)
-    notify_user(user, notification, user_camera_name)
     notify_subscribers(json.dumps({
         "message": message,
         "timestamp": timestamp,
