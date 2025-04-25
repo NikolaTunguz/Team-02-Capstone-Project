@@ -1,7 +1,16 @@
-import React from "react";
-import { Box, Typography, Button, Switch, OutlinedInput, IconButton } from "@mui/material";
+import React, { useState } from "react";
+import {
+    Box,
+    Typography,
+    Button,
+    Switch,
+    OutlinedInput,
+    IconButton,
+    Tooltip,
+    Modal,
+} from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
-import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
 import DeleteCamera from "./DeleteCamera.jsx";
 import { useNavigate } from 'react-router-dom';
 import httpClient from "../pages/httpClient";
@@ -9,11 +18,11 @@ import "../App.css";
 import { showSuccess, showError } from "./ToastUtils";
 
 const CameraSettings = ({ camera, setOpenDialog }) => {
-    const [cameraToggleSwitch, setCameraSwitchState] = React.useState({});
-    const [cameraToDelete, setCameraToDelete] = React.useState(null);
-    const [open, setOpen] = React.useState(false);
-    const [editButton, setEditingState] = React.useState(false);
-    const [deviceName, setDeviceName] = React.useState(camera.device_name);
+    const [cameraToggleSwitch, setCameraSwitchState] = useState({});
+    const [cameraToDelete, setCameraToDelete] = useState(null);
+    const [open, setOpen] = useState(false);
+    const [editModalOpen, setEditModalOpen] = useState(false);
+    const [deviceName, setDeviceName] = useState(camera.device_name);
 
     const navigate = useNavigate();
 
@@ -34,127 +43,143 @@ const CameraSettings = ({ camera, setOpenDialog }) => {
         setCameraToDelete(null);
     };
 
-    const handleEditButton = () => {
-        setEditingState(!editButton);
-    };
-
     const handleEditName = async () => {
         try {
-            await httpClient.post("http://localhost:8080/update_camera_name",
-                {
-                    device_id: camera.device_id,
-                    new_device_name: deviceName,
-                });
+            await httpClient.post("http://localhost:8080/update_camera_name", {
+                device_id: camera.device_id,
+                new_device_name: deviceName,
+            });
             camera.device_name = deviceName;
-            setEditingState(false);
-
-            //update name in camera dashboard (callback)
-            if (nameChange) {
-                nameChange(camera.device_id, deviceName);
-            }
+            setEditModalOpen(false);
             showSuccess("Camera name updated successfully!");
-        }
-        catch (e) {
+        } catch (e) {
             showError(e.response?.data?.error || "Failed to update camera name.");
         }
     };
 
+    const openEditModal = () => {
+        setDeviceName(camera.device_name);
+        setEditModalOpen(true);
+    };
 
     return (
-        <Box
-            style={{
-                width: "25vw",
-                height: "80vh",
-                backgroundColor: "white",
-                color: "black",
-                border: "3px solid white",
-                borderRadius: "8px",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                marginLeft: "10px",
-                paddingTop: "10px",
-            }}
-        >
-            <Typography variant="h4" gutterBottom> Camera Settings </Typography>
-
-
+        <>
             <Box
-                style={{
+                sx={{
+                    width: "25vw",
+                    height: "80vh",
+                    backgroundColor: "white",
+                    color: "black",
+                    border: "3px solid white",
+                    borderRadius: "8px",
                     display: "flex",
+                    flexDirection: "column",
                     alignItems: "center",
-                }}>
-                {editButton ? (
-                    <>
-                        <OutlinedInput
-                            value={deviceName}
-                            onChange={(e) => setDeviceName(e.target.value)}
-                        />
+                    marginLeft: "10px",
+                    pt: 2,
+                }}
+            >
+                <Typography variant="h4" gutterBottom>
+                    Camera Settings
+                </Typography>
 
-                        <IconButton
-                            onClick={handleEditName}
-                            color="primary"
-                        >
-                            <SaveIcon />
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <Typography variant="body1">
+                        Device Name: {camera.device_name}
+                    </Typography>
+                    <Tooltip title="Edit device name">
+                        <IconButton onClick={openEditModal} color="primary" sx={{ ml: 1 }}>
+                            <EditIcon />
                         </IconButton>
-                    </>)
-                    :
-                    (
-                        <Typography variant="body1">Device Name: {camera.device_name}</Typography>
-                    )}
-                <IconButton
-                    onClick={handleEditButton}
-                    color="primary"
-                    sx={{ ml: 1 }}
-                >
-                    <EditIcon />
-                </IconButton>
-            </Box>
+                    </Tooltip>
+                </Box>
 
-            <Typography variant="body1" gutterBottom>Device ID: {camera.device_id}</Typography>
+                <Typography variant="body1" gutterBottom>
+                    Device ID: {camera.device_id}
+                </Typography>
 
-            <Box
-                style={{
-                    display: "flex",
-                    alignItems: "center",
-                    width: "90%",
-                    marginTop: "20px",
-                }}
-            >
-                <Typography variant="body1">Thermal View</Typography>
-                <Switch
-                    checked={cameraToggleSwitch[camera.device_id] || false}
-                    onChange={() => handleToggle(camera)}
-                    color="primary"
-                />
-            </Box>
-
-            <Box style={{ flexGrow: 1 }} />
-
-            <Button
-                variant="contained"
-                color="error"
-                onClick={() => handleDelete(camera)}
-                style={{
-                    width: "80%",
-                    marginBottom: "20px",
-                }}
-            >
-                Delete Camera
-            </Button>
-
-            {cameraToDelete && (
-                <DeleteCamera
-                    open={open}
-                    onClose={handleCloseModal}
-                    camera={cameraToDelete}
-                    onCameraDeleted={() => {
-                        setOpenDialog(false);
-                        navigate(0);
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        width: "90%",
+                        mt: 3,
                     }}
-                />
-            )}
-        </Box>
+                >
+                    <Typography variant="body1">Thermal View</Typography>
+                    <Switch
+                        checked={cameraToggleSwitch[camera.device_id] || false}
+                        onChange={() => handleToggle(camera)}
+                        color="primary"
+                    />
+                </Box>
+
+                <Box sx={{ flexGrow: 1 }} />
+
+                <Button
+                    variant="contained"
+                    color="error"
+                    onClick={() => handleDelete(camera)}
+                    sx={{ width: "80%", mb: 2 }}
+                >
+                    Delete Camera
+                </Button>
+
+                {cameraToDelete && (
+                    <DeleteCamera
+                        open={open}
+                        onClose={handleCloseModal}
+                        camera={cameraToDelete}
+                        onCameraDeleted={() => {
+                            setOpenDialog(false);
+                            navigate(0);
+                        }}
+                    />
+                )}
+            </Box>
+
+            <Modal open={editModalOpen} onClose={() => setEditModalOpen(false)}>
+                <Box
+                    sx={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        bgcolor: "white",
+                        boxShadow: 24,
+                        p: 3,
+                        borderRadius: 3,
+                        width: 400,
+                    }}
+                >
+                    <Tooltip title="Close">
+                        <IconButton
+                            onClick={() => setEditModalOpen(false)}
+                            sx={{ position: "absolute", top: 8, right: 8 }}
+                        >
+                            <CancelIcon />
+                        </IconButton>
+                    </Tooltip>
+                    <Typography variant="h6" mb={2}>
+                        Edit Camera Name
+                    </Typography>
+                    <OutlinedInput
+                        fullWidth
+                        value={deviceName}
+                        onChange={(e) => setDeviceName(e.target.value)}
+                    />
+                    <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 2 }}>
+                        <Button
+                            onClick={handleEditName}
+                            variant="contained"
+                            sx={{ width: "100%" }}
+                        >
+                            Save
+                        </Button>
+                    </Box>
+                </Box>
+            </Modal>
+        </>
     );
 };
 
