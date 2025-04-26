@@ -38,11 +38,9 @@ class TestTrack(VideoStreamTrack):
         self.webrtc_con_package = webrtc_con_package
         self.person_bboxes = []
         self.package_bboxes = []
-
-
+        
     async def recv(self):
         img = self.camera_queue.get()
-
 
         if(self.webrtc_con_person.poll()):
             self.person_bboxes = self.webrtc_con_person.recv()
@@ -75,7 +73,6 @@ class TestTrack(VideoStreamTrack):
         frame.time_base = time_base
         return frame
 
-
 class ThermalTrack(VideoStreamTrack):
     def __init__(self, camera_queue, webrtc_con_thermal):
         super().__init__()
@@ -93,7 +90,7 @@ class ThermalTrack(VideoStreamTrack):
                 self.pistol_bboxes = boxes
                 print(self.pistol_bboxes)
             elif(det_type == 'fire'):
-                self.fire_bbox = boxes
+                self.fire_bboxes = boxes
                 pass
        
         if self.pistol_bboxes:
@@ -113,7 +110,7 @@ class ThermalTrack(VideoStreamTrack):
             img = cv2.putText(img, "fire", (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 200), 1, cv2.LINE_AA)
 
 
-        # img = cv2.resize(img, (640, 480), interpolation=cv2.INTER_NEAREST)
+        img = cv2.resize(img, (640, 480), interpolation=cv2.INTER_NEAREST)
        
         frame = VideoFrame.from_ndarray(img, format="bgr24")
         pts, time_base = await self.next_timestamp()
@@ -136,13 +133,14 @@ def camera_reader(camera_queue, thermal_queue):
     print("loaded")
     while(True):
         frame = cap_standard.capture_array()
-        #frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         #_, frame = cap_standard.read()
         if not camera_queue.full():
             camera_queue.put_nowait(frame)
        
         _, frame = cap_thermal.read()
         if not thermal_queue.full():
+            frame = frame.reshape(384, 256, 2)
             imdata, thdata = np.array_split(frame, 2)
             combined = np.concatenate((imdata, thdata), axis=1)
             np.save('localcache/thermal_input.npy', combined)
@@ -165,12 +163,10 @@ def image_process(camera_queue, im_pro_con_person, im_pro_con_package):
         cv2.imwrite("localcache/input_image.jpg", frame)
         model_interface.set_normal_image("localcache/input_image.jpg")
 
-
         #person detection
         person_detected = model_interface.detect_person()
         person_bboxes = model_interface.normal_interface.person_bboxes.cpu().numpy().astype("int")
         im_pro_con_person.send(person_bboxes)
-
 
         current_time = time.time()
 
@@ -223,7 +219,6 @@ def image_process(camera_queue, im_pro_con_person, im_pro_con_package):
             date = datetime.now()
             date = date.strftime("%m/%d/%Y, %H:%M:%S")
 
-
             cv2.imwrite("localcache/event_snap.jpg", frame)
 
 
@@ -272,7 +267,7 @@ async def on_offer(offer_sdp, target_id, camera_queue, thermal_queue, webrtc_con
         type = peer_connection.localDescription.type,
         sdp = peer_connection.localDescription.sdp,
     )
-   
+
     signaling_message = {
         "type": answer.type,
         "target_id": target_id,
@@ -307,12 +302,10 @@ async def connect_to_signaling_server(camera_queue, thermal_queue, webrtc_con_pe
 async def main(camera_queue, thermal_queue, webrtc_con_person, webrtc_con_package, webrtc_con_thermal):
     await connect_to_signaling_server(camera_queue, thermal_queue, webrtc_con_person, webrtc_con_package, webrtc_con_thermal)
 
-
 async def im_read(camera_queue, thermal_queue):
     im_reader = aioprocessing.AioProcess(target=camera_reader, args=[camera_queue, thermal_queue])
     im_reader.start()
     await im_reader.coro_join()
-
 
 async def run_im_pro(camera_queue, im_pro_con_person, im_pro_con_package):
     im_pro = aioprocessing.AioProcess(target=image_process, args=[camera_queue, im_pro_con_person, im_pro_con_package])
@@ -375,11 +368,10 @@ def thermal_process(thermal_queue, im_pro_con_thermal):
         model_interface.set_thermal_data(thermal_data)
 
 
-
-
         if model_interface.detect_pistol():
             print("TRUE")
             _, bbox, _ = model_interface.detect_and_bound_pistol()
+            print('direct', bbox)
             bbox_scaled = [box / 384 for box in bbox]
             im_pro_con_thermal.send((bbox_scaled, 'pistol'))
         else:
@@ -399,13 +391,10 @@ def thermal_process(thermal_queue, im_pro_con_thermal):
 if __name__ == "__main__":
     mp.set_start_method("spawn")
 
-
     loop = asyncio.get_event_loop()
 
-
-    camera_queue = aioprocessing.AioQueue(5)
-    thermal_queue = aioprocessing.AioQueue(5)
-
+    camera_queue = aioprocessing.AioQueue(1)
+    thermal_queue = aioprocessing.AioQueue(1)
 
     webrtc_con_person, im_pro_con_person = aioprocessing.AioPipe(duplex=False)
     webrtc_con_package, im_pro_con_package = aioprocessing.AioPipe(duplex=False)
