@@ -44,7 +44,7 @@ const AboutUs = () => {
                     />
                     <p>
                         We are Team 02: SeeThru, a dedicated group of students from the University of Nevada, Reno.
-                        Picture from left to right are Nikola Tunguz, Diego Borne, Joel Molina, and Reni Wu. <br /> <br />
+                        Pictured from left to right are Nikola Tunguz, Diego Borne, Joel Molina, and Reni Wu. <br /> <br />
                         Our diverse backgrounds and shared passion for innovation drive us to create impactful solutions.
                         Together, we aim to make residential security accessible and effective, ensuring safety and peace of mind for all.
                     </p>

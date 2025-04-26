@@ -7,6 +7,10 @@ Models/Data/ConcealedPistolDataset/
 Website/api/venv/routes/__pycache__/auth.cpython-312.pyc
 Models/Data/ConcealedTestDataset/
 Models/Data/AnnotatedData
+Models/Data/collected_data
+Models/Data/CombinedData
+Models/Data/CombinedImages
+Models/Data/new_data
 Models/Data/test_image.jpg
 Embedded System/api/venv/localcache/input_image.jpg
 Embedded System/api/venv/localcache/test_thermal_image.jpg
@@ -17,5 +21,6 @@ Embedded System/api/venv/localcache/test_img_3.jpg
 Embedded System/api/venv/localcache/test_img_4.jpg
 Embedded System/api/venv/localcache/*.jpg
 Embedded System/api/venv/localcache/*.npy
+Embedded System/api/venv/localcache/*.png
 Embedded System/api/venv/localcache/event_snapshot.jpg
 **/.DS_Store
