@@ -33,6 +33,7 @@ class YOLOv8Package():
 
         #reload model with new weights
         self.model = YOLO(save_path).to(self.device)
+        self.model.eval()
 
 
     def prediction(self, image_path): 
