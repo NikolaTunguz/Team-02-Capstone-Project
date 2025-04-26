@@ -9,7 +9,7 @@ class YOLOv8Package():
     def __init__(self):
         #initialize model
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        model_path = os.path.join("model-weights", "yolov8n-package.pt")
+        model_path = os.path.join("..", "..", "..", "Models", "normal_models", "model-weights", "yolov8n-package.pt")
         self.model = YOLO(model_path)
         self.model = self.model.to(self.device)
 

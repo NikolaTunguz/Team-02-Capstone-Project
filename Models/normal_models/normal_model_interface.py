@@ -1,8 +1,8 @@
 #model imports
 from .person_classification import FineTunedRN18
-from .person_detection import FineTunedFasterRCNNPerson
+from .person_detection import YOLOv8Person
 from .package_classification import CustomCNN
-from .package_detection import FinedTunedFasterRCNNPackage
+from .package_detection import YOLOv8Package
 
 #image imports
 import cv2
@@ -12,9 +12,9 @@ class NormalInterface:
     def __init__(self):
         #initialize models
         self.person_classifier = FineTunedRN18()
-        self.person_detector = FineTunedFasterRCNNPerson()
+        self.person_detector = YOLOv8Person()
         self.package_classifier = CustomCNN()
-        self.package_detector = FinedTunedFasterRCNNPackage()
+        self.package_detector = YOLOv8Package()
 
         #initialize bboxes
         self.person_bboxes = []
