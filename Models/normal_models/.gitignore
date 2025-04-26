@@ -1,4 +1,7 @@
 __pycache__/
 test/
 datasets/
-model-weights/
+model-weights/*.pth
+yolo11n.pt
+runs/detect/*
+runs/
