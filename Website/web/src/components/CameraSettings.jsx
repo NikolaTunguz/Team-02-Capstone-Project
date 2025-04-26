@@ -26,11 +26,9 @@ const CameraSettings = ({ camera, setOpenDialog }) => {
 
     const navigate = useNavigate();
 
-    const handleToggle = (camera) => {
-        setCameraSwitchState((prev) => ({
-            ...prev,
-            [camera.device_id]: !prev[camera.device_id],
-        }));
+    const handleToggle = (value) => {
+        setCameraSwitchState(!value)
+        sendToggle(cameraToggleSwitch);
     };
 
     const handleDelete = (camera) => {
@@ -106,12 +104,12 @@ const CameraSettings = ({ camera, setOpenDialog }) => {
                         mt: 3,
                     }}
                 >
-                    <Typography variant="body1">Thermal View</Typography>
-                    <Switch
-                        checked={cameraToggleSwitch[camera.device_id] || false}
-                        onChange={() => handleToggle(camera)}
-                        color="primary"
-                    />
+                <Typography variant="body1">Thermal View</Typography>
+                <Switch
+                    checked={cameraToggleSwitch || false}
+                    onChange={() => handleToggle(cameraToggleSwitch)}
+                    color="primary"
+                />
                 </Box>
 
                 <Box sx={{ flexGrow: 1 }} />
