@@ -42,9 +42,9 @@ const NotificationInfo = () => {
             >
                 <Box sx={{ maxWidth: 500, padding: 3, maxHeight: 160 }}>
                     <Typography variant="body4" paragraph>
-                        Please note that the options provided in the notification settings will alert this emergency contact
-                        in case of an event. Our models are designed to detect potential events, but they may not always be 100%
-                        accurate.
+                        These notification settings determine which events will trigger email alerts.
+                        While our detection models are designed to identify potential events,
+                        they may not always be 100% accurate.
                     </Typography>
                     <Typography variant="body4" paragraph>
                         We encourage you to be prepared to receive notifications and emails from <strong>seethrucapstone@gmail.com</strong>.
