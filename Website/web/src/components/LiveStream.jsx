@@ -1,24 +1,26 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Dialog, DialogContent, IconButton, Box, Tooltip } from "@mui/material";
+import { Dialog, DialogContent, IconButton, Box, Tooltip, CircularProgress } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import CameraSettings from "./CameraSettings";
 import { useNavigate } from 'react-router-dom';
 import "../App.css";
 import httpClient from '../pages/httpClient';
-import temp_team_photo from '../assets/images/team_photo.png'
+import default_thumbnail from '../assets/images/default_thumbnail.png'
 
 const LiveStream = ({ camera }) => {
     const [open, setOpen] = useState(false);
     const [originalName, setOriginalName] = useState(camera.device_name);
     const navigate = useNavigate();
+    const [cameraToggleSwitch, setCameraToggleSwitch] = useState(true)
 
     const peerConnectionRef = useRef(null);
     const signalingSocketRef = useRef(null);
-    const [thumbnail, setThumbnail] = useState(temp_team_photo);
+    const [thumbnail, setThumbnail] = useState(default_thumbnail);
+    const [loading, setLoading] = useState(false);
 
     function websocketConnect() {
         return new Promise((resolve) => {
-            signalingSocketRef.current = new WebSocket("ws://localhost:8765");
+            signalingSocketRef.current = new WebSocket("ws://seethru-wss.unr.dev");
             signalingSocketRef.current.onopen = () => {
                 console.log('WebSocket connection established');
                 resolve(signalingSocketRef.current);
@@ -39,27 +41,42 @@ const LiveStream = ({ camera }) => {
         };
 
         const config = {
-            sdpSemantics: 'unified-plan'
+            sdpSemantics: 'unified-plan',
+            iceServers: [{ urls: ['stun:stun.l.google.com:19302'] }],
         };
-
-        config.iceServers = [{ urls: ['stun:stun.l.google.com:19302'] }];
 
         peerConnectionRef.current = new RTCPeerConnection(config);
 
+
+        let counter = 0;
         peerConnectionRef.current.addEventListener('track', (evt) => {
+
             if (evt.track.kind === 'video') {
-                document.getElementById('video').srcObject = evt.streams[0];
-            } else {
-                document.getElementById('audio').srcObject = evt.streams[0];
+                // document.getElementById('video').srcObject = evt.streams[0];
+                setLoading(false)
+                if (counter == 0) {
+                    document.getElementById('thermal').srcObject = new MediaStream([evt.track])
+                    counter += 1;
+                } else if (counter > 0) {
+                    document.getElementById('video').srcObject = new MediaStream([evt.track])
+                }
             }
         });
+
         await sendOffer(camera.device_id);
-    };
+
+        return;
+    }
 
     const handleOpen = async () => {
-        await startStream();
-        setOriginalName(camera.device_name);
+        setLoading(true);
         setOpen(true);
+        setOriginalName(camera.device_name);
+        try {
+            await startStream();
+        } catch (e) {
+            console.error("Failed to start stream:", e);
+        }
     };
 
     const handleClose = () => {
@@ -77,6 +94,7 @@ const LiveStream = ({ camera }) => {
     };
 
     async function sendOffer(targetId) {
+        peerConnectionRef.current.addTransceiver('video', { direction: 'recvonly' });
         peerConnectionRef.current.addTransceiver('video', { direction: 'recvonly' });
         peerConnectionRef.current.addTransceiver('audio', { direction: 'recvonly' });
         const offer = await peerConnectionRef.current.createOffer();
@@ -121,6 +139,10 @@ const LiveStream = ({ camera }) => {
         } catch (error) {
             console.error("Error fetching thumbnail:", error);
         }
+    }
+
+    const handleToggle = (value) => {
+        setCameraToggleSwitch(value)
     }
 
     useEffect(() => {
@@ -178,11 +200,31 @@ const LiveStream = ({ camera }) => {
                             overflow: "hidden"
                         }}
                     >
-                        <video id="video" autoPlay playsInline></video>
+                      
+                      {loading && 
+                            <>
+                                <CircularProgress />
+                                <p> Live stream loading...</p>
+                            </>
+                        }
+
+                        <video 
+                            id="video" 
+                            autoPlay 
+                            playsInline 
+                            style={{ display: (!loading && cameraToggleSwitch) ? 'block' : 'none' }}>
+                        </video>
+
+                        <video 
+                            id="thermal" 
+                            autoPlay 
+                            playsInline 
+                            style={{ display: (!loading && !cameraToggleSwitch) ? 'block' : 'none' }}>
+                        </video>
                     </Box>
 
                     <Box style={{ marginLeft: "20px", display: "flex", alignItems: "center" }}>
-                        <CameraSettings camera={camera} setOpenDialog={setOpen} />
+                        <CameraSettings camera={camera} setOpenDialog={setOpen} sendToggle={handleToggle} />
                     </Box>
                 </DialogContent>
             </Dialog>

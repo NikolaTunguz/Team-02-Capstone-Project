@@ -206,15 +206,17 @@ const EmergencyContacts = () => {
                         width: 600,
                     }}
                 >
-                    <IconButton
-                        onClick={() => {
-                            setOpen(false);
-                            setEditingContact(null);
-                        }}
-                        sx={{ position: "absolute", top: 8, right: 8 }}
-                    >
-                        <Cancel />
-                    </IconButton>
+                    <Tooltip title="Close">
+                        <IconButton
+                            onClick={() => {
+                                setOpen(false);
+                                setEditingContact(null);
+                            }}
+                            sx={{ position: "absolute", top: 8, right: 8 }}
+                        >
+                            <Cancel />
+                        </IconButton>
+                    </Tooltip>
 
                     <Typography id="modal-title" variant="h6" mb={2}>
                         {editingContact ? "Edit Contact" : "Add New Contact"}

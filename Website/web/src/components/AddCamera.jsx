@@ -10,11 +10,13 @@ import {
     Box,
     IconButton,
     Modal,
+    Tooltip,
     FormControl,
 } from "@mui/material";
 import { Cancel, Add } from "@mui/icons-material";
 import httpClient from "../pages/httpClient";
 import { showSuccess, showError } from "./ToastUtils";
+import CancelIcon from '@mui/icons-material/Cancel';
 
 const AddCamera = ({ onCameraAdded }) => {
     const [open, setOpen] = useState(false);
@@ -63,12 +65,14 @@ const AddCamera = ({ onCameraAdded }) => {
                         width: 400,
                     }}
                 >
-                    <IconButton
-                        onClick={resetModal}
-                        sx={{ position: "absolute", top: 8, right: 8 }}
-                    >
-                        <Cancel />
-                    </IconButton>
+                    <Tooltip title="Close">
+                        <IconButton
+                            onClick={resetModal}
+                            sx={{ position: "absolute", top: 8, right: 8 }}
+                        >
+                            <CancelIcon />
+                        </IconButton>
+                    </Tooltip>
                     <Typography variant="h6" mb={2}>
                         Add New Camera
                     </Typography>
