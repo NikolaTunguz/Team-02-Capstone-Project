@@ -124,7 +124,10 @@ if __name__ == '__main__':
 
     path =  os.path.join(base_path, 'localcache', 'thermal_frame_appendix.npy')
     model_interface.set_thermal_npy(path)
+    detection = model_interface.detect_pistol()
+    print(detection)
     detection, bbox, result_image = model_interface.detect_and_bound_pistol()
+    print(bbox)
     if detection:
         print("pistol detected ")
     else:
@@ -134,7 +137,24 @@ if __name__ == '__main__':
 
     path =  os.path.join(base_path, 'localcache', 'thermal_frame_pocket.npy')
     model_interface.set_thermal_npy(path)
+    detection = model_interface.detect_pistol()
+    print(detection)
     detection, bbox, result_image = model_interface.detect_and_bound_pistol()
+    print(bbox)
+    if detection:
+        print("pistol detected ")
+    else:
+        print("no pistol detected ")
+    cv2.imshow('test', result_image)
+    cv2.waitKey(3000)
+
+    
+    path =  os.path.join(base_path, 'localcache', 'test_thermal_npy.npy')
+    model_interface.set_thermal_npy(path)
+    detection = model_interface.detect_pistol()
+    print(detection)
+    detection, bbox, result_image = model_interface.detect_and_bound_pistol()
+    print(bbox)
     if detection:
         print("pistol detected ")
     else:
