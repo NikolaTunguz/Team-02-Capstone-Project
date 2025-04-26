@@ -7,12 +7,10 @@ import torchvision.transforms as transforms
 from PIL import Image
 import os
 import matplotlib.pyplot as plt
-import cv2
 
 #class imports
 from .concealed_pistol_classification import ConcealedPistol
 from .concealed_pistol_detection import BoundPistol
-from .fire_detection import FireDetection
 
 
 class ThermalInterface:
@@ -21,7 +19,6 @@ class ThermalInterface:
 
         self.concealed_pistol_model = ConcealedPistol()
         self.bound_pistol_model = BoundPistol()
-        self.fire_detection_model = FireDetection()
 
         current_dir = os.path.dirname(os.path.abspath(__file__))
         concealed_model_path = os.path.join(current_dir, 'best_concealed_model.pth')
@@ -31,29 +28,22 @@ class ThermalInterface:
         self.concealed_pistol_model.load_state_dict(torch.load(concealed_model_path, weights_only = True, map_location = device))
         self.bound_pistol_model.load_state_dict(torch.load(bound_model_path, weights_only = True, map_location = device))
 
-        self.concealed_pistol_model.to(device)
-        self.bound_pistol_model.to(device)
-        self.concealed_pistol_model.eval()
-        self.bound_pistol_model.eval()
-
 
     def transform_image(self):
         #shape and grayscale image
         transform = transforms.Compose([
-            transforms.Resize((384, 384)), 
+            transforms.Resize((256, 256)),
             transforms.Grayscale(),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.5], std=[0.5])
+            transforms.ToTensor()
         ])
 
         #transform, and change to have right dimensionality
         self.image = transform(self.image)
         self.image = self.image.unsqueeze(0) 
-        return self.image
 
-    def detect_pistol(self, image):
+    def detect_pistol(self, image_path):
         #process image
-        self.image = Image.fromarray(image)
+        self.image = Image.open(image_path)
         self.transform_image()
 
         #send to model to detect
@@ -64,31 +54,20 @@ class ThermalInterface:
         else:
             return 0
         
-    def detect_and_bound_pistol(self, image):
-        self.image = Image.fromarray(image)
-        self.image = self.transform_image()
+    def detect_and_bound_pistol(self, image_path):
+        self.image = Image.open(image_path)
+        self.transform_image()
 
-        detected, pred_bbox, result_image = self.bound_pistol_model.pistol_detected(self.image)
+        detected, result_image = self.bound_pistol_model.pistol_detected(self.image)
         
         if detected:
-            #plt.imshow(result_image, cmap='gray')
-            #plt.axis("off")
-            #plt.title("Pistol Detected" if detected else "No Pistol Detected")
-            #plt.show()
-            return 1, pred_bbox, result_image  
+            plt.imshow(result_image, cmap='gray')
+            plt.axis("off")
+            plt.title("Pistol Detected" if detected else "No Pistol Detected")
+            plt.show()
+            return 1, result_image  
         else:
-            return 0, pred_bbox, result_image
-
-    def detect_fire(self, thermal_data):
-        self.fire_detection_model.set_thermal_data(thermal_data)
-        detection, num_fires, contours = self.fire_detection_model.detect()
-        bboxes = []
-        for contour in contours:
-            x, y, w, h = cv2.boundingRect(contour)
-            x1, y1 = x, y
-            x2, y2 = x+w, y+h
-            bboxes.append( (x1, y1, x2, y2) )
-        return detection, bboxes
+            return 0, result_image
 
 
 #if __name__ == '__main__':

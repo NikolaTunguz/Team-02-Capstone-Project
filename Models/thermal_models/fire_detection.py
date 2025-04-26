@@ -4,20 +4,11 @@ import numpy as np
 class FireDetection():
     def __init__(self):
         self.image_path = None
-        self.image_npy = None
-        self.thermal_image = None
-        self.thermal_data = None
 
     def set_thermal_image_path(self, image_path):
         self.image_path = image_path
-        self.image_npy = np.load(self.image_path)
 
-    def set_thermal_image(self, thermal_image):
-        self.thermal_image = thermal_image
-    def set_thermal_data(self, thermal_data):
-        self.thermal_data = thermal_data
-
-    def convert_to_temperature(self):
+    def convert_to_temperature(self, image):
         #function temperature conversion logic from https://github.com/leswright1977/PyThermalCamera/blob/main/src/tc001v4.2.py
     
         # #find the max temperature in the frame
@@ -53,7 +44,6 @@ class FireDetection():
         # print(maxtemp, mintemp, avgtemp)
 
         #scale all temperatures from -20 - 550C to 0-255, limits come from hardware specifications
-        image = self.image_npy
         image_data, thermal_data = np.array_split(image, 2, axis = 1)
 
         min_temp = -20
@@ -67,11 +57,9 @@ class FireDetection():
         scaled_temp = (temperatures - min_temp) / (max_temp - min_temp) * 255
         scaled_temp = np.clip(scaled_temp, 0, 255).astype(np.uint8)
 
-        self.thermal_data = scaled_temp
         return scaled_temp
 
-    def convert_raw_thermal_to_displayable(self):
-        image = self.image_npy
+    def convert_raw_thermal_to_displayable(self, image):
         image_data, thermal_data = np.array_split(image, 2, axis = 1)
         hi = image_data[:, :, 0].astype(np.uint16)
         lo = image_data[:, :, 1].astype(np.uint16)
@@ -84,25 +72,18 @@ class FireDetection():
         #apply a color map for visibility
         colored = cv2.applyColorMap(normalized, cv2.COLORMAP_JET)
 
-        self.thermal_image = colored
         return colored
-    
-    def show_displayable(self):
-        image = self.convert_raw_thermal_to_displayable()
-        cv2.imshow('test', image)
-        cv2.waitKey(3000)
 
     def detect(self):
-        #image = np.load(self.image_path)
-       # thermal_image = self.convert_to_temperature(image)
+        image = np.load(self.image_path)
+        thermal_image = self.convert_to_temperature(image)
         #cv2.imshow('test', image)
         #cv2.waitKey(0)
-        thermal_image = self.thermal_data
 
         #-20C is 0, 550C is 255
         #fire begins around ~200C, corresponds to ~86.8 in pixel value
         #lighter fires are tamer, ~100
-        _, thermal_image = cv2.threshold(thermal_image, 25, 255, cv2.THRESH_BINARY)
+        _, thermal_image = cv2.threshold(thermal_image, 30, 255, cv2.THRESH_BINARY)
         #cv2.imshow('test',thermal_image)
         #cv2.waitKey(0)
 
@@ -138,13 +119,9 @@ if __name__ == '__main__':
     fire = FireDetection()
 
     fire.set_thermal_image_path('../../Embedded System/api/venv/localcache/thermal_frame_0.npy')
-    fire.convert_to_temperature()
-    fire.show_displayable()
     detection, num_fires, contours = fire.detect()
     print(detection, num_fires)
 
     fire.set_thermal_image_path('../../Embedded System/api/venv/localcache/thermal_frame_1.npy')
-    fire.convert_to_temperature()
-    fire.show_displayable()
     detection, num_fires, contours = fire.detect()
     print(detection, num_fires)

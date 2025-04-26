@@ -11,7 +11,7 @@ def get_user_cameras():
     if not user_id:
         return jsonify({"error": "Unauthorized"}), 401
     try:
-        cameras = UserCameras.query.filter_by(user_id=user_id).order_by(UserCameras.order).all()
+        cameras = UserCameras.query.filter_by(user_id=user_id).all()
         camera_list = [
             {
                 "device_id": camera.device_id,
@@ -111,23 +111,3 @@ def get_thumbnail(device_id):
         return jsonify({"error": "Thumbnail not found"}), 404
 
     return send_file(BytesIO(camera.thumbnail), mimetype='image/jpeg')
-
-@camera_bp.route('/update_camera_order', methods=['POST'])
-def update_camera_order():
-    user_id = session.get("user_id")
-    if not user_id:
-        return jsonify({"error": "Unauthorized"}), 401
-
-    data = request.get_json()
-    ordered_ids = data.get("ordered_ids", [])
-
-    if not ordered_ids:
-        return jsonify({"error": "No camera order provided"}), 400
-
-    for index, device_id in enumerate(ordered_ids):
-        camera = UserCameras.query.filter_by(user_id=user_id, device_id=device_id).first()
-        if camera:
-            camera.order = index  
-    db.session.commit()
-
-    return jsonify({"message": "Camera order updated successfully"}), 200
