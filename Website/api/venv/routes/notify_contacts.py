@@ -1,16 +1,48 @@
+import os
+import json
+import base64
+import pickle
+from model import User, EmergencyContact
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
-import smtplib
-import os
-from dotenv import load_dotenv
-from model import User, EmergencyContact
 
-load_dotenv()
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from google.auth.transport.requests import Request
+
+SCOPES = ['https://www.googleapis.com/auth/gmail.send']
+credential_path = os.path.join(os.path.dirname(__file__), 'credentials.json')
+token_path = os.path.join(os.path.dirname(__file__), 'token.pkl')
+
+def save_credentials(creds):
+    with open(token_path, 'wb') as token:
+        pickle.dump(creds, token)
+
+def load_credentials():
+    creds = None
+    if os.path.exists(token_path):
+        with open(token_path, 'rb') as token:
+            creds = pickle.load(token)
+    return creds
+
+def get_gmail_service():
+    creds = load_credentials()
+
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(credential_path, SCOPES)
+            creds = flow.run_console()
+            save_credentials(creds)
+
+    service = build('gmail', 'v1', credentials=creds)
+    return service
 
 def send_email(recipient_email, subject, body_text, image_bytes=None):
     sender_email = "seethrucapstone@gmail.com"
-    sender_password = os.getenv('SMTP_APP_PASSWORD')
 
     msg = MIMEMultipart('related')
     msg['Subject'] = subject
@@ -36,12 +68,17 @@ def send_email(recipient_email, subject, body_text, image_bytes=None):
         image.add_header('Content-ID', '<snapshot_image>')
         msg.attach(image)
 
-    with smtplib.SMTP("smtp.gmail.com", 587) as server:
-        server.starttls()
-        server.login(sender_email, sender_password)
-        server.send_message(msg)
+    raw_message = base64.urlsafe_b64encode(msg.as_bytes()).decode('utf-8')
+    message = {'raw': raw_message}
 
-def notify_user(user, notification, camera_name): 
+    try:
+        service = get_gmail_service()
+        service.users().messages().send(userId='me', body=message).execute()
+        print(f"Email successfully sent to {recipient_email}")
+    except Exception as e:
+        print("Error sending email via Gmail API:", e)
+
+def notify_user(user, notification, camera_name):
     subject = "Emergency Notification Alert"
     body = f"""
     Dear {user.first_name} {user.last_name},
@@ -64,8 +101,9 @@ def notify_emergency_contacts(user_id, notification, camera_name):
     user = User.query.filter_by(id=user_id).first()
 
     for contact in contacts:
+        # Adjust according to your model's field (notif_type or type)
         notify = getattr(contact, f'notify_{notification.notif_type}', False)
-        if notify: 
+        if notify and contact.email:
             subject = "Emergency Notification Alert"
             body = f"""
             Dear {contact.first_name} {contact.last_name},
@@ -82,5 +120,4 @@ def notify_emergency_contacts(user_id, notification, camera_name):
             Regards,
             SeeThru
             """
-            if contact.email:
-                send_email(contact.email, subject, body, image_bytes=notification.snapshot)
+            send_email(contact.email, subject, body, image_bytes=notification.snapshot)
