@@ -17,6 +17,7 @@ def create_emergency_contact():
     notify_pistol = request.get_json().get("notify_pistol", False)
     notify_package = request.get_json().get("notify_package", False)
     notify_person = request.get_json().get("notify_person", False)
+    notify_fire = request.get_json().get("notify_fire", False)
 
     exists = EmergencyContact.query.filter(
             (EmergencyContact.email == email) 
@@ -30,7 +31,8 @@ def create_emergency_contact():
         user_id=user_id,
         notify_pistol=notify_pistol,
         notify_package=notify_package,
-        notify_person=notify_person
+        notify_person=notify_person,
+        notify_fire=notify_fire
     )
     db.session.add(new_contact)
     db.session.commit()
@@ -50,6 +52,7 @@ def update_emergency_contact():
     notify_pistol = request.get_json().get("notify_pistol", False)
     notify_package = request.get_json().get("notify_package", False)
     notify_person = request.get_json().get("notify_person", False)
+    notify_fire = request.get_json().get("notify_fire", False)
     contact = EmergencyContact.query.filter_by(user_id=user_id, email=previous_email).first()
     if not contact:
         return jsonify({"error": "Contact not found"}), 404
@@ -61,6 +64,7 @@ def update_emergency_contact():
     contact.notify_pistol = notify_pistol
     contact.notify_package = notify_package
     contact.notify_person = notify_person
+    contact.notify_fire = notify_fire
     db.session.commit()
     return jsonify({"message": "Emergency contact successfully updated"}), 200
 
@@ -94,7 +98,8 @@ def get_emergency_contacts():
                 "phone": contact.phone,
                 "notify_pistol": contact.notify_pistol,
                 "notify_package": contact.notify_package,
-                "notify_person": contact.notify_person
+                "notify_person": contact.notify_person,
+                "notify_fire": contact.notify_fire
             }
             for contact in contacts
         ]

@@ -15,13 +15,19 @@ class User (db.Model):
     email = db.Column(db.String(145), unique=True)
     password = db.Column(db.String(128), nullable=False)
     account_type = db.Column(db.String(10), default = 'user')
+    notify_pistol = db.Column(db.Boolean, default=True)
+    notify_person = db.Column(db.Boolean, default=True)
+    notify_package = db.Column(db.Boolean, default=True)
+    notify_fire = db.Column(db.Boolean, default=True)
 
 class Notification (db.Model):
     __tablename__ = "notifications"
     device_id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column(db.String(25), primary_key=True)
     message = db.Column(db.String(50))
+    notif_type = db.Column(db.String(25))
     read = db.Column(db.Boolean, default=False)
+    snapshot = db.Column(db.LargeBinary) 
 
 class UserCameras (db.Model):
     __tablename__ = "user_cameras"
@@ -30,6 +36,7 @@ class UserCameras (db.Model):
     device_name = db.Column(db.String(100))
     thumbnail = db.Column(db.LargeBinary) 
     last_updated = db.Column(db.DateTime, nullable=True)
+    order = db.Column(db.Integer, default=0)
     __table_args__ = (db.PrimaryKeyConstraint(device_id, user_id),)
 
 class EmergencyContact (db.Model):
@@ -42,3 +49,13 @@ class EmergencyContact (db.Model):
     notify_pistol = db.Column(db.Boolean, default=False)
     notify_person = db.Column(db.Boolean, default=False)
     notify_package = db.Column(db.Boolean, default=False)
+    notify_fire = db.Column(db.Boolean, default=False)
+
+class UserNotificationSettings(db.Model):
+    __tablename__ = "user_notification_settings"
+    user_id = db.Column(db.String(32), db.ForeignKey('users.id'), primary_key=True)
+    notify_pistol = db.Column(db.Boolean, default=True)
+    notify_person = db.Column(db.Boolean, default=True)
+    notify_package = db.Column(db.Boolean, default=True)
+    notify_fire = db.Column(db.Boolean, default=True)
+    user = db.relationship("User", backref=db.backref("notification_settings", uselist=False))

@@ -27,15 +27,14 @@ import {
 } from "@mui/icons-material";
 import httpClient from "../pages/httpClient";
 import NotificationInfo from "./NotificationInfo";
+import { showSuccess, showError } from "./ToastUtils";
 
 const EmergencyContacts = () => {
     const [contacts, setContacts] = useState([]);
     const [editingContact, setEditingContact] = useState(null);
-    const [error, setError] = useState("");
     const [open, setOpen] = useState(false);
 
     const resetModal = () => {
-        setError("");
         setEditingContact(null);
         setOpen(false);
         getContacts();
@@ -60,11 +59,16 @@ const EmergencyContacts = () => {
             } else {
                 await httpClient.post("http://localhost:8080/create_emergency_contact", values);
             }
+            showSuccess(`Contact ${editingContact ? "updated" : "added"} successfully!`);
             resetForm();
             resetModal();
         } catch (e) {
-            if (e.response.status === 409) setError("Contact already exists")
-            else setError(e.response?.data?.error || "Failed to save contact.");
+            if (e.response.status === 409) {
+                showError("Contact already exists");
+            }
+            else {
+                showError(e.response?.data?.error || "Failed to save contact.");
+            }
         }
     };
 
@@ -72,9 +76,10 @@ const EmergencyContacts = () => {
         try {
             await httpClient.post("http://localhost:8080/delete_emergency_contact", { email });
             getContacts();
+            showSuccess("Contact deleted successfully!");
         } catch (e) {
             console.error("Failed to delete contact:", e);
-            setError("Could not delete contact.");
+            showError("Could not delete contact.");
         }
     };
 
@@ -140,19 +145,31 @@ const EmergencyContacts = () => {
                                                 Package Detection
                                             </ListItem>
                                         )}
+                                        {contact.notify_fire && (
+                                            <ListItem>
+                                                <ListItemIcon>
+                                                    <Check color="success" />
+                                                </ListItemIcon>
+                                                Fire Detection
+                                            </ListItem>
+                                        )}
                                     </List>
                                 </Box>
                                 <Box sx={{ gap: 2, }}>
-                                    <IconButton
-                                        onClick={() => {
-                                            setEditingContact(contact);
-                                            setOpen(true);
-                                        }}
-                                    > <Edit sx={{ fontSize: 28 }} />
-                                    </IconButton>
-                                    <IconButton color="error" onClick={() => deleteContact(contact.email)}>
-                                        <Delete sx={{ fontSize: 28 }} />
-                                    </IconButton>
+                                    <Tooltip title="Edit Contact">
+                                        <IconButton
+                                            onClick={() => {
+                                                setEditingContact(contact);
+                                                setOpen(true);
+                                            }}
+                                        > <Edit sx={{ fontSize: 28 }} />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title="Delete Contact">
+                                        <IconButton color="error" onClick={() => deleteContact(contact.email)}>
+                                            <Delete sx={{ fontSize: 28 }} />
+                                        </IconButton>
+                                    </Tooltip>
                                 </Box>
                             </Stack>
                         ))}
@@ -189,15 +206,17 @@ const EmergencyContacts = () => {
                         width: 600,
                     }}
                 >
-                    <IconButton
-                        onClick={() => {
-                            setOpen(false);
-                            setEditingContact(null);
-                        }}
-                        sx={{ position: "absolute", top: 8, right: 8 }}
-                    >
-                        <Cancel />
-                    </IconButton>
+                    <Tooltip title="Close">
+                        <IconButton
+                            onClick={() => {
+                                setOpen(false);
+                                setEditingContact(null);
+                            }}
+                            sx={{ position: "absolute", top: 8, right: 8 }}
+                        >
+                            <Cancel />
+                        </IconButton>
+                    </Tooltip>
 
                     <Typography id="modal-title" variant="h6" mb={2}>
                         {editingContact ? "Edit Contact" : "Add New Contact"}
@@ -213,6 +232,7 @@ const EmergencyContacts = () => {
                             notify_pistol: editingContact?.notify_pistol || false,
                             notify_person: editingContact?.notify_person || false,
                             notify_package: editingContact?.notify_package || false,
+                            notify_fire: editingContact?.notify_fire || false,
                         }}
 
                         validationSchema={Yup.object({
@@ -334,7 +354,7 @@ const EmergencyContacts = () => {
                                                 width: "auto"
                                             }}
                                         />
-
+                                        <Box sx={{ width: 100 }} />
                                         <FormControlLabel
                                             control={
                                                 <Tooltip title="Alert this contact when a person is detected">
@@ -357,7 +377,8 @@ const EmergencyContacts = () => {
                                                 width: "auto"
                                             }}
                                         />
-
+                                    </Stack>
+                                    <Stack direction="row" spacing={2} alignItems="center" >
                                         <FormControlLabel
                                             control={
                                                 <Tooltip title="Alert this contact when a package is detected">
@@ -372,6 +393,29 @@ const EmergencyContacts = () => {
                                                 </Tooltip>
                                             }
                                             label="Package Detection"
+                                            sx={{
+                                                color: "#333",
+                                                marginLeft: 0,
+                                                alignItems: "center",
+                                                justifyContent: "flex-start",
+                                                width: "auto"
+                                            }}
+                                        />
+                                        <Box sx={{ width: 77 }} />
+                                        <FormControlLabel
+                                            control={
+                                                <Tooltip title="Alert this contact when a fire is detected">
+                                                    <Switch
+                                                        label="notify_fire"
+                                                        name="notify_fire"
+                                                        checked={values.notify_fire}
+                                                        onChange={handleChange}
+                                                        onBlur={handleBlur}
+                                                        color="primary"
+                                                    />
+                                                </Tooltip>
+                                            }
+                                            label="Fire Detection"
                                             sx={{
                                                 color: "#333",
                                                 marginLeft: 0,
@@ -397,11 +441,6 @@ const EmergencyContacts = () => {
                         )}
                     </Formik>
                     <br />
-                    {error && (
-                        <Typography variant="body2" color="error" sx={{ mb: 2 }}>
-                            {error}
-                        </Typography>
-                    )}
                 </Box>
             </Modal>
         </>

@@ -13,22 +13,14 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import httpClient from '../pages/httpClient';
 import { useAuth } from '../context/AuthContext';
-
-import { Link } from 'react-router-dom';
 import Expandable from './Expandable.jsx'
-
-
+import { showSuccess, showError } from "./ToastUtils";
 
 const AccountSettings = () => {
     const [showCurrentPassword, setShowCurrentPassword] = React.useState(false);
     const [showNewPassword, setShowNewPassword] = React.useState(false);
     const [showConfPassword, setShowConfPassword] = React.useState(false);
-    const [formStatus, setFormStatus] = React.useState({
-        personalInfo: {},
-        loginInfo: {},
-    });
     const [currentEmail, setCurrentEmail] = React.useState("");
-    const [error, setError] = React.useState("");
     const [currentPhoneNumber, setCurrentPhoneNumber] = React.useState("");
     const { firstName, lastName, setFirstName, setLastName } = useAuth();
 
@@ -65,15 +57,15 @@ const AccountSettings = () => {
             const resp = await httpClient.post("http://localhost:8080/update_email", { email });
             if (resp.status === 200) {
                 setCurrentEmail(email);
-                setFormStatus({ ...formStatus, loginInfo: { success: true, message: "Account updated successfully!" } });
+                showSuccess("Account updated successfully!");
             } else {
-                setFormStatus({ ...formStatus, loginInfo: { success: false, message: "Could not update email." } });
+                showError("Email could not be updated.");
             }
         } catch (error) {
             if (error.response?.status === 409) {
-                setFormStatus({ ...formStatus, loginInfo: { success: false, message: "Email is already registered" } });
+                showError("Email is already registered with SeeThru.");
             } else {
-                setFormStatus({ ...formStatus, loginInfo: { success: false, message: "Failed to update account" } });
+                showError("Failed to update account.");
             }
         }
     };
@@ -85,15 +77,15 @@ const AccountSettings = () => {
                 new_password: newPassword,
             });
             if (resp.status === 200) {
-                setFormStatus({ ...formStatus, loginInfo: { success: true, message: "Account updated successfully!" } });
+                showSuccess("Password updated successfully!");
             } else {
-                setFormStatus({ ...formStatus, loginInfo: { success: false, message: "Could not update password." } });
+                showError("Password could not be updated.");
             }
         } catch (e) {
             if (e.response?.status === 403) {
-                setFormStatus({ ...formStatus, loginInfo: { success: false, message: "Current password is incorrect." } });
+                showError("Current password is incorrect.");
             } else {
-                setFormStatus({ ...formStatus, loginInfo: { success: false, message: "Failed to update account." } });
+                showError("Failed to update password.");
             }
         }
     };
@@ -103,10 +95,10 @@ const AccountSettings = () => {
             const resp = await httpClient.post("http://localhost:8080/update_first_name", { first_name });
             setFirstName(first_name)
             if (resp.status === 200) {
-                setFormStatus({ ...formStatus, personalInfo: { success: true, message: "Account updated successfully!" } });
+                showSuccess("First name updated successfully!");
             }
         } catch {
-            setFormStatus({ ...formStatus, personalInfo: { success: false, message: "Failed to update account." } });
+            showError("Last name to update account.");
         }
     };
 
@@ -115,10 +107,10 @@ const AccountSettings = () => {
             const resp = await httpClient.post("http://localhost:8080/update_last_name", { last_name });
             setLastName(last_name)
             if (resp.status === 200) {
-                setFormStatus({ ...formStatus, personalInfo: { success: true, message: "Account updated successfully!" } });
+                showSuccess("Last name updated successfully!");
             }
         } catch {
-            setFormStatus({ ...formStatus, personalInfo: { success: false, message: "Failed to update account." } });
+            showError("Failed to update last name.");
         }
     };
 
@@ -127,10 +119,10 @@ const AccountSettings = () => {
             const resp = await httpClient.post("http://localhost:8080/update_phone_number", { phone_number });
             setCurrentPhoneNumber(phone_number)
             if (resp.status === 200) {
-                setFormStatus({ ...formStatus, personalInfo: { success: true, message: "Account updated successfuly!" } });
+                showSuccess("Phone number updated successfully!");
             }
         } catch {
-            setFormStatus({ ...formStatus, personalInfo: { success: false, message: "Failed to update account." } });
+            showError("Failed to update phone number.");
         }
     }
 
@@ -167,7 +159,6 @@ const AccountSettings = () => {
                             if (formLastName && formLastName !== lastName) await updateLastName(formLastName);
                             if (phoneNumber && phoneNumber !== currentPhoneNumber) await updatePhoneNumber(phoneNumber);
                             resetForm();
-                            setError("");
                         }}
                     >
                         {({
@@ -181,7 +172,7 @@ const AccountSettings = () => {
                             values
                         }) => (
                             <Form onSubmit={handleSubmit}>
-                                <Stack spacing={2} sx={{ width: "100%", color: "#333" }}>
+                                <Stack spacing={2} sx={{ width: "100%", color: "#333", paddingBottom: 2 }}>
                                     <InputLabel>First Name</InputLabel>
                                     <OutlinedInput
                                         type="text"
@@ -261,16 +252,6 @@ const AccountSettings = () => {
                             </Form>
                         )}
                     </Formik>
-                    {formStatus.personalInfo && (
-                        <FormHelperText error={!formStatus.personalInfo.success} sx={{ mt: 2, textAlign: "center", color: formStatus.personalInfo.success ? "green" : "red" }}>
-                            {formStatus.personalInfo.message}
-                        </FormHelperText>
-                    )}
-                    {error && (
-                        <FormHelperText error sx={{ mt: 2, textAlign: "center", color: "red" }}>
-                            {error}
-                        </FormHelperText>
-                    )}
                 </div>
             }
                 style={{ minWidth: '760px' }}
@@ -299,7 +280,6 @@ const AccountSettings = () => {
                             if (email && email !== currentEmail) await updateEmail(email);
                             if (currentPassword && newPassword) await updatePassword(currentPassword, newPassword);
                             resetForm();
-                            setError("");
                         }}
                     >
                         {({
@@ -313,7 +293,7 @@ const AccountSettings = () => {
                             values
                         }) => (
                             <Form onSubmit={handleSubmit}>
-                                <Stack spacing={2} sx={{ width: "100%", color: "#333" }}>
+                                <Stack spacing={2} sx={{ width: "100%", color: "#333", paddingBottom: 2 }}>
                                     <InputLabel>Email</InputLabel>
                                     <OutlinedInput
                                         type="email"
@@ -467,16 +447,6 @@ const AccountSettings = () => {
                             </Form>
                         )}
                     </Formik>
-                    {formStatus.loginInfo && (
-                        <FormHelperText error={!formStatus.loginInfo.success} sx={{ mt: 2, textAlign: "center", color: formStatus.loginInfo.success ? "green" : "red" }}>
-                            {formStatus.loginInfo.message}
-                        </FormHelperText>
-                    )}
-                    {error && (
-                        <FormHelperText error sx={{ mt: 2, textAlign: "center", color: "red" }}>
-                            {error}
-                        </FormHelperText>
-                    )}
                 </div>
             }
                 style={{ minWidth: '760px' }}
