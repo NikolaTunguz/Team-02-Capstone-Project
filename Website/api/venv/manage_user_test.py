@@ -3,9 +3,12 @@ from main import setup
 from model import db, User  
 from uuid import uuid4
 from flask_bcrypt import Bcrypt
+from dotenv import load_dotenv
+import os
 
 bcrypt = Bcrypt()
-
+load_dotenv()
+admin_pass = os.getenv("ADMIN_PASSWORD")
 app = setup("test")
 
 @pytest.fixture
@@ -22,7 +25,7 @@ def client():
                 first_name = 'Test',
                 last_name = 'Admin',
                 email = 'test@admin',
-                password = bcrypt.generate_password_hash('Password123').decode('utf-8'), 
+                password = bcrypt.generate_password_hash(admin_pass).decode('utf-8'), 
                 account_type = 'admin'
             )
 

@@ -38,11 +38,9 @@ class TestTrack(VideoStreamTrack):
         self.webrtc_con_package = webrtc_con_package
         self.person_bboxes = []
         self.package_bboxes = []
-
-
+        
     async def recv(self):
         img = self.camera_queue.get()
-
 
         if(self.webrtc_con_person.poll()):
             self.person_bboxes = self.webrtc_con_person.recv()
@@ -74,7 +72,6 @@ class TestTrack(VideoStreamTrack):
         frame.pts = pts
         frame.time_base = time_base
         return frame
-
 
 class ThermalTrack(VideoStreamTrack):
     def __init__(self, camera_queue, webrtc_con_thermal):
@@ -165,12 +162,10 @@ def image_process(camera_queue, im_pro_con_person, im_pro_con_package):
         cv2.imwrite("localcache/input_image.jpg", frame)
         model_interface.set_normal_image("localcache/input_image.jpg")
 
-
         #person detection
         person_detected = model_interface.detect_person()
         person_bboxes = model_interface.normal_interface.person_bboxes.cpu().numpy().astype("int")
         im_pro_con_person.send(person_bboxes)
-
 
         current_time = time.time()
 
@@ -223,7 +218,6 @@ def image_process(camera_queue, im_pro_con_person, im_pro_con_package):
             date = datetime.now()
             date = date.strftime("%m/%d/%Y, %H:%M:%S")
 
-
             cv2.imwrite("localcache/event_snap.jpg", frame)
 
 
@@ -272,7 +266,7 @@ async def on_offer(offer_sdp, target_id, camera_queue, thermal_queue, webrtc_con
         type = peer_connection.localDescription.type,
         sdp = peer_connection.localDescription.sdp,
     )
-   
+
     signaling_message = {
         "type": answer.type,
         "target_id": target_id,
@@ -307,12 +301,10 @@ async def connect_to_signaling_server(camera_queue, thermal_queue, webrtc_con_pe
 async def main(camera_queue, thermal_queue, webrtc_con_person, webrtc_con_package, webrtc_con_thermal):
     await connect_to_signaling_server(camera_queue, thermal_queue, webrtc_con_person, webrtc_con_package, webrtc_con_thermal)
 
-
 async def im_read(camera_queue, thermal_queue):
     im_reader = aioprocessing.AioProcess(target=camera_reader, args=[camera_queue, thermal_queue])
     im_reader.start()
     await im_reader.coro_join()
-
 
 async def run_im_pro(camera_queue, im_pro_con_person, im_pro_con_package):
     im_pro = aioprocessing.AioProcess(target=image_process, args=[camera_queue, im_pro_con_person, im_pro_con_package])
@@ -399,13 +391,10 @@ def thermal_process(thermal_queue, im_pro_con_thermal):
 if __name__ == "__main__":
     mp.set_start_method("spawn")
 
-
     loop = asyncio.get_event_loop()
-
 
     camera_queue = aioprocessing.AioQueue(5)
     thermal_queue = aioprocessing.AioQueue(5)
-
 
     webrtc_con_person, im_pro_con_person = aioprocessing.AioPipe(duplex=False)
     webrtc_con_package, im_pro_con_package = aioprocessing.AioPipe(duplex=False)

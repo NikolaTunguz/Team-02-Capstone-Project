@@ -8,10 +8,16 @@ from routes.emergency_contact import emergency_contact_bp
 from routes.cameras import camera_bp
 from routes.notifications import notifications_bp
 from routes.manage_users import manage_users_bp
+from routes.notification_settings import notification_settings_bp
 from uuid import uuid4
 from flask_bcrypt import Bcrypt
+from dotenv import load_dotenv
+import os
 
 bcrypt = Bcrypt()
+
+load_dotenv()
+admin_pass = os.getenv("ADMIN_PASSWORD")
 
 def setup(mode):
     app = Flask(__name__)
@@ -25,6 +31,7 @@ def setup(mode):
     app.register_blueprint(camera_bp)
     app.register_blueprint(notifications_bp)
     app.register_blueprint(manage_users_bp)
+    app.register_blueprint(notification_settings_bp)
 
     db.init_app(app)
     with app.app_context():
@@ -41,7 +48,7 @@ def create_admin_user(app):
                 first_name="Admin",
                 last_name="Admin",
                 email="admin@admin",
-                password=bcrypt.generate_password_hash("Password123").decode("utf-8"), 
+                password=bcrypt.generate_password_hash(admin_pass).decode("utf-8"), 
                 account_type="admin"
             )
             db.session.add(admin)
