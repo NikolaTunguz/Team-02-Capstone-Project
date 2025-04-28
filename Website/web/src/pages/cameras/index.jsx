@@ -72,7 +72,7 @@ export default function Cameras() {
                                                     color: "black"
                                                 }}
                                             >
-                                                Last Updated: {camera.last_Updated ? new Date(camera.last_updated).toLocaleString() : "N/A"}
+                                                Last Updated: {camera.last_updated ? new Date(camera.last_updated).toLocaleString() : "N/A"}
                                             </Typography>
                                         </div>
                                     )}
