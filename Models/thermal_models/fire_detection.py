@@ -102,7 +102,7 @@ class FireDetection():
         #-20C is 0, 550C is 255
         #fire begins around ~200C, corresponds to ~86.8 in pixel value
         #lighter fires are tamer, ~100
-        _, thermal_image = cv2.threshold(thermal_image, 25, 255, cv2.THRESH_BINARY)
+        _, thermal_image = cv2.threshold(thermal_image, 37, 255, cv2.THRESH_BINARY)
         #cv2.imshow('test',thermal_image)
         #cv2.waitKey(0)
 
