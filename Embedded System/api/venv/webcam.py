@@ -231,11 +231,25 @@ def image_process(camera_queue, im_pro_con_standard):
         print(current_time - previous_person_notification > 60, ":", person_detected, ":", not (True in prev_person_detections))
         if ((current_time - previous_person_notification > 60) and person_detected and not (True in prev_person_detections)):
             previous_person_notification = current_time
+            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+            
+            for box in person_bboxes:
+                x1,y1,x2,y2 = box
+                frame = cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 199, 46), 1)
+                frame = cv2.putText(frame, "person", (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 200), 1, cv2.LINE_AA)
+
             send_notification(frame, "localcache/event_snap.jpg", "Person detected at camera.", "person")
         prev_person_detections.append(person_detected)
        
         if (package_detected):
             previous_package_notification = current_time
+            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+            
+            for box in package_bboxes:
+                x1,y1,x2,y2 = box
+                frame = cv2.rectangle(frame, (x1, y1), (x2, y2), (255, 0, 0), 1)
+                frame = cv2.putText(frame, "package", (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 1, cv2.LINE_AA)
+                
             send_notification(frame, "localcache/event_snap.jpg", "Package detected at camera.", "package")
             package_detected = False
            
@@ -352,6 +366,17 @@ def thermal_process(thermal_queue, im_pro_con_thermal):
             _, bbox, _ = model_interface.detect_and_bound_pistol()
             bbox_scaled = [box / 384 for box in bbox]
             im_pro_con_thermal.send((bbox_scaled, 'pistol'))
+            
+            if bbox_scaled:
+                x1, y1, x2, y2 = bbox_scaled
+                x1, x2 = int(x1 * 256), int(x2 * 256)
+                y1, y2 = int(y1 * 192), int(y2 * 192)
+               
+                thermal_image = cv2.rectangle(thermal_image, (x1, y1), (x2, y2), (255, 199, 46), 2)
+                thermal_image = cv2.putText(thermal_image, "pistol", (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 200), 1, cv2.LINE_AA)
+                
+                thermal_image = cv2.resize(thermal_image, (640, 480), interpolation=cv2.INTER_NEAREST)
+                
             send_notification(thermal_image, "localcache/event_snap_thermal.jpg", "Pistol detected at camera", "pistol")
         else:
             print("No pistol")
@@ -362,6 +387,17 @@ def thermal_process(thermal_queue, im_pro_con_thermal):
         if det:
             bbox_scaled = ( bbox[0][0] / 256, bbox[0][1] / 192, bbox[0][2] / 256, bbox[0][3] / 192 )
             im_pro_con_thermal.send((bbox_scaled, 'fire'))
+            
+            if bbox_scaled:
+                x1, y1, x2, y2 = bbox_scaled
+                x1, x2 = int(x1 * 256), int(x2 * 256)
+                y1, y2 = int(y1 * 192), int(y2 * 192)
+               
+                thermal_image = cv2.rectangle(thermal_image, (x1, y1), (x2, y2), (255, 199, 46), 2)
+                thermal_image = cv2.putText(thermal_image, "fire", (x1, y1-10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 200), 1, cv2.LINE_AA)
+
+                thermal_image = cv2.resize(thermal_image, (640, 480), interpolation=cv2.INTER_NEAREST)
+            
             send_notification(thermal_image, "localcache/event_snap_thermal.jpg", "Fire detected at camera", "fire")
             print('Fire')
         else:
