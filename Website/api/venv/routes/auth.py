@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, session
 from flask_bcrypt import Bcrypt
-from model import db, User
+from model import db, User, UserNotificationSettings
 from sqlalchemy import select
 import json
 
@@ -33,6 +33,9 @@ def register_user():
     db.session.add(new_user)
     db.session.commit()
     session["user_id"] = new_user.id
+    new_user_settings = UserNotificationSettings(user_id=new_user.id)
+    db.session.add(new_user_settings)
+    db.session.commit()
     return jsonify({
         "id": new_user.id,
         "email": new_user.email
@@ -151,3 +154,4 @@ def first_last():
 
     firstLast = {'first':first_name, 'last':last_name}
     return json.dumps(firstLast, default=str)
+    

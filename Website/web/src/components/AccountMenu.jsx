@@ -18,7 +18,7 @@ const AccountMenu = () => {
 
     const logout = async () => {
         try {
-            const resp = await httpClient.post("http://localhost:8080/logout");
+            const resp = await httpClient.post("/api/logout");
             if (resp.status === 200) {
                 handleMenuClose();
                 navigate('/login');

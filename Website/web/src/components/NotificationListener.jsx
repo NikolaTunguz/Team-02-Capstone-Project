@@ -21,7 +21,7 @@ const NotificationListener = () => {
 
     useEffect(() => {
         if (!canPlay) return;
-        const eventSource = new EventSource('http://localhost:8080/subscribe');
+        const eventSource = new EventSource('/api/subscribe');
 
         eventSource.onerror = (err) => {
             console.error("SSE error", err);
