@@ -11,7 +11,7 @@ export default function Cameras() {
 
     const getCameras = async () => {
         try {
-            const response = await httpClient.get("http://localhost:8080/get_user_cameras");
+            const response = await httpClient.get("/api/get_user_cameras");
             setCameras(response.data.cameras || []);
         } catch (error) {
             console.error("Error fetching cameras:", error);
@@ -32,7 +32,7 @@ export default function Cameras() {
     
         const ordered_ids = reorderedCameras.map((cam) => cam.device_id);
         try {
-            await httpClient.post("http://localhost:8080/update_camera_order", {
+            await httpClient.post("/api/update_camera_order", {
                 ordered_ids
             });
         } catch (error) {
@@ -72,7 +72,7 @@ export default function Cameras() {
                                                     color: "black"
                                                 }}
                                             >
-                                                Last Updated: {camera.last_Updated ? new Date(camera.last_updated).toLocaleString() : "N/A"}
+                                                Last Updated: {camera.last_updated ? new Date(camera.last_updated).toLocaleString() : "N/A"}
                                             </Typography>
                                         </div>
                                     )}

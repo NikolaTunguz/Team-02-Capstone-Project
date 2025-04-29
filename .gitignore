@@ -4,6 +4,8 @@ venv/lib/python3.12/site-packages/
 **/__pycache__/
 **/*.pyc
 Models/Data/ConcealedPistolDataset/
+Website/api/venv/routes/token.pkl
+Website/api/venv/routes/credentials.json
 Website/api/venv/routes/__pycache__/auth.cpython-312.pyc
 Models/Data/ConcealedTestDataset/
 Models/Data/AnnotatedData

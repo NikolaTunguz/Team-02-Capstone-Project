@@ -17,7 +17,7 @@ const AccountMenu = () => {
     React.useEffect(() => {
         const fetchFirstLast = async () => {
             try {
-                const response = await httpClient.get('http://localhost:8080/first_last');
+                const response = await httpClient.get('/api/first_last');
                 setFirstName(response.data['first'])
                 setLastName(response.data['last'])
             } catch (error) {
@@ -38,7 +38,7 @@ const AccountMenu = () => {
 
     const logout = async () => {
         try {
-            const resp = await httpClient.post("http://localhost:8080/logout");
+            const resp = await httpClient.post("/api/logout");
             if (resp.status === 200) {
                 handleMenuClose();
                 setIsLoggedIn(false);

@@ -22,7 +22,7 @@ const NotificationSettings = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        httpClient.get("http://localhost:8080/notification_settings")
+        httpClient.get("/api/notification_settings")
             .then(response => {
                 setValues(response.data);
             })
@@ -39,7 +39,7 @@ const NotificationSettings = () => {
         setValues(updatedValues);
 
         try {
-            await httpClient.post("http://localhost:8080/notification_settings", updatedValues);
+            await httpClient.post("/api/notification_settings", updatedValues);
             showSuccess("Notification settings updated successfully!");
         } catch (e) {
             console.error("Failed to update settings", e);
