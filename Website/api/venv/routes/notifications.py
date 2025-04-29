@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, session, Response, stream_with_context, send_file
 from flask_bcrypt import Bcrypt
-from model import db, Notification, UserCameras, User
+from model import db, Notification, UserCameras, User, UserNotificationSettings
 from sqlalchemy import select, desc
 from .notify_contacts import notify_emergency_contacts, notify_user
 import json
@@ -13,21 +13,22 @@ subscribers = []
 
 @notifications_bp.route('/database', methods=['POST'])
 def database(): 
-    data = request.get_json()
-    device_id = data.get("device_id")
-    timestamp = data.get("timestamp")
-    message = data.get("message")
-    notif_type = data.get("notif_type")
+    device_id = request.form.get("device_id")
+    timestamp = request.form.get("timestamp")
+    message = request.form.get("message")
+    notif_type = request.form.get("notif_type")
 
     user_camera = UserCameras.query.filter_by(device_id=device_id).first()
     if not user_camera:
+        print("device")
         return jsonify({"error": "Device not found"}), 404
     user_camera_name = user_camera.device_name
     user_id = user_camera.user_id 
     user = User.query.filter_by(id=user_id).first()
 
-    settings = NotificationSettings.query.filter_by(user_id=user_id).first()
+    settings = UserNotificationSettings.query.filter_by(user_id=user_id).first()
     if not settings:
+        print("404")
         return jsonify({"error": "Notification settings not found"}), 404
 
     should_notify = (

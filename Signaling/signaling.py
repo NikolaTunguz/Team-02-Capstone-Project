@@ -38,7 +38,7 @@ async def handle_client(websocket):
         connected_clients.pop(client_id, None)
 
 async def main():
-    server = await websockets.serve(handle_client, 'localhost', 8765)
+    server = await websockets.serve(handle_client, 'localhost', 5174)
     print("WebSocket server started on ws://localhost:8765")
     await server.wait_closed()
 

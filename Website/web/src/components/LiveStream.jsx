@@ -11,7 +11,7 @@ const LiveStream = ({ camera }) => {
     const [open, setOpen] = useState(false);
     const [originalName, setOriginalName] = useState(camera.device_name);
     const navigate = useNavigate();
-    const [cameraToggleSwitch, setCameraToggleSwitch] = useState(true)
+    const [cameraToggleSwitch, setCameraToggleSwitch] = useState(false)
 
     const peerConnectionRef = useRef(null);
     const signalingSocketRef = useRef(null);
@@ -20,7 +20,7 @@ const LiveStream = ({ camera }) => {
 
     function websocketConnect() {
         return new Promise((resolve) => {
-            signalingSocketRef.current = new WebSocket("ws://seethru-wss.unr.dev");
+            signalingSocketRef.current = new WebSocket("wss://seethru-wss.unr.dev");
             signalingSocketRef.current.onopen = () => {
                 console.log('WebSocket connection established');
                 resolve(signalingSocketRef.current);
@@ -87,7 +87,6 @@ const LiveStream = ({ camera }) => {
             signalingSocketRef.current.close();
         }
         setOpen(false);
-
         if (camera.device_name !== originalName) {
             navigate(0);
         }
@@ -124,7 +123,7 @@ const LiveStream = ({ camera }) => {
 
     async function fetchThumbnail(deviceId) {
         try {
-            const response = await httpClient.get(`http://localhost:8080/get_thumbnail/${deviceId}`, {
+            const response = await httpClient.get(`/api/get_thumbnail/${deviceId}`, {
                 responseType: "blob",
                 withCredentials: true,
                 headers: {
@@ -142,7 +141,7 @@ const LiveStream = ({ camera }) => {
     }
 
     const handleToggle = (value) => {
-        setCameraToggleSwitch(value)
+        setCameraToggleSwitch(!value)
     }
 
     useEffect(() => {
@@ -212,19 +211,19 @@ const LiveStream = ({ camera }) => {
                             id="video" 
                             autoPlay 
                             playsInline 
-                            style={{ display: (!loading && cameraToggleSwitch) ? 'block' : 'none' }}>
+                            style={{ display: (!loading && !cameraToggleSwitch) ? 'block' : 'none' }}>
                         </video>
 
                         <video 
                             id="thermal" 
                             autoPlay 
                             playsInline 
-                            style={{ display: (!loading && !cameraToggleSwitch) ? 'block' : 'none' }}>
+                            style={{ display: (!loading && cameraToggleSwitch) ? 'block' : 'none' }}>
                         </video>
                     </Box>
 
                     <Box style={{ marginLeft: "20px", display: "flex", alignItems: "center" }}>
-                        <CameraSettings camera={camera} setOpenDialog={setOpen} sendToggle={handleToggle} />
+                        <CameraSettings camera={camera} setOpenDialog={setOpen} thermalView={cameraToggleSwitch} sendToggle={handleToggle} />
                     </Box>
                 </DialogContent>
             </Dialog>

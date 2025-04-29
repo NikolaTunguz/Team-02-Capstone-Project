@@ -19,8 +19,8 @@ const NotificationDeck = () => {
     const fetchNotifications = async () => {
       const response = 
         viewingReadNotifications ?
-          await httpClient.get('http://localhost:8080/read-notifications') :
-          await httpClient.get('http://localhost:8080/notifications');
+          await httpClient.get('/api/read-notifications') :
+          await httpClient.get('/api/notifications');
           
       setNotifications(response.data);
       setLoading(false);
@@ -35,7 +35,7 @@ const NotificationDeck = () => {
   async function fetchSnapshot(deviceId, timestamp, index) {
     try {
       const response = await httpClient.get(
-        `http://localhost:8080/get_notification?device_id=${deviceId}&timestamp=${encodeURIComponent(timestamp)}`,
+        `/api/get_notification?device_id=${deviceId}&timestamp=${encodeURIComponent(timestamp)}`,
         {
           responseType: "blob",
           withCredentials: true,
@@ -65,7 +65,7 @@ const NotificationDeck = () => {
       device_id:notifications[index]['device_id'],
       timestamp:notifications[index]['timestamp']
     };
-    await httpClient.post("http://localhost:8080/remove_notification", data)
+    await httpClient.post("/api/remove_notification", data)
     setNotifications(updatedNotifications);
   };
 
@@ -73,7 +73,7 @@ const NotificationDeck = () => {
   {
     const notification = notifications[index];
 
-    await httpClient.post("http://localhost:8080/mark_read",
+    await httpClient.post("/api/mark_read",
     {
       device_id: notification.device_id,
       timestamp: notification.timestamp,
@@ -86,7 +86,7 @@ const NotificationDeck = () => {
   {
       const notification = notifications[index];
   
-      await httpClient.post("http://localhost:8080/mark_unread",
+      await httpClient.post("/api/mark_unread",
       {
           device_id: notification.device_id,
           timestamp: notification.timestamp,
@@ -97,14 +97,14 @@ const NotificationDeck = () => {
   
   const handleMarkAllRead = async () =>
   {
-    await httpClient.post("http://localhost:8080/mark_all_read");
+    await httpClient.post("/api/mark_all_read");
     setNotifications([]);
   };
 
   
   const handleDeleteAllRead = async () =>
   {
-      await httpClient.post("http://localhost:8080/delete_all_read");
+      await httpClient.post("/api/delete_all_read");
       setNotifications([]);
   };
 

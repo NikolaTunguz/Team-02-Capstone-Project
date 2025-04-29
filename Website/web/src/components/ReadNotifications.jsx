@@ -15,7 +15,7 @@ const ReadNotifications = () => {
 
   React.useEffect(() => {
     const fetchNotifications = async () => {
-      const response = await httpClient.get('http://localhost:8080/read-notifications');
+      const response = await httpClient.get('/api/read-notifications');
       setNotifications(response.data);
       setLoading(false);
 
@@ -29,7 +29,7 @@ const ReadNotifications = () => {
   async function fetchSnapshot(deviceId, timestamp, index) {
     try {
       const response = await httpClient.get(
-        `http://localhost:8080/get_notification?device_id=${deviceId}&timestamp=${encodeURIComponent(timestamp)}`,
+        `/api/get_notification?device_id=${deviceId}&timestamp=${encodeURIComponent(timestamp)}`,
         {
           responseType: "blob",
           withCredentials: true,
@@ -59,13 +59,13 @@ const ReadNotifications = () => {
       device_id: notifications[index].device_id,
       timestamp: notifications[index].timestamp,
     };
-    await httpClient.post("http://localhost:8080/remove_notification", data);
+    await httpClient.post("/api/remove_notification", data);
     setNotifications(updatedNotifications);
   };
 
   const handleMarkUnread = async (index) => {
     const notification = notifications[index];
-    await httpClient.post("http://localhost:8080/mark_unread", {
+    await httpClient.post("/api/mark_unread", {
       device_id: notification.device_id,
       timestamp: notification.timestamp,
     });
@@ -73,7 +73,7 @@ const ReadNotifications = () => {
   };
 
   const handleDeleteAllRead = async () => {
-    await httpClient.post("http://localhost:8080/delete_all_read");
+    await httpClient.post("/api/delete_all_read");
     setNotifications([]);
   };
 

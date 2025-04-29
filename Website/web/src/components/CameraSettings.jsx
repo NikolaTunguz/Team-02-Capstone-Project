@@ -17,19 +17,13 @@ import httpClient from "../pages/httpClient";
 import "../App.css";
 import { showSuccess, showError } from "./ToastUtils";
 
-const CameraSettings = ({ camera, setOpenDialog }) => {
-    const [cameraToggleSwitch, setCameraSwitchState] = useState({});
+const CameraSettings = ({ camera, setOpenDialog, thermalView, sendToggle }) => {
     const [cameraToDelete, setCameraToDelete] = useState(null);
     const [open, setOpen] = useState(false);
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [deviceName, setDeviceName] = useState(camera.device_name);
 
     const navigate = useNavigate();
-
-    const handleToggle = (value) => {
-        setCameraSwitchState(!value)
-        sendToggle(cameraToggleSwitch);
-    };
 
     const handleDelete = (camera) => {
         setCameraToDelete({ camera: camera });
@@ -43,7 +37,7 @@ const CameraSettings = ({ camera, setOpenDialog }) => {
 
     const handleEditName = async () => {
         try {
-            await httpClient.post("http://localhost:8080/update_camera_name", {
+            await httpClient.post("/api/update_camera_name", {
                 device_id: camera.device_id,
                 new_device_name: deviceName,
             });
@@ -106,8 +100,8 @@ const CameraSettings = ({ camera, setOpenDialog }) => {
                 >
                 <Typography variant="body1">Thermal View</Typography>
                 <Switch
-                    checked={cameraToggleSwitch || false}
-                    onChange={() => handleToggle(cameraToggleSwitch)}
+                    checked={thermalView || false}
+                    onChange={() => sendToggle(thermalView)}
                     color="primary"
                 />
                 </Box>
