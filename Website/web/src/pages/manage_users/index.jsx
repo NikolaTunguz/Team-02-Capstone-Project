@@ -21,6 +21,7 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import "../../App.css";
 import { Cancel } from "@mui/icons-material";
+import { showSuccess, showError } from "../../components/ToastUtils";
 
 const ManageUsers = () => {
     const [users, setUsers] = React.useState([]);
@@ -88,8 +89,10 @@ const ManageUsers = () => {
             await httpClient.post("http://localhost:8080/delete_user", { email });
             getUsers();
             setOpenDeleteModal(false);
+            showSuccess("User deleted successfully!");
         } catch (error) {
             console.error("Error deleting user:", error);
+            showError("Error deleting user.");
         }
     }
 
@@ -104,8 +107,10 @@ const ManageUsers = () => {
                 account_type: accountType
             });
             getUsers();
+            showSuccess("User updated successfully!");
         } catch (error) {
-            console.error("Error updating contact: ", error);
+            console.error("Error updating user: ", error);
+            showError("Error updating user.");
         }
     };
 
@@ -159,7 +164,7 @@ const ManageUsers = () => {
                                             .required("Phone number is required"),
                                         account_type: Yup.string()
                                             .oneOf(["admin", "user"], "Account type must be either 'admin' or 'user'")
-                                            .required("Account type is required") 
+                                            .required("Account type is required")
                                     })}
                                     onSubmit={(values) => {
                                         updateUser(
