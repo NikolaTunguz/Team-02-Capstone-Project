@@ -19,6 +19,13 @@ class User (db.Model):
     notify_person = db.Column(db.Boolean, default=True)
     notify_package = db.Column(db.Boolean, default=True)
     notify_fire = db.Column(db.Boolean, default=True)
+    notification_settings = db.relationship(
+        "UserNotificationSettings",
+        back_populates="user",
+        uselist=False,
+        cascade="all, delete-orphan",
+        single_parent=True
+    )
 
 class Notification (db.Model):
     __tablename__ = "notifications"
@@ -53,9 +60,9 @@ class EmergencyContact (db.Model):
 
 class UserNotificationSettings(db.Model):
     __tablename__ = "user_notification_settings"
-    user_id = db.Column(db.String(32), db.ForeignKey('users.id'), primary_key=True)
+    user_id = db.Column(db.String(32), db.ForeignKey('users.id', ondelete='CASCADE'), primary_key=True)
     notify_pistol = db.Column(db.Boolean, default=True)
     notify_person = db.Column(db.Boolean, default=True)
     notify_package = db.Column(db.Boolean, default=True)
     notify_fire = db.Column(db.Boolean, default=True)
-    user = db.relationship("User", backref=db.backref("notification_settings", uselist=False))
+    user = db.relationship("User", back_populates="notification_settings", single_parent=True)
