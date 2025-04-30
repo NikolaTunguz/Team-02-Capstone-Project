@@ -19,6 +19,13 @@ class User (db.Model):
     notify_person = db.Column(db.Boolean, default=True)
     notify_package = db.Column(db.Boolean, default=True)
     notify_fire = db.Column(db.Boolean, default=True)
+    notification_settings = db.relationship(
+        "UserNotificationSettings",
+        back_populates="user",
+        uselist=False,
+        cascade="all, delete-orphan",
+        single_parent=True
+    )
 
 class Notification (db.Model):
     __tablename__ = "notifications"
@@ -32,16 +39,17 @@ class Notification (db.Model):
 class UserCameras (db.Model):
     __tablename__ = "user_cameras"
     device_id = db.Column(db.Integer)
-    user_id = db.Column(db.String(32))
+    user_id = db.Column(db.String(32), db.ForeignKey("users.id", ondelete='CASCADE'), nullable=False)
     device_name = db.Column(db.String(100))
     thumbnail = db.Column(db.LargeBinary) 
     last_updated = db.Column(db.DateTime, nullable=True)
     order = db.Column(db.Integer, default=0)
     __table_args__ = (db.PrimaryKeyConstraint(device_id, user_id),)
+    user = db.relationship("User", backref=db.backref("cameras", cascade="all, delete-orphan"))
 
 class EmergencyContact (db.Model):
     __tablename__ = "emergency_contact"
-    user_id = db.Column(db.String(32), primary_key=True)
+    user_id = db.Column(db.String(32), db.ForeignKey('users.id', ondelete='CASCADE'), primary_key=True)
     first_name = db.Column(db.String(100))
     last_name = db.Column(db.String(100))
     email = db.Column(db.String(128), primary_key=True)
@@ -50,12 +58,13 @@ class EmergencyContact (db.Model):
     notify_person = db.Column(db.Boolean, default=False)
     notify_package = db.Column(db.Boolean, default=False)
     notify_fire = db.Column(db.Boolean, default=False)
+    user = db.relationship("User", backref=db.backref("emergency_contacts", cascade="all, delete-orphan"))
 
 class UserNotificationSettings(db.Model):
     __tablename__ = "user_notification_settings"
-    user_id = db.Column(db.String(32), db.ForeignKey('users.id'), primary_key=True)
+    user_id = db.Column(db.String(32), db.ForeignKey('users.id', ondelete='CASCADE'), primary_key=True)
     notify_pistol = db.Column(db.Boolean, default=True)
     notify_person = db.Column(db.Boolean, default=True)
     notify_package = db.Column(db.Boolean, default=True)
     notify_fire = db.Column(db.Boolean, default=True)
-    user = db.relationship("User", backref=db.backref("notification_settings", uselist=False))
+    user = db.relationship("User", back_populates="notification_settings", single_parent=True)

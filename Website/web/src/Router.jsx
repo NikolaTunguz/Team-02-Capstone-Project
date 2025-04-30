@@ -25,9 +25,9 @@ const Router = () => {
                 <>
                     <NavBar />
                     <NotificationListener />
-                    <ToastContainer />
                 </>
             }
+            {isLoggedIn && <ToastContainer />}
             <Routes>
                 <Route
                     path="/login"
