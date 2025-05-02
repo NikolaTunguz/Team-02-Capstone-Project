@@ -7,7 +7,7 @@ import os
 class YOLOv8Person():
     def __init__(self):
         #initialize model
-        model_path = os.path.join("model-weights", "yolov8n.pt")
+        model_path = os.path.join("model-weights", "yolov8m.pt")
         self.model = YOLO(model_path)
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = self.model.to(self.device)
@@ -29,7 +29,7 @@ class YOLOv8Person():
         scores = scores[person_only]
         
         #NMS filtering
-        keep = torch.where(scores > 0.8)[0]
+        keep = torch.where(scores > 0.7)[0]
         #check if empty bboxes BEFORE nms
         if (keep.numel() == 0):
             return torch.empty((0, 4), device=self.device), torch.empty((0,), device=self.device)
